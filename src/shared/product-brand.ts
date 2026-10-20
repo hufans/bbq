@@ -259,9 +259,9 @@ function moveLegacyExportedEnv(
   delete env[key]
 }
 
-export function stripLegacyExportedProductEnv(
-  env: Record<string, string | undefined>
-): Record<string, string | undefined> {
+export function stripLegacyExportedProductEnv<Env extends Record<string, string | undefined>>(
+  env: Env
+): Env {
   for (const key of LEGACY_EXPORTED_ENV_KEYS) {
     moveLegacyExportedEnv(env, key, false)
   }

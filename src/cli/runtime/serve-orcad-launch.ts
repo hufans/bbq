@@ -75,20 +75,20 @@ export function serveWithOrcad(
   /** The app's browser client; the slot does not carry one, so orcad serves it from here. */
   webClientRoot?: string
 ): Promise<number> {
+  const env = stripLegacyExportedProductEnv({
+    ...baseEnv,
+    // The desktop's profile: its instance lock makes the two refuse each other.
+    BBQ_USER_DATA: userDataPath,
+    ORCA_VERSION: selection.version
+  })
   const spec: ProcessSpec = {
     program: selection.runtime,
     args: [selection.entry, ...orcadServeArgs(args, webClientRoot)],
     detached: args.recipeJson === true,
     cwd: dirname(selection.entry),
     stdio: args.recipeJson === true ? ['ignore', 'pipe', 'inherit'] : 'inherit',
-    env: {
-      ...baseEnv,
-      // The desktop's profile: its instance lock makes the two refuse each other.
-      BBQ_USER_DATA: userDataPath,
-      ORCA_VERSION: selection.version
-    }
+    env
   }
-  stripLegacyExportedProductEnv(spec.env)
   const spawnChild = shouldRedactSupervisedStdout(args.supervise === true)
     ? redactingSpawn(spawnProcess)
     : spawnProcess

@@ -42,12 +42,10 @@ try {
   process.exit(1)
 }
 // The provider's own argv, after this script's '--'.
-const providerSeparator = process.argv.indexOf('--')
-if (providerSeparator < 0) process.exit(1)
-const [providerCommand, ...providerArgs] = process.argv.slice(providerSeparator + 1)
+const providerSeparator = process.argv.indexOf('--'); if (providerSeparator < 0) process.exit(1)
+const [providerCommand, ...providerArgs] = process.argv.slice(providerSeparator + 1); const ownerGone = () => process.ppid !== spec.ownerPid
 // A detached supervisor is reparented when its owner exits. The new parent may
 // be PID 1 or a platform subreaper, so any other parent means no live owner.
-const ownerGone = () => process.ppid !== spec.ownerPid
 // Registered before the spawn, so a stop that lands while the provider starts still reaps it.
 for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP']) process.on(signal, () => stopProviderGroup(signal))
 // The owner can exit before this runs; spawning then would start a provider nothing watches.
@@ -245,7 +243,9 @@ function writeProviderSupervisorSpecFile(spec: unknown): string {
   return path
 }
 
-export function isProviderSupervisorArgv(args: readonly string[] | undefined): boolean {
+export function isProviderSupervisorArgv(
+  args: readonly string[] | undefined
+): args is readonly [string, string, ...string[]] {
   return (
     typeof args?.[0] === 'string' &&
     args[0].endsWith(PROVIDER_SUPERVISOR_SCRIPT_FILENAME) &&
