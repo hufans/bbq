@@ -7,8 +7,8 @@ import {
   resolveProfileLoadingShell
 } from './hydrate-shell-path'
 
-const START_MARKER = '__ORCA_LOGIN_SHELL_ENV_START__'
-const END_MARKER = '__ORCA_LOGIN_SHELL_ENV_END__'
+const START_MARKER = '__BBQ_LOGIN_SHELL_ENV_START__'
+const END_MARKER = '__BBQ_LOGIN_SHELL_ENV_END__'
 const SPAWN_TIMEOUT_MS = 5000
 
 /** Whether a profile-loading shell produced the env, or Orca fell back to its own. */

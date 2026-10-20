@@ -80,7 +80,7 @@ export abstract class OrcaRuntimeWithCreateTerminal extends OrcaRuntimeWithTermi
         const launchToken = agentLaunchTokenFor(launchOpts, dependencies.randomUUID)
         const baseEnv = {
           ...launchOpts.env,
-          ...(launchToken ? { ORCA_AGENT_LAUNCH_TOKEN: launchToken } : {})
+          ...(launchToken ? { BBQ_AGENT_LAUNCH_TOKEN: launchToken } : {})
         }
         let agentTeamsPlan: Awaited<ReturnType<typeof buildRuntimeAgentTeamsLaunchPlan>>['plan']
         let sequencedStartupCommand: string | undefined

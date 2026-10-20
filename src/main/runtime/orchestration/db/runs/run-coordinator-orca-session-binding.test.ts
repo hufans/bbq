@@ -89,7 +89,7 @@ describe('Run binding by Orca session id', () => {
     expect(db.getRunRaw(run.id)).toMatchObject({
       coordinator_handle: null,
       coordinator_pane_key: null,
-      coordinator_orca_session_id: CHAT_X_ID
+      coordinator_bbq_session_id: CHAT_X_ID
     })
     expect(db.getCurrentRunForCoordinator(chat(CHAT_X_ID))?.id).toBe(run.id)
     expect(db.getRunMailboxOwnerIdsForHandle(CHAT_X)).toEqual([run.id])
@@ -121,11 +121,11 @@ describe('Run binding by Orca session id', () => {
 
     expect(db.getCurrentRunForCoordinator(chat(CHAT_X_ID))?.id).toBe(xSecond.id)
     expect(db.getCurrentRunForCoordinator(chat(CHAT_Y_ID))?.id).toBe(yRun.id)
-    expect(db.getRunRaw(yRun.id)?.coordinator_orca_session_id).toBe(CHAT_Y_ID)
+    expect(db.getRunRaw(yRun.id)?.coordinator_bbq_session_id).toBe(CHAT_Y_ID)
     expect(db.getRunRaw(ptyRun.id)?.coordinator_pane_key).toBe(PTY_PANE)
     expect(db.getRunRaw(xFirst.id)).toMatchObject({
       coordinator_handle: null,
-      coordinator_orca_session_id: null,
+      coordinator_bbq_session_id: null,
       consumer_generation: generation + 1
     })
     // Pending coordinator mail follows the Run, as it does when a pane is unbound.
@@ -159,7 +159,7 @@ describe('Run binding by Orca session id', () => {
     expect(db.getRunRaw(run.id)).toMatchObject({
       coordinator_handle: null,
       coordinator_pane_key: null,
-      coordinator_orca_session_id: CHAT_X_ID
+      coordinator_bbq_session_id: CHAT_X_ID
     })
     expect(db.getCurrentRunForCoordinator(chat(CHAT_X_ID))).toBeUndefined()
     const next = createChatRun(CHAT_X_ID, 'next')
@@ -211,7 +211,7 @@ describe('Run binding by Orca session id', () => {
     })
 
     expect(db.getRunRaw(run.id)).toMatchObject({
-      coordinator_orca_session_id: CHAT_Y_ID,
+      coordinator_bbq_session_id: CHAT_Y_ID,
       consumer_generation: before + 1
     })
     expect(db.getCurrentRunForCoordinator(chat(CHAT_X_ID))).toBeUndefined()
@@ -230,7 +230,7 @@ describe('Run binding by Orca session id', () => {
     })
     // As an older binary writes the row: no Orca session id, and no generation for one.
     db.db
-      .prepare('UPDATE runs SET coordinator_orca_session_id_generation = NULL WHERE id = ?')
+      .prepare('UPDATE runs SET coordinator_bbq_session_id_generation = NULL WHERE id = ?')
       .run(run.id)
     const before = db.getRunRaw(run.id)?.consumer_generation
 
@@ -242,7 +242,7 @@ describe('Run binding by Orca session id', () => {
     })
 
     expect(db.getRunRaw(run.id)).toMatchObject({
-      coordinator_orca_session_id: WORKER_SESSION,
+      coordinator_bbq_session_id: WORKER_SESSION,
       consumer_generation: before
     })
     // Written at the current generation, so the filled id counts on its own.
@@ -331,12 +331,12 @@ describe('Dispatch Orca session ids recorded by every writer', () => {
     })
 
     expect(assigned).toMatchObject({
-      assignee_orca_session_id: WORKER_SESSION,
+      assignee_bbq_session_id: WORKER_SESSION,
       creator_handle: null,
       creator_pane_key: null,
-      creator_orca_session_id: CHAT_X_ID
+      creator_bbq_session_id: CHAT_X_ID
     })
-    expect(pty).toMatchObject({ assignee_orca_session_id: null, creator_orca_session_id: null })
+    expect(pty).toMatchObject({ assignee_bbq_session_id: null, creator_bbq_session_id: null })
   })
 
   it('nests under the Dispatch a handle-less creator is assigned by its Orca session id', () => {
@@ -383,8 +383,8 @@ describe('Dispatch Orca session ids recorded by every writer', () => {
       startOptions: {}
     })
     expect(started.dispatch).toMatchObject({
-      creator_orca_session_id: CHAT_X_ID,
-      assignee_orca_session_id: null
+      creator_bbq_session_id: CHAT_X_ID,
+      assignee_bbq_session_id: null
     })
 
     const handle = mintStructuredWorkerHandle()
@@ -398,7 +398,7 @@ describe('Dispatch Orca session ids recorded by every writer', () => {
       setupState: 'not_applicable'
     })
 
-    expect(db.getDispatchContextById(started.dispatch.id)?.assignee_orca_session_id).toBe(
+    expect(db.getDispatchContextById(started.dispatch.id)?.assignee_bbq_session_id).toBe(
       WORKER_SESSION
     )
   })

@@ -1,6 +1,5 @@
 import { chmod, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { accessSync, constants, existsSync } from 'node:fs'
-import { homedir } from 'node:os'
 import { delimiter, dirname, isAbsolute, join } from 'node:path'
 import {
   addClaudeTeammateModeAuto,
@@ -9,6 +8,11 @@ import {
   type ClaudeAgentTeamsMode
 } from '../../shared/claude-agent-teams-tmux-compat'
 import { getOrcaCliCommandNameForPlatform } from '../../shared/orca-cli-command-name'
+import {
+  PRODUCT_COMMAND,
+  PRODUCT_DEV_COMMAND,
+  resolveProductHomeDir
+} from '../../shared/product-brand'
 import { resolvePathEnvKey } from '../pty/windows-path-segment-merge'
 
 export type ClaudeAgentTeamsLaunchPlan = {
@@ -65,7 +69,7 @@ export function resolveClaudeAgentTeamsShimBin(
 ): string | null {
   // Why: Windows callers pass an env spelt `Path`; reading only `PATH` there would find no CLI at all.
   const pathValue = env[resolvePathEnvKey(env, process.platform)]
-  const override = env.ORCA_AGENT_TEAMS_SHIM_BIN
+  const override = env.BBQ_AGENT_TEAMS_SHIM_BIN
   if (override) {
     // Why: a bare override name would be resolved by the shim's shell against its cwd, so qualify it or ignore it.
     const qualified = isAbsolute(override) ? override : findExecutableOnPath(override, pathValue)
@@ -78,27 +82,26 @@ export function resolveClaudeAgentTeamsShimBin(
     return bundled
   }
   return (
-    findExecutableOnPath(process.platform === 'win32' ? 'orca-dev.cmd' : 'orca-dev', pathValue) ??
-    findExecutableOnPath(getOrcaCliCommandNameForPlatform(process.platform), pathValue)
+    findExecutableOnPath(
+      process.platform === 'win32' ? `${PRODUCT_DEV_COMMAND}.cmd` : PRODUCT_DEV_COMMAND,
+      pathValue
+    ) ?? findExecutableOnPath(getOrcaCliCommandNameForPlatform(process.platform), pathValue)
   )
 }
 
 function defaultShimRoot(): string {
-  return join(homedir(), '.orca', 'claude-agent-teams-bin')
+  return join(resolveProductHomeDir(), 'claude-agent-teams-bin')
 }
 
 function bundledLauncherPath(): string | null {
   if (!process.resourcesPath) {
     return null
   }
-  if (process.platform === 'darwin') {
-    return join(process.resourcesPath, 'bin', 'orca')
-  }
-  if (process.platform === 'linux') {
-    return join(process.resourcesPath, 'bin', 'orca-ide')
+  if (process.platform === 'darwin' || process.platform === 'linux') {
+    return join(process.resourcesPath, 'bin', PRODUCT_COMMAND)
   }
   if (process.platform === 'win32') {
-    return join(process.resourcesPath, 'bin', 'orca.exe')
+    return join(process.resourcesPath, 'bin', `${PRODUCT_COMMAND}.exe`)
   }
   return null
 }
@@ -136,15 +139,15 @@ function unixShimScript(): string {
   return [
     '#!/usr/bin/env sh',
     'set -eu',
-    'orca_bin=${ORCA_AGENT_TEAMS_SHIM_BIN:-}',
-    'case $orca_bin in',
+    'bbq_bin=${BBQ_AGENT_TEAMS_SHIM_BIN:-}',
+    'case $bbq_bin in',
     '  /*|[A-Za-z]:[\\\\/]*) ;;',
     '  *)',
-    '    echo "orca agent-teams tmux shim: ORCA_AGENT_TEAMS_SHIM_BIN must be an absolute path" >&2',
+    '    echo "bbq agent-teams tmux shim: BBQ_AGENT_TEAMS_SHIM_BIN must be an absolute path" >&2',
     '    exit 127',
     '    ;;',
     'esac',
-    'exec "$orca_bin" agent-teams-tmux "$@"',
+    'exec "$bbq_bin" agent-teams-tmux "$@"',
     ''
   ].join('\n')
 }
@@ -153,17 +156,17 @@ export function windowsClaudeAgentTeamsShimScript(): string {
   return [
     '@echo off',
     'setlocal',
-    'set "ORCA_SHIM_BIN=%ORCA_AGENT_TEAMS_SHIM_BIN%"',
-    'if not defined ORCA_SHIM_BIN goto :unqualified',
-    'if "%ORCA_SHIM_BIN:~1,1%"==":" goto :run',
-    'if "%ORCA_SHIM_BIN:~0,2%"=="\\\\" goto :run',
+    'set "BBQ_SHIM_BIN=%BBQ_AGENT_TEAMS_SHIM_BIN%"',
+    'if not defined BBQ_SHIM_BIN goto :unqualified',
+    'if "%BBQ_SHIM_BIN:~1,1%"==":" goto :run',
+    'if "%BBQ_SHIM_BIN:~0,2%"=="\\\\" goto :run',
     'goto :unqualified',
     ':run',
     // Why: no `call` — its extra percent-expansion pass would rewrite tmux pane args such as `%2` into batch parameters.
-    '"%ORCA_SHIM_BIN%" agent-teams-tmux %*',
+    '"%BBQ_SHIM_BIN%" agent-teams-tmux %*',
     'exit /b %ERRORLEVEL%',
     ':unqualified',
-    'echo orca agent-teams tmux shim: ORCA_AGENT_TEAMS_SHIM_BIN must be an absolute path 1>&2',
+    'echo bbq agent-teams tmux shim: BBQ_AGENT_TEAMS_SHIM_BIN must be an absolute path 1>&2',
     'exit /b 127',
     ''
   ].join('\r\n')

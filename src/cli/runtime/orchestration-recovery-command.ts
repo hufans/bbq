@@ -1,15 +1,17 @@
+import { PRODUCT_COMMAND, PRODUCT_DEV_COMMAND } from '../../shared/product-brand'
+
 export function resolveOrchestrationCliExecutable(
   env: NodeJS.ProcessEnv = process.env,
-  platform: NodeJS.Platform = process.platform
+  _platform: NodeJS.Platform = process.platform
 ): string {
-  const configured = env.ORCA_CLI_COMMAND?.trim()
+  const configured = (env.BBQ_CLI_COMMAND ?? env.ORCA_CLI_COMMAND)?.trim()
   if (configured) {
     return configured
   }
   if (env.ORCA_DEV_REPO_ROOT) {
-    return 'orca-dev'
+    return PRODUCT_DEV_COMMAND
   }
-  return platform === 'linux' ? 'orca-ide' : 'orca'
+  return PRODUCT_COMMAND
 }
 
 export function buildOrchestrationRecoveryCommand(

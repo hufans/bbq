@@ -140,9 +140,9 @@ export const WORKTREE_HANDLERS: Record<string, CommandHandler> = {
     assertWorkspaceTargetFlagsCompatible(flags)
     const reviewLinks = getReviewTargetLinkFlags(flags)
     const callerTerminalHandle =
-      typeof process.env.ORCA_TERMINAL_HANDLE === 'string' &&
-      process.env.ORCA_TERMINAL_HANDLE.length > 0
-        ? process.env.ORCA_TERMINAL_HANDLE
+      typeof process.env.BBQ_TERMINAL_HANDLE === 'string' &&
+      process.env.BBQ_TERMINAL_HANDLE.length > 0
+        ? process.env.BBQ_TERMINAL_HANDLE
         : undefined
     const explicitParent = await resolveCreateParentSelector(flags, cwd, client)
     const explicitParentWorktree = explicitParent.parentWorktree
@@ -165,7 +165,7 @@ export const WORKTREE_HANDLERS: Record<string, CommandHandler> = {
       needsCwdRepoInference
     ) {
       try {
-        // Why: agent shells can lose ORCA_TERMINAL_HANDLE while still running
+        // Why: agent shells can lose BBQ_TERMINAL_HANDLE while still running
         // inside an Orca worktree. Cwd keeps CLI-created children nestable and
         // lets create infer the repo for the common current-workspace case.
         cwdParentWorktree = await resolveCurrentWorktreeSelection(cwd, client)

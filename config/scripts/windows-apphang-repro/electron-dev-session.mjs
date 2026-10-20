@@ -51,7 +51,7 @@ export function launchDevApp({ cdpPort, userDataDir }) {
   const env = { ...process.env }
   delete env.ELECTRON_RUN_AS_NODE
   delete env.CODEX_HOME
-  delete env.ORCA_CODEX_HOME
+  delete env.BBQ_CODEX_HOME
   const isolatedHome = path.join(userDataDir, 'home')
   mkdirSync(isolatedHome, { recursive: true })
   Object.assign(env, {

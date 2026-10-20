@@ -96,20 +96,10 @@ const devChannelBuildVersion = isHourlyChannel
     : isAdhocChannel
       ? process.env.ORCA_ADHOC_BUILD_VERSION
       : undefined
-// Why each dev channel gets its own repo rather than tagging into the main one:
-// the releases atom feed exposes only the 10 newest entries, so 24 hourly tags a
-// day would evict every stable/RC entry and strand users on a feed with nothing
-// to install. Keeping adhoc/daily separate from hourly too means a branch build
-// or a once-a-day cut cannot be picked up by someone who only meant to ride
-// main's hourlies.
-const devChannelRepo = isHourlyChannel
-  ? 'orca-hourly'
-  : isDailyChannel
-    ? 'orca-daily'
-    : isAdhocChannel
-      ? 'orca-adhoc'
-      : null
-const appId = 'com.stablyai.orca'
+// Dev channels stay prereleases on this fork's repo. They must not publish to
+// the upstream Orca repos, or an update would replace this build with Orca.
+const devChannelRepo = isHourlyChannel || isDailyChannel || isAdhocChannel ? 'bbq' : null
+const appId = 'com.hufans.bbq'
 const featureWallResources = {
   from: 'resources/onboarding/feature-wall',
   to: 'onboarding/feature-wall'
@@ -239,8 +229,8 @@ const ORCA_MAC_TEAM_ID = '6CX3WHS9HZ'
 /** @type {import('electron-builder').Configuration} */
 module.exports = {
   appId,
-  productName: 'Orca',
-  protocols: [{ name: 'Orca', schemes: ['orca'] }],
+  productName: 'BBQ',
+  protocols: [{ name: 'BBQ', schemes: ['bbq', 'orca'] }],
   toolsets: { appimage: '1.0.3' },
   ...(devChannelBuildVersion
     ? { extraMetadata: { version: devChannelBuildVersion } }
@@ -524,22 +514,22 @@ module.exports = {
       chmodSync(join(resourcesDir, filename), 0o755)
     }
     if (context.electronPlatformName === 'darwin') {
-      await signMacComputerUseHelper(join(resourcesDir, 'Orca Computer Use.app'), context.packager)
+      await signMacComputerUseHelper(join(resourcesDir, 'BBQ Computer Use.app'), context.packager)
       await signMacStandaloneHelper(
-        join(resourcesDir, '..', 'MacOS', 'orca-notification-status'),
-        'orca-notification-status',
+        join(resourcesDir, '..', 'MacOS', 'bbq-notification-status'),
+        'bbq-notification-status',
         context.packager
       )
       await signMacStandaloneHelper(
-        join(resourcesDir, '..', 'MacOS', 'orca-keyboard-layout'),
-        'orca-keyboard-layout',
+        join(resourcesDir, '..', 'MacOS', 'bbq-keyboard-layout'),
+        'bbq-keyboard-layout',
         context.packager
       )
       await packageMacTerminalHost(join(resourcesDir, '..', '..'), context)
     }
   },
   win: {
-    executableName: 'Orca',
+    executableName: 'bbq',
     // Why: Windows installers are signed after electron-builder packaging by
     // SignPath, so the packager cannot infer the updater publisherName.
     //
@@ -567,16 +557,16 @@ module.exports = {
       ...windowsRuntimeResources,
       winSpeechNativeResource,
       {
-        from: 'resources/win32/bin/orca.cmd',
-        to: 'bin/orca.cmd'
+        from: 'resources/win32/bin/bbq.cmd',
+        to: 'bin/bbq.cmd'
       },
       {
-        from: 'native/windows-cli-launcher/.build/orca.exe',
-        to: 'bin/orca.exe'
+        from: 'native/windows-cli-launcher/.build/bbq.exe',
+        to: 'bin/bbq.exe'
       },
       {
-        from: 'native/windows-cli-launcher/.build/orca-administrator-restart.exe',
-        to: 'bin/orca-administrator-restart.exe'
+        from: 'native/windows-cli-launcher/.build/bbq-administrator-restart.exe',
+        to: 'bin/bbq-administrator-restart.exe'
       },
       // Why resources/bin: SignPath signs every unsigned PE under win-unpacked, and the hook
       // installer copies this signed file into ~/.orca/agent-hooks (#20913).
@@ -596,7 +586,7 @@ module.exports = {
     ]
   },
   nsis: {
-    artifactName: 'orca-windows-setup.${ext}',
+    artifactName: 'bbq-windows-setup.${ext}',
     shortcutName: '${productName}',
     uninstallDisplayName: '${productName}',
     createDesktopShortcut: 'always',
@@ -654,16 +644,16 @@ module.exports = {
       ...createPackagedRuntimeNodeModuleResources('darwin'),
       macSpeechNativeResource,
       {
-        from: 'resources/darwin/bin/orca',
-        to: 'bin/orca'
+        from: 'resources/darwin/bin/bbq',
+        to: 'bin/bbq'
       },
       {
         from: 'node_modules/agent-browser/bin/agent-browser-darwin-${arch}',
         to: 'agent-browser-darwin-${arch}'
       },
       {
-        from: 'native/computer-use-macos/.build/release/Orca Computer Use.app',
-        to: 'Orca Computer Use.app'
+        from: 'native/computer-use-macos/.build/release/BBQ Computer Use.app',
+        to: 'BBQ Computer Use.app'
       },
       featureWallResources
     ],
@@ -672,12 +662,12 @@ module.exports = {
     // is nil) for executables launched out of Contents/Resources (#7929).
     extraFiles: [
       {
-        from: 'native/notification-status-macos/.build/release/orca-notification-status',
-        to: 'MacOS/orca-notification-status'
+        from: 'native/notification-status-macos/.build/release/bbq-notification-status',
+        to: 'MacOS/bbq-notification-status'
       },
       {
-        from: 'native/keyboard-layout-macos/.build/release/orca-keyboard-layout',
-        to: 'MacOS/orca-keyboard-layout'
+        from: 'native/keyboard-layout-macos/.build/release/bbq-keyboard-layout',
+        to: 'MacOS/bbq-keyboard-layout'
       }
     ],
     target: [
@@ -695,7 +685,7 @@ module.exports = {
   // silently downgrading to ad-hoc artifacts that look shippable in CI logs.
   forceCodeSigning: isMacRelease,
   dmg: {
-    artifactName: 'orca-macos-${arch}.${ext}'
+    artifactName: 'bbq-macos-${arch}.${ext}'
   },
   linux: {
     // Why mimeTypes and not fileAssociations: shared-mime-info already maps *.md/*.markdown to
@@ -706,15 +696,15 @@ module.exports = {
     mimeTypes: ['text/markdown', 'text/csv', 'text/tab-separated-values'],
     // Why: Ubuntu desktop ships GNOME Orca as the `orca` package and /usr/bin/orca.
     // The Linux installer should not claim those system package/file names.
-    executableName: 'orca-ide',
+    executableName: 'bbq',
     // Why: the icns source lets electron-builder emit standard hicolor PNG
     // sizes; a single 1024px PNG is ignored by some Linux docks/launchers.
     icon: 'resources/build/icon.icns',
     desktop: {
       entry: {
-        // Why: Electron reports WM_CLASS=orca for the visible Linux window;
-        // GNOME docks need an exact match to group it with orca-ide.desktop.
-        StartupWMClass: 'orca'
+        // Why: Electron reports WM_CLASS from the executable name. The dock
+        // entry must match bbq.desktop.
+        StartupWMClass: 'bbq'
       }
     },
     extraResources: [
@@ -722,12 +712,12 @@ module.exports = {
       ...createPackagedRuntimeNodeModuleResources('linux'),
       linuxSpeechNativeResource,
       {
-        from: 'native/wayland-clipboard/.build/${arch}/orca-wayland-clipboard',
-        to: 'bin/orca-wayland-clipboard'
+        from: 'native/wayland-clipboard/.build/${arch}/bbq-wayland-clipboard',
+        to: 'bin/bbq-wayland-clipboard'
       },
       {
-        from: 'resources/linux/bin/orca-ide',
-        to: 'bin/orca-ide'
+        from: 'resources/linux/bin/bbq',
+        to: 'bin/bbq'
       },
       {
         from: 'node_modules/agent-browser/bin/agent-browser-linux-${arch}',
@@ -745,11 +735,11 @@ module.exports = {
     category: 'Utility'
   },
   appImage: {
-    artifactName: isLinuxArm64Release ? 'orca-linux-arm64.${ext}' : 'orca-linux.${ext}'
+    artifactName: isLinuxArm64Release ? 'bbq-linux-arm64.${ext}' : 'bbq-linux.${ext}'
   },
   deb: {
-    packageName: 'orca-ide',
-    artifactName: 'orca-ide_${version}_${arch}.${ext}',
+    packageName: 'bbq',
+    artifactName: 'bbq_${version}_${arch}.${ext}',
     // Why: xvfb lets the bundled `orca serve` CLI run browser panes on a headless
     // Linux host — Chromium needs a display server even for offscreen rendering,
     // and serve starts Xvfb itself when present (see ensure-virtual-display.ts).
@@ -773,8 +763,8 @@ module.exports = {
     fpm: appImageNodeRuntimeFpmArgs
   },
   rpm: {
-    packageName: 'orca-ide',
-    artifactName: 'orca-ide-${version}.${arch}.${ext}',
+    packageName: 'bbq',
+    artifactName: 'bbq-${version}.${arch}.${ext}',
     // Why: see deb depends. RPM distros ship Xvfb as xorg-x11-server-Xvfb (there
     // is no `xvfb` package), so the name differs from the deb here.
     depends: [
@@ -801,8 +791,8 @@ module.exports = {
   npmRebuild: true,
   publish: {
     provider: 'github',
-    owner: 'stablyai',
-    repo: devChannelRepo ?? 'orca',
+    owner: 'hufans',
+    repo: devChannelRepo ?? 'bbq',
     // Why draft on the main repo: `--publish always` otherwise creates a
     // public GitHub release as soon as the first platform uploads, and
     // /releases/latest serves a missing Windows exe. release-cut undrafts
@@ -825,7 +815,7 @@ function chmodUnixCliLaunchers(resourcesDir, electronPlatformName) {
   if (electronPlatformName === 'win32') {
     return
   }
-  for (const launcherName of ['orca', 'orca-ide']) {
+  for (const launcherName of ['bbq']) {
     const launcherPath = join(resourcesDir, 'bin', launcherName)
     if (!existsSync(launcherPath)) {
       continue
@@ -839,7 +829,7 @@ function chmodUnixCliLaunchers(resourcesDir, electronPlatformName) {
 async function signMacComputerUseHelper(helperAppPath, packager) {
   if (!existsSync(helperAppPath)) {
     if (isMacRelease) {
-      throw new Error(`Missing Orca Computer Use helper app at ${helperAppPath}`)
+      throw new Error(`Missing BBQ Computer Use helper app at ${helperAppPath}`)
     }
     return
   }
@@ -853,7 +843,7 @@ async function signMacComputerUseHelper(helperAppPath, packager) {
     findInstalledMacSigningIdentity(codeSigningInfo?.keychainFile) ??
     (isMacRelease ? null : '-')
   if (!identity) {
-    throw new Error('Missing signing identity for Orca Computer Use helper app')
+    throw new Error('Missing signing identity for BBQ Computer Use helper app')
   }
   // Why: TCC grants attach to this nested app's code identity. Sign it before
   // the outer Orca.app is sealed so production builds preserve that identity.

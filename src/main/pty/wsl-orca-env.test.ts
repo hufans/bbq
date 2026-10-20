@@ -26,15 +26,15 @@ describe('addOrcaWslInteropEnv', () => {
   )
 
   it('marks the Orca terminal handle for Windows to WSL env import', () => {
-    const env: Record<string, string> = { ORCA_TERMINAL_HANDLE: 'term_wsl' }
+    const env: Record<string, string> = { BBQ_TERMINAL_HANDLE: 'term_wsl' }
 
     addOrcaWslInteropEnv(env)
 
-    expect(env.WSLENV).toBe('ORCA_TERMINAL_HANDLE/u:ORCA_SHELL_READY_ROOT/p')
+    expect(env.WSLENV).toBe('BBQ_TERMINAL_HANDLE/u:BBQ_SHELL_READY_ROOT/p')
   })
 
   // Why this is published at all: the wrapper tree is content-addressed, so the
-  // in-guest login script cannot rebuild its path from ORCA_USER_DATA_PATH -- it
+  // in-guest login script cannot rebuild its path from BBQ_USER_DATA_PATH -- it
   // cannot derive the hash segment. Without this the guest finds no wrapper and
   // every WSL pane launches unwrapped: no ready marker, so every startup command
   // waits out the full readiness timeout.
@@ -43,10 +43,10 @@ describe('addOrcaWslInteropEnv', () => {
 
     addOrcaWslInteropEnv(env)
 
-    expect(env.ORCA_SHELL_READY_ROOT).toBe(getShellReadyWrapperRoot())
-    expect(isAbsolute(env.ORCA_SHELL_READY_ROOT as string)).toBe(true)
+    expect(env.BBQ_SHELL_READY_ROOT).toBe(getShellReadyWrapperRoot())
+    expect(isAbsolute(env.BBQ_SHELL_READY_ROOT as string)).toBe(true)
     // /p, not /u: the guest reads a Windows path through /mnt/c.
-    expect(env.WSLENV?.split(':')).toContain('ORCA_SHELL_READY_ROOT/p')
+    expect(env.WSLENV?.split(':')).toContain('BBQ_SHELL_READY_ROOT/p')
   })
 
   it('imports setup-gated startup env into WSL without path translation', () => {
@@ -58,7 +58,7 @@ describe('addOrcaWslInteropEnv', () => {
     addOrcaWslInteropEnv(env)
 
     expect(env.WSLENV?.split(':')).toEqual([
-      'ORCA_SHELL_READY_ROOT/p',
+      'BBQ_SHELL_READY_ROOT/p',
       `${SETUP_AGENT_SEQUENCE_STARTUP_COMMAND_ENV}/u`,
       `${SETUP_AGENT_SEQUENCE_STARTUP_SCRIPT_ENV}/u`
     ])
@@ -66,39 +66,39 @@ describe('addOrcaWslInteropEnv', () => {
 
   it('preserves existing WSLENV entries and does not duplicate the handle entry', () => {
     const env: Record<string, string> = {
-      WSLENV: 'FOO/u:ORCA_TERMINAL_HANDLE/u:BAR/p'
+      WSLENV: 'FOO/u:BBQ_TERMINAL_HANDLE/u:BAR/p'
     }
 
     addOrcaWslInteropEnv(env)
 
-    expect(env.WSLENV).toBe('FOO/u:ORCA_TERMINAL_HANDLE/u:BAR/p:ORCA_SHELL_READY_ROOT/p')
+    expect(env.WSLENV).toBe('FOO/u:BBQ_TERMINAL_HANDLE/u:BAR/p:BBQ_SHELL_READY_ROOT/p')
   })
 
   it('marks OMP status and hook env for Windows to WSL import', () => {
     const env: Record<string, string> = {
-      ORCA_TERMINAL_HANDLE: 'term_wsl',
-      ORCA_USER_DATA_PATH: 'C:\\Users\\jin\\AppData\\Roaming\\Orca',
-      ORCA_CLI_COMMAND: 'orca-ide',
-      ORCA_WSL_CLI_DIR: 'C:\\Users\\jin\\AppData\\Roaming\\Orca\\wsl-managed-cli\\hash',
-      ORCA_CODEX_LAUNCH_PREFLIGHT: 'C:\\Program Files\\Orca\\resources\\bin\\orca.exe',
-      ORCA_CODEX_ISOLATE: '0',
-      ORCA_OMP_FRESH_CONFIG: 'C:\\Orca\\fresh-session.yml',
-      ORCA_OMP_STATUS_EXTENSION: 'C:\\Users\\jin\\.omp\\agent\\extensions\\orca-agent-status.ts',
-      ORCA_PRIME_AGENT_STATUS_EXTENSION: 'C:\\stale\\orca-agent-status.ts',
-      ORCA_PANE_KEY: 'tab-1:leaf-1',
-      ORCA_TAB_ID: 'tab-1',
-      ORCA_WORKTREE_ID: 'repo::\\\\wsl.localhost\\Ubuntu\\home\\jin\\repo',
-      ORCA_AGENT_LAUNCH_TOKEN: 'launch-secret',
-      ORCA_OPENCODE_AGENT: 'opencode2',
-      ORCA_AGENT_HOOK_PORT: '4567',
-      ORCA_AGENT_HOOK_TOKEN: 'token',
-      ORCA_AGENT_HOOK_ENV: 'dev',
-      ORCA_AGENT_HOOK_VERSION: '1',
-      ORCA_AGENT_HOOK_TRANSPORT: 'raw-json-v1',
-      ORCA_WSL_HOOK_INSTANCE: 'testinstance',
-      ORCA_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'wsl',
-      ORCA_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'local',
-      ORCA_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'Ubuntu',
+      BBQ_TERMINAL_HANDLE: 'term_wsl',
+      BBQ_USER_DATA_PATH: 'C:\\Users\\jin\\AppData\\Roaming\\Orca',
+      BBQ_CLI_COMMAND: 'orca-ide',
+      BBQ_WSL_CLI_DIR: 'C:\\Users\\jin\\AppData\\Roaming\\Orca\\wsl-managed-cli\\hash',
+      BBQ_CODEX_LAUNCH_PREFLIGHT: 'C:\\Program Files\\Orca\\resources\\bin\\orca.exe',
+      BBQ_CODEX_ISOLATE: '0',
+      BBQ_OMP_FRESH_CONFIG: 'C:\\Orca\\fresh-session.yml',
+      BBQ_OMP_STATUS_EXTENSION: 'C:\\Users\\jin\\.omp\\agent\\extensions\\orca-agent-status.ts',
+      BBQ_PRIME_AGENT_STATUS_EXTENSION: 'C:\\stale\\orca-agent-status.ts',
+      BBQ_PANE_KEY: 'tab-1:leaf-1',
+      BBQ_TAB_ID: 'tab-1',
+      BBQ_WORKTREE_ID: 'repo::\\\\wsl.localhost\\Ubuntu\\home\\jin\\repo',
+      BBQ_AGENT_LAUNCH_TOKEN: 'launch-secret',
+      BBQ_OPENCODE_AGENT: 'opencode2',
+      BBQ_AGENT_HOOK_PORT: '4567',
+      BBQ_AGENT_HOOK_TOKEN: 'token',
+      BBQ_AGENT_HOOK_ENV: 'dev',
+      BBQ_AGENT_HOOK_VERSION: '1',
+      BBQ_AGENT_HOOK_TRANSPORT: 'raw-json-v1',
+      BBQ_WSL_HOOK_INSTANCE: 'testinstance',
+      BBQ_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'wsl',
+      BBQ_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'local',
+      BBQ_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'Ubuntu',
       ORCA_RUNTIME_SOURCE_ID: '11111111-1111-4111-8111-111111111111',
       ORCA_RUNTIME_SOURCE_INCARNATION: 'runtime-a',
       ORCA_RUNTIME_SOURCE_PROFILE_PATH: 'C:\\Users\\a\\AppData\\Roaming\\orca'
@@ -106,29 +106,29 @@ describe('addOrcaWslInteropEnv', () => {
 
     addOrcaWslInteropEnv(env)
 
-    expect(env.WSLENV).toContain('ORCA_TERMINAL_HANDLE/u')
-    expect(env.WSLENV).toContain('ORCA_USER_DATA_PATH/p')
-    expect(env.WSLENV).toContain('ORCA_CLI_COMMAND/u')
-    expect(env.WSLENV).toContain('ORCA_WSL_CLI_DIR/p')
-    expect(env.WSLENV).toContain('ORCA_CODEX_LAUNCH_PREFLIGHT/p')
-    expect(env.WSLENV).toContain('ORCA_CODEX_ISOLATE/u')
-    expect(env.WSLENV).toContain('ORCA_OMP_STATUS_EXTENSION/p')
-    expect(env.WSLENV).toContain('ORCA_OMP_FRESH_CONFIG/p')
-    expect(env.WSLENV).not.toContain('ORCA_PRIME_AGENT_STATUS_EXTENSION')
-    expect(env.WSLENV).toContain('ORCA_PANE_KEY/u')
-    expect(env.WSLENV).toContain('ORCA_TAB_ID/u')
-    expect(env.WSLENV).toContain('ORCA_WORKTREE_ID/u')
-    expect(env.WSLENV).toContain('ORCA_AGENT_LAUNCH_TOKEN/u')
-    expect(env.WSLENV).toContain('ORCA_OPENCODE_AGENT/u')
-    expect(env.WSLENV).toContain('ORCA_AGENT_HOOK_PORT/u')
-    expect(env.WSLENV).toContain('ORCA_AGENT_HOOK_TOKEN/u')
-    expect(env.WSLENV).toContain('ORCA_AGENT_HOOK_ENV/u')
-    expect(env.WSLENV).toContain('ORCA_AGENT_HOOK_VERSION/u')
-    expect(env.WSLENV).toContain('ORCA_AGENT_HOOK_TRANSPORT/u')
-    expect(env.WSLENV).toContain('ORCA_WSL_HOOK_INSTANCE/u')
-    expect(env.WSLENV).toContain('ORCA_ORCHESTRATION_COMPATIBILITY_HOST_KIND/u')
-    expect(env.WSLENV).toContain('ORCA_ORCHESTRATION_COMPATIBILITY_HOST_ID/u')
-    expect(env.WSLENV).toContain('ORCA_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION/u')
+    expect(env.WSLENV).toContain('BBQ_TERMINAL_HANDLE/u')
+    expect(env.WSLENV).toContain('BBQ_USER_DATA_PATH/p')
+    expect(env.WSLENV).toContain('BBQ_CLI_COMMAND/u')
+    expect(env.WSLENV).toContain('BBQ_WSL_CLI_DIR/p')
+    expect(env.WSLENV).toContain('BBQ_CODEX_LAUNCH_PREFLIGHT/p')
+    expect(env.WSLENV).toContain('BBQ_CODEX_ISOLATE/u')
+    expect(env.WSLENV).toContain('BBQ_OMP_STATUS_EXTENSION/p')
+    expect(env.WSLENV).toContain('BBQ_OMP_FRESH_CONFIG/p')
+    expect(env.WSLENV).not.toContain('BBQ_PRIME_AGENT_STATUS_EXTENSION')
+    expect(env.WSLENV).toContain('BBQ_PANE_KEY/u')
+    expect(env.WSLENV).toContain('BBQ_TAB_ID/u')
+    expect(env.WSLENV).toContain('BBQ_WORKTREE_ID/u')
+    expect(env.WSLENV).toContain('BBQ_AGENT_LAUNCH_TOKEN/u')
+    expect(env.WSLENV).toContain('BBQ_OPENCODE_AGENT/u')
+    expect(env.WSLENV).toContain('BBQ_AGENT_HOOK_PORT/u')
+    expect(env.WSLENV).toContain('BBQ_AGENT_HOOK_TOKEN/u')
+    expect(env.WSLENV).toContain('BBQ_AGENT_HOOK_ENV/u')
+    expect(env.WSLENV).toContain('BBQ_AGENT_HOOK_VERSION/u')
+    expect(env.WSLENV).toContain('BBQ_AGENT_HOOK_TRANSPORT/u')
+    expect(env.WSLENV).toContain('BBQ_WSL_HOOK_INSTANCE/u')
+    expect(env.WSLENV).toContain('BBQ_ORCHESTRATION_COMPATIBILITY_HOST_KIND/u')
+    expect(env.WSLENV).toContain('BBQ_ORCHESTRATION_COMPATIBILITY_HOST_ID/u')
+    expect(env.WSLENV).toContain('BBQ_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION/u')
     expect(env.WSLENV).toContain('ORCA_RUNTIME_SOURCE_ID/u')
     expect(env.WSLENV).toContain('ORCA_RUNTIME_SOURCE_INCARNATION/u')
     expect(env.WSLENV).toContain('ORCA_RUNTIME_SOURCE_PROFILE_PATH/u')
@@ -136,27 +136,27 @@ describe('addOrcaWslInteropEnv', () => {
 
   it('overwrites caller host evidence with native runtime WSL authority', () => {
     const env = {
-      ORCA_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'ssh',
-      ORCA_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'caller-host',
-      ORCA_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'caller-incarnation',
-      ORCA_ORCHESTRATION_COMPATIBILITY_ATTACHMENT: 'caller-attachment'
+      BBQ_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'ssh',
+      BBQ_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'caller-host',
+      BBQ_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'caller-incarnation',
+      BBQ_ORCHESTRATION_COMPATIBILITY_ATTACHMENT: 'caller-attachment'
     }
 
     stampWslOrchestrationCompatibilityHost(env, 'local', 'Ubuntu')
 
     expect(env).toEqual({
-      ORCA_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'wsl',
-      ORCA_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'local',
-      ORCA_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'Ubuntu'
+      BBQ_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'wsl',
+      BBQ_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'local',
+      BBQ_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'Ubuntu'
     })
   })
 
   it('clears inherited host evidence outside a runtime-owned WSL scope', () => {
     const env = {
-      ORCA_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'ssh',
-      ORCA_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'caller-host',
-      ORCA_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'caller-incarnation',
-      ORCA_ORCHESTRATION_COMPATIBILITY_ATTACHMENT: 'caller-attachment'
+      BBQ_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'ssh',
+      BBQ_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'caller-host',
+      BBQ_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'caller-incarnation',
+      BBQ_ORCHESTRATION_COMPATIBILITY_ATTACHMENT: 'caller-attachment'
     }
 
     stampWslOrchestrationCompatibilityHost(env, 'local', null)
@@ -166,24 +166,24 @@ describe('addOrcaWslInteropEnv', () => {
 
   it('path-translates a Windows hook endpoint but passes a guest-side one untouched', () => {
     const windowsEnv: Record<string, string> = {
-      ORCA_AGENT_HOOK_ENDPOINT: 'C:\\Users\\jin\\AppData\\Roaming\\Orca\\agent-hooks\\endpoint.cmd'
+      BBQ_AGENT_HOOK_ENDPOINT: 'C:\\Users\\jin\\AppData\\Roaming\\Orca\\agent-hooks\\endpoint.cmd'
     }
     addOrcaWslInteropEnv(windowsEnv)
-    expect(windowsEnv.WSLENV).toContain('ORCA_AGENT_HOOK_ENDPOINT/p')
+    expect(windowsEnv.WSLENV).toContain('BBQ_AGENT_HOOK_ENDPOINT/p')
 
     const guestEnv: Record<string, string> = {
-      ORCA_AGENT_HOOK_ENDPOINT: '/home/jin/.orca-wsl/agent-hooks/port-4567/endpoint.env'
+      BBQ_AGENT_HOOK_ENDPOINT: '/home/jin/.orca-wsl/agent-hooks/port-4567/endpoint.env'
     }
     addOrcaWslInteropEnv(guestEnv)
-    expect(guestEnv.WSLENV).toContain('ORCA_AGENT_HOOK_ENDPOINT/u')
-    expect(guestEnv.WSLENV).not.toContain('ORCA_AGENT_HOOK_ENDPOINT/p')
+    expect(guestEnv.WSLENV).toContain('BBQ_AGENT_HOOK_ENDPOINT/u')
+    expect(guestEnv.WSLENV).not.toContain('BBQ_AGENT_HOOK_ENDPOINT/p')
   })
 
   it('tags pre-translated Linux setup paths /u so WSLENV does not translate them again (#9206)', () => {
     const env: Record<string, string> = {
-      ORCA_ROOT_PATH: '/home/jin/repo',
-      ORCA_WORKTREE_PATH: '/home/jin/repo-worktrees/fix-1',
-      ORCA_WORKSPACE_NAME: 'fix-1',
+      BBQ_ROOT_PATH: '/home/jin/repo',
+      BBQ_WORKTREE_PATH: '/home/jin/repo-worktrees/fix-1',
+      BBQ_WORKSPACE_NAME: 'fix-1',
       CONDUCTOR_ROOT_PATH: '/home/jin/repo',
       GHOSTX_ROOT_PATH: '/home/jin/repo'
     }
@@ -192,65 +192,65 @@ describe('addOrcaWslInteropEnv', () => {
 
     // /u (not /p): hooks.ts already converted these to Linux paths before
     // spawn, so a /p flag would make WSLENV double-translate them.
-    expect(env.WSLENV).toContain('ORCA_ROOT_PATH/u')
-    expect(env.WSLENV).toContain('ORCA_WORKTREE_PATH/u')
+    expect(env.WSLENV).toContain('BBQ_ROOT_PATH/u')
+    expect(env.WSLENV).toContain('BBQ_WORKTREE_PATH/u')
     expect(env.WSLENV).toContain('CONDUCTOR_ROOT_PATH/u')
     expect(env.WSLENV).toContain('GHOSTX_ROOT_PATH/u')
-    expect(env.WSLENV).not.toContain('ORCA_ROOT_PATH/p')
-    expect(env.WSLENV).not.toContain('ORCA_WORKTREE_PATH/p')
+    expect(env.WSLENV).not.toContain('BBQ_ROOT_PATH/p')
+    expect(env.WSLENV).not.toContain('BBQ_WORKTREE_PATH/p')
     // The value itself must stay the already-Linux path.
-    expect(env.ORCA_ROOT_PATH).toBe('/home/jin/repo')
-    expect(env.ORCA_WORKTREE_PATH).toBe('/home/jin/repo-worktrees/fix-1')
+    expect(env.BBQ_ROOT_PATH).toBe('/home/jin/repo')
+    expect(env.BBQ_WORKTREE_PATH).toBe('/home/jin/repo-worktrees/fix-1')
   })
 
   it('tags untranslated Windows setup paths /p so WSLENV translates them (wsl.exe shell over a Windows worktree)', () => {
     const env: Record<string, string> = {
-      ORCA_ROOT_PATH: 'C:\\Users\\jin\\repo',
-      ORCA_WORKTREE_PATH: 'C:\\Users\\jin\\repo-worktrees\\fix-1',
+      BBQ_ROOT_PATH: 'C:\\Users\\jin\\repo',
+      BBQ_WORKTREE_PATH: 'C:\\Users\\jin\\repo-worktrees\\fix-1',
       CONDUCTOR_ROOT_PATH: 'C:\\Users\\jin\\repo',
       GHOSTX_ROOT_PATH: 'C:\\Users\\jin\\repo'
     }
 
     addOrcaWslInteropEnv(env)
 
-    expect(env.WSLENV).toContain('ORCA_ROOT_PATH/p')
-    expect(env.WSLENV).toContain('ORCA_WORKTREE_PATH/p')
+    expect(env.WSLENV).toContain('BBQ_ROOT_PATH/p')
+    expect(env.WSLENV).toContain('BBQ_WORKTREE_PATH/p')
     expect(env.WSLENV).toContain('CONDUCTOR_ROOT_PATH/p')
     expect(env.WSLENV).toContain('GHOSTX_ROOT_PATH/p')
-    expect(env.WSLENV).not.toContain('ORCA_ROOT_PATH/u')
-    expect(env.WSLENV).not.toContain('ORCA_WORKTREE_PATH/u')
+    expect(env.WSLENV).not.toContain('BBQ_ROOT_PATH/u')
+    expect(env.WSLENV).not.toContain('BBQ_WORKTREE_PATH/u')
   })
 
-  it('always tags ORCA_WORKSPACE_NAME /u because it is a name, not a path', () => {
-    const env: Record<string, string> = { ORCA_WORKSPACE_NAME: 'fix-1' }
+  it('always tags BBQ_WORKSPACE_NAME /u because it is a name, not a path', () => {
+    const env: Record<string, string> = { BBQ_WORKSPACE_NAME: 'fix-1' }
 
     addOrcaWslInteropEnv(env)
 
-    expect(env.WSLENV).toBe('ORCA_SHELL_READY_ROOT/p:ORCA_WORKSPACE_NAME/u')
+    expect(env.WSLENV).toBe('BBQ_SHELL_READY_ROOT/p:BBQ_WORKSPACE_NAME/u')
   })
 
   it('crosses the inline-image protocol hint into the guest untranslated (/u)', () => {
-    const env: Record<string, string> = { ORCA_IMAGE_PROTOCOL: 'kitty' }
+    const env: Record<string, string> = { BBQ_IMAGE_PROTOCOL: 'kitty' }
     addOrcaWslInteropEnv(env)
-    expect(env.WSLENV).toContain('ORCA_IMAGE_PROTOCOL/u')
+    expect(env.WSLENV).toContain('BBQ_IMAGE_PROTOCOL/u')
   })
 
   it('marks the WSL hook relay version for import on relay spawn envs', () => {
     const env: Record<string, string> = {
-      ORCA_WSL_HOOK_RELAY_VERSION: '0.1.0+abc'
+      BBQ_WSL_HOOK_RELAY_VERSION: '0.1.0+abc'
     }
     addOrcaWslInteropEnv(env)
-    expect(env.WSLENV).toBe('ORCA_SHELL_READY_ROOT/p:ORCA_WSL_HOOK_RELAY_VERSION/u')
+    expect(env.WSLENV).toBe('BBQ_SHELL_READY_ROOT/p:BBQ_WSL_HOOK_RELAY_VERSION/u')
   })
 
   it('crosses a guest-side OpenCode config overlay untranslated (/u)', () => {
     const env: Record<string, string> = {
       OPENCODE_CONFIG_DIR: '/home/jin/.orca-relay/opencode-overlays/abc',
-      ORCA_OPENCODE_CONFIG_DIR: '/home/jin/.orca-relay/opencode-overlays/abc'
+      BBQ_OPENCODE_CONFIG_DIR: '/home/jin/.orca-relay/opencode-overlays/abc'
     }
     addOrcaWslInteropEnv(env)
     expect(env.WSLENV).toContain('OPENCODE_CONFIG_DIR/u')
-    expect(env.WSLENV).toContain('ORCA_OPENCODE_CONFIG_DIR/u')
+    expect(env.WSLENV).toContain('BBQ_OPENCODE_CONFIG_DIR/u')
     expect(env.WSLENV).not.toContain('OPENCODE_CONFIG_DIR/p')
   })
 
@@ -260,17 +260,17 @@ describe('addOrcaWslInteropEnv', () => {
     // would adopt Orca's Windows overlay as its config root.
     const env: Record<string, string> = {
       OPENCODE_CONFIG_DIR: 'C:\\Users\\jin\\AppData\\Roaming\\Orca\\opencode-overlays\\abc',
-      ORCA_OPENCODE_CONFIG_DIR: 'C:\\Users\\jin\\AppData\\Roaming\\Orca\\opencode-overlays\\abc'
+      BBQ_OPENCODE_CONFIG_DIR: 'C:\\Users\\jin\\AppData\\Roaming\\Orca\\opencode-overlays\\abc'
     }
     addOrcaWslInteropEnv(env)
     expect(env.WSLENV).not.toContain('OPENCODE_CONFIG_DIR')
-    expect(env.WSLENV).not.toContain('ORCA_OPENCODE_CONFIG_DIR')
+    expect(env.WSLENV).not.toContain('BBQ_OPENCODE_CONFIG_DIR')
   })
 
   it('does not register the OpenCode config vars when they are absent', () => {
-    const env: Record<string, string> = { ORCA_TERMINAL_HANDLE: 'term_wsl' }
+    const env: Record<string, string> = { BBQ_TERMINAL_HANDLE: 'term_wsl' }
     addOrcaWslInteropEnv(env)
     expect(env.WSLENV).not.toContain('OPENCODE_CONFIG_DIR')
-    expect(env.WSLENV).not.toContain('ORCA_OPENCODE_CONFIG_DIR')
+    expect(env.WSLENV).not.toContain('BBQ_OPENCODE_CONFIG_DIR')
   })
 })

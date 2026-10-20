@@ -65,7 +65,7 @@ function launchPane(
 ) {
   const env: Record<string, string> = {
     HOME: home,
-    ...(scopedHistfile ? { HISTFILE: scopedHistfile, ORCA_HISTFILE: scopedHistfile } : {})
+    ...(scopedHistfile ? { HISTFILE: scopedHistfile, BBQ_HISTFILE: scopedHistfile } : {})
   }
   const features = selectShellStartupFeatures({
     shellPath: ZSH_PATH,
@@ -79,10 +79,10 @@ function launchPane(
   return {
     features,
     launch,
-    // Why ORCA_ORIG_ZDOTDIR overridden: the launch config resolves the user's
+    // Why BBQ_ORIG_ZDOTDIR overridden: the launch config resolves the user's
     // config dir from the real process env, and these runs must resolve against
     // the sandbox home instead.
-    env: { PATH: '/usr/bin:/bin', ...env, ...launch.env, ORCA_ORIG_ZDOTDIR: home }
+    env: { PATH: '/usr/bin:/bin', ...env, ...launch.env, BBQ_ORIG_ZDOTDIR: home }
   }
 }
 
@@ -115,7 +115,7 @@ describe.skipIf(process.platform === 'win32')(
         // startup command, so before #15258 nothing pointed it at a wrapper.
         expect(features).toEqual(['history'])
         expect(launch.env.ZDOTDIR).toBeTruthy()
-        expect(launch.env.ORCA_SHELL_FEATURES).toBe('history')
+        expect(launch.env.BBQ_SHELL_FEATURES).toBe('history')
       })
     )
 
@@ -169,19 +169,19 @@ describe.skipIf(process.platform === 'win32')(
     )
 
     itWithZsh(
-      'consumes ORCA_HISTFILE so nothing the shell spawns can inherit it',
+      'consumes BBQ_HISTFILE so nothing the shell spawns can inherit it',
       withHome(USER_FILES, async (home) => {
         const scoped = join(home, 'orca-history', 'zsh_history')
         const { env } = launchPane(home, scoped)
 
         const { values } = await runZshPty({
           env,
-          report: ['ORCA_HISTFILE', 'ORCA_SHELL_FEATURES', 'HISTFILE']
+          report: ['BBQ_HISTFILE', 'BBQ_SHELL_FEATURES', 'HISTFILE']
         })
 
         // Root-cause fix for #11146: the variables no longer exist after use.
-        expect(values.ORCA_HISTFILE).toBe('UNSET')
-        expect(values.ORCA_SHELL_FEATURES).toBe('UNSET')
+        expect(values.BBQ_HISTFILE).toBe('UNSET')
+        expect(values.BBQ_SHELL_FEATURES).toBe('UNSET')
         expect(values.HISTFILE).toBe(scoped)
       })
     )
@@ -193,7 +193,7 @@ describe.skipIf(process.platform === 'win32')(
         // what zsh defaults to is platform-specific. macOS /etc/zshrc assigns
         // HISTFILE, so it is always set there; a stock Ubuntu zsh leaves it EMPTY.
         // The contract is that Orca's wrapper does not change it either way.
-        const overlayEnv = { ORCA_CODEX_HOME: join(home, 'codex') }
+        const overlayEnv = { BBQ_CODEX_HOME: join(home, 'codex') }
         const features = selectShellStartupFeatures({
           shellPath: ZSH_PATH,
           env: { HOME: home, ...overlayEnv },
@@ -209,7 +209,7 @@ describe.skipIf(process.platform === 'win32')(
             HOME: home,
             ...overlayEnv,
             ...launch.env,
-            ORCA_ORIG_ZDOTDIR: home
+            BBQ_ORIG_ZDOTDIR: home
           },
           report: ['HISTFILE']
         })
@@ -260,8 +260,8 @@ describe.skipIf(process.platform === 'win32')('the deferred hook delivers every 
       },
       async (home) => {
         const overlayEnv = {
-          ORCA_CODEX_HOME: '/orca/codex',
-          ORCA_AGENT_TEAMS_SHIM_DIR: '/orca/shim'
+          BBQ_CODEX_HOME: '/orca/codex',
+          BBQ_AGENT_TEAMS_SHIM_DIR: '/orca/shim'
         }
         const features = selectShellStartupFeatures({
           shellPath: ZSH_PATH,
@@ -278,7 +278,7 @@ describe.skipIf(process.platform === 'win32')('the deferred hook delivers every 
             HOME: home,
             ...overlayEnv,
             ...launch.env,
-            ORCA_ORIG_ZDOTDIR: home
+            BBQ_ORIG_ZDOTDIR: home
           },
           report: ['CODEX_HOME', 'PATH']
         })
@@ -322,10 +322,10 @@ describe.skipIf(process.platform === 'win32')(
         const scoped = join(home, 'orca-history', 'zsh_history')
         const { env } = launchPane(home, scoped)
 
-        const { values } = await runZshPty({ env, report: ['HISTFILE', 'ORCA_HISTFILE'] })
+        const { values } = await runZshPty({ env, report: ['HISTFILE', 'BBQ_HISTFILE'] })
 
         expect(values.HISTFILE).toBe(scoped)
-        expect(values.ORCA_HISTFILE).toBe('UNSET')
+        expect(values.BBQ_HISTFILE).toBe('UNSET')
       } finally {
         rmSync(home, { recursive: true, force: true })
       }
@@ -337,13 +337,13 @@ describe.skipIf(process.platform === 'win32')(
         const scoped = join(home, 'orca-history', 'zsh_history')
         const { env, launch } = launchPane(home, scoped)
 
-        const report = ['HISTFILE', 'ORCA_HISTFILE', 'ZDOTDIR']
+        const report = ['HISTFILE', 'BBQ_HISTFILE', 'ZDOTDIR']
         const { values } = await runZshPty({ env, report })
         expect(values.HISTFILE).toBe(scoped)
         expect(values.HISTFILE).not.toContain(launch.env.ZDOTDIR)
-        // ORCA_HISTFILE was consumed in .zshenv precisely so a dropped hook
+        // BBQ_HISTFILE was consumed in .zshenv precisely so a dropped hook
         // leaks nothing to the pane's children.
-        expect(values.ORCA_HISTFILE).toBe('UNSET')
+        expect(values.BBQ_HISTFILE).toBe('UNSET')
         expect(values.ZDOTDIR).toBe(home)
       })
     )
@@ -396,7 +396,7 @@ describe.skipIf(process.platform === 'win32')('the real-zsh harness', () => {
         mkdirSync(completions)
         chmodSync(completions, 0o777)
         writeFileSync(
-          join(completions, '_orca_compinit_fixture'),
+          join(completions, '_bbq_compinit_fixture'),
           '#compdef orca_compinit_fixture\n'
         )
         const scoped = join(home, 'scoped_history')

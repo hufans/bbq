@@ -50,10 +50,10 @@ describe.skipIf(process.platform !== 'darwin')('real permission status helper cl
     const statusPath = join(directory, 'status.json')
     const executablePath = join(
       directory,
-      'Orca Computer Use.app',
+      'BBQ Computer Use.app',
       'Contents',
       'MacOS',
-      'orca-computer-use-macos'
+      'bbq-computer-use-macos'
     )
     const peers = await Promise.all([
       startFixture(executablePath, ['--permission-status-file', `${statusPath}.peer`]),

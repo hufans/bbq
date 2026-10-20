@@ -53,12 +53,10 @@ function usableInheritedZdotdir(value: string | undefined): string | null {
  * everything the pane goes on to launch.
  */
 export function resolveInheritedZdotdir(env: EnvLike): string | null {
-  return (
-    usableInheritedZdotdir(env.ZDOTDIR) ?? usableInheritedZdotdir(env.ORCA_ORIG_ZDOTDIR) ?? null
-  )
+  return usableInheritedZdotdir(env.ZDOTDIR) ?? usableInheritedZdotdir(env.BBQ_ORIG_ZDOTDIR) ?? null
 }
 
 /** Spawn-env entry for the wrapper's ZDOTDIR handback; absent when there is none. */
 export function inheritedZdotdirEnv(inherited: string | null): Record<string, string> {
-  return inherited ? { ORCA_ORIG_ZDOTDIR: inherited } : {}
+  return inherited ? { BBQ_ORIG_ZDOTDIR: inherited } : {}
 }

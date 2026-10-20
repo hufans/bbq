@@ -15,8 +15,8 @@ import type { OrcaSessionId } from '../../../../shared/orca-session-address'
 
 export const DISPATCH_CONTEXT_CLAIM_SQL = `INSERT INTO dispatch_contexts (
   id, run_id, task_id, contract_version, launch_token_hash,
-  assignee_handle, assignee_pane_key, assignee_orca_session_id, process_incarnation,
-  creator_dispatch_id, creator_handle, creator_pane_key, creator_orca_session_id,
+  assignee_handle, assignee_pane_key, assignee_bbq_session_id, process_incarnation,
+  creator_dispatch_id, creator_handle, creator_pane_key, creator_bbq_session_id,
   status, failure_count, depth, dispatched_at
 )
 SELECT ?, run_id, id, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'dispatched', ?, ?, datetime('now')
@@ -46,7 +46,7 @@ WHERE id = ? AND status = 'ready'
 
 const STARTING_DISPATCH_CONTEXT_SQL = `INSERT INTO dispatch_contexts (
    id, run_id, task_id, contract_version, launch_token_hash, retry_of_dispatch_id,
-   creator_dispatch_id, creator_handle, creator_pane_key, creator_orca_session_id, depth, status,
+   creator_dispatch_id, creator_handle, creator_pane_key, creator_bbq_session_id, depth, status,
    failure_count, dispatched_at
  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, datetime('now'))`
 

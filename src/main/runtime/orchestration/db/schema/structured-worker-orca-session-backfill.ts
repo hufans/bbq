@@ -64,13 +64,13 @@ export function backfillStructuredWorkerOrcaSessionIds(db: Database.Database): v
   const assignees = db
     .prepare(
       `SELECT id, assignee_handle, process_incarnation FROM dispatch_contexts
-       WHERE assignee_orca_session_id IS NULL
+       WHERE assignee_bbq_session_id IS NULL
          AND (process_incarnation GLOB ? OR assignee_handle GLOB ?)`
     )
     .all(INCARNATION_GLOB, HANDLE_GLOB)
   const setAssignee = db.prepare(
-    `UPDATE dispatch_contexts SET assignee_orca_session_id = ?
-     WHERE id = ? AND assignee_orca_session_id IS NULL`
+    `UPDATE dispatch_contexts SET assignee_bbq_session_id = ?
+     WHERE id = ? AND assignee_bbq_session_id IS NULL`
   )
   for (const row of assignees) {
     const orcaSessionId = orcaSessionIdFor(row.assignee_handle, row.process_incarnation)
@@ -82,12 +82,12 @@ export function backfillStructuredWorkerOrcaSessionIds(db: Database.Database): v
   const creators = db
     .prepare(
       `SELECT id, creator_handle FROM dispatch_contexts
-       WHERE creator_orca_session_id IS NULL AND creator_handle GLOB ?`
+       WHERE creator_bbq_session_id IS NULL AND creator_handle GLOB ?`
     )
     .all(HANDLE_GLOB)
   const setCreator = db.prepare(
-    `UPDATE dispatch_contexts SET creator_orca_session_id = ?
-     WHERE id = ? AND creator_orca_session_id IS NULL`
+    `UPDATE dispatch_contexts SET creator_bbq_session_id = ?
+     WHERE id = ? AND creator_bbq_session_id IS NULL`
   )
   for (const row of creators) {
     const orcaSessionId = orcaSessionIdFor(row.creator_handle, null)
@@ -104,8 +104,8 @@ export function backfillStructuredWorkerOrcaSessionIds(db: Database.Database): v
     )
     .all(HANDLE_GLOB)
   const setCoordinator = db.prepare(
-    `UPDATE runs SET coordinator_orca_session_id = ?,
-       coordinator_orca_session_id_generation = consumer_generation
+    `UPDATE runs SET coordinator_bbq_session_id = ?,
+       coordinator_bbq_session_id_generation = consumer_generation
      WHERE id = ? AND ${CURRENT_COORDINATOR_ORCA_SESSION_ID_SQL} IS NULL`
   )
   for (const row of coordinators) {

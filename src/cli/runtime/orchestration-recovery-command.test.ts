@@ -6,12 +6,12 @@ import {
 
 describe('orchestration recovery command identity', () => {
   it.each([
-    ['configured dev', { ORCA_CLI_COMMAND: 'orca-dev' }, 'darwin', 'orca-dev'],
-    ['configured WSL', { ORCA_CLI_COMMAND: 'orca-ide' }, 'linux', 'orca-ide'],
-    ['dev checkout', { ORCA_DEV_REPO_ROOT: '/repo' }, 'darwin', 'orca-dev'],
-    ['packaged Linux', {}, 'linux', 'orca-ide'],
-    ['local macOS', {}, 'darwin', 'orca'],
-    ['local Windows', {}, 'win32', 'orca']
+    ['configured dev', { BBQ_CLI_COMMAND: 'orca-dev' }, 'darwin', 'orca-dev'],
+    ['configured WSL', { BBQ_CLI_COMMAND: 'orca-ide' }, 'linux', 'orca-ide'],
+    ['dev checkout', { ORCA_DEV_REPO_ROOT: '/repo' }, 'darwin', 'bbq-dev'],
+    ['packaged Linux', {}, 'linux', 'bbq'],
+    ['local macOS', {}, 'darwin', 'bbq'],
+    ['local Windows', {}, 'win32', 'bbq']
   ] as const)('resolves the %s CLI identity', (_name, env, platform, expected) => {
     expect(resolveOrchestrationCliExecutable(env, platform)).toBe(expected)
   })

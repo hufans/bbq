@@ -261,7 +261,7 @@ describe('registerOrcaProfileHandlers', () => {
 
     await expect(
       Promise.resolve(handlers.get('orcaProfiles:switch')?.(ipcEvent, { profileId: ' ' }))
-    ).rejects.toThrow('invalid_orca_profile_id')
+    ).rejects.toThrow('invalid_bbq_profile_id')
   })
 
   it('transfers projects between inactive profiles after flushing active state', async () => {
@@ -418,7 +418,7 @@ describe('registerOrcaProfileHandlers', () => {
           mode: 'copy'
         })
       )
-    ).rejects.toThrow('active_target_orca_profile_transfer_requires_relaunch')
+    ).rejects.toThrow('active_target_bbq_profile_transfer_requires_relaunch')
 
     expect(transferOrcaProfileProjectMock).not.toHaveBeenCalled()
   })
@@ -498,7 +498,7 @@ describe('registerOrcaProfileHandlers', () => {
     registerOrcaProfileHandlers(store as never)
     await expect(
       Promise.resolve(handlers.get('orcaProfiles:transferProject')?.(ipcEvent, args))
-    ).rejects.toThrow('invalid_orca_profile_project_transfer')
+    ).rejects.toThrow('invalid_bbq_profile_project_transfer')
     expect(store.flushPendingOrThrowAsync).not.toHaveBeenCalled()
     expect(transferOrcaProfileProjectMock).not.toHaveBeenCalled()
   })

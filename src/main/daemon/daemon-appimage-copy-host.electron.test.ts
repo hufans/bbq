@@ -90,8 +90,8 @@ function extractCopy(install: AppImageInstall, version: string, withNode = true)
   })!.rootPath
   const resources = join(generation, 'resources')
   mkdirSync(join(resources, 'bin'), { recursive: true })
-  writeFileSync(join(resources, 'bin', 'orca-ide'), '#!/bin/sh\n')
-  chmodSync(join(resources, 'bin', 'orca-ide'), 0o755)
+  writeFileSync(join(resources, 'bin', 'bbq'), '#!/bin/sh\n')
+  chmodSync(join(resources, 'bin', 'bbq'), 0o755)
   cpSync(
     join(install.mountPath, 'resources', 'app.asar.unpacked'),
     join(resources, 'app.asar.unpacked'),

@@ -2,11 +2,11 @@
   "name": "orca",
   "version": "1.4.214",
   "description": "Next-gen IDE for parallel agentic development",
-  "homepage": "https://github.com/stablyai/orca",
+  "homepage": "https://github.com/hufans/bbq",
   "author": "stablyai",
   "bin": {
-    "orca": "./out/cli/index.js",
-    "orca-dev": "./config/scripts/orca-dev.mjs"
+    "bbq": "./out/cli/index.js",
+    "bbq-dev": "./config/scripts/orca-dev.mjs"
   },
   "main": "./out/main/index.js",
   "scripts": {

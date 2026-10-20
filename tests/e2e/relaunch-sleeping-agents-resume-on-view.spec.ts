@@ -49,10 +49,7 @@ function writeFakeAgent(dir: string): { command: string; log: string } {
   const command = path.join(dir, 'fake-agent.sh')
   const log = path.join(dir, 'fake-agent-resumes.log')
   writeFileSync(log, '')
-  writeFileSync(
-    command,
-    `#!/bin/sh\nprintf '%s\\n' "$ORCA_PANE_KEY" >> '${log}'\nexec sleep 3600\n`
-  )
+  writeFileSync(command, `#!/bin/sh\nprintf '%s\\n' "$BBQ_PANE_KEY" >> '${log}'\nexec sleep 3600\n`)
   chmodSync(command, 0o755)
   return { command, log }
 }

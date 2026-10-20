@@ -500,9 +500,9 @@ describe('OrcaRuntimeService', () => {
     expect(spawnCall?.command).toBe("codex '--dangerously-bypass-approvals-and-sandbox'")
     expect(spawnedPtyEnv(spawnCall)).toMatchObject({
       CODEX_PROFILE: 'captured',
-      ORCA_WORKTREE_ID: TEST_WORKTREE_ID
+      BBQ_WORKTREE_ID: TEST_WORKTREE_ID
     })
-    expect(spawnCall?.env?.ORCA_AGENT_LAUNCH_TOKEN).toMatch(UUID_RE)
+    expect(spawnCall?.env?.BBQ_AGENT_LAUNCH_TOKEN).toMatch(UUID_RE)
     // The spawn builder pre-trusts the workspace for the declared launch agent.
     expect(spawnCall?.launchAgent).toBe('codex')
   })
@@ -574,13 +574,12 @@ describe('OrcaRuntimeService', () => {
     expect(spawnCall?.command).toBe('cursor-agent "--force"')
   })
 
-  // Why: claude-agent-teams is the only agent whose launcher name varies by
-  // platform (launchCmdByPlatform), so it is what proves resolution is
-  // platform-aware rather than a fixed string.
+  // Why: claude-agent-teams is the agent whose launcher name varies by
+  // platform (launchCmdByPlatform). Windows uses the .cmd shim.
   it.each([
-    { platform: 'win32' as const, expected: 'orca.cmd claude-teams' },
-    { platform: 'linux' as const, expected: 'orca-ide claude-teams' },
-    { platform: 'darwin' as const, expected: 'orca claude-teams' }
+    { platform: 'win32' as const, expected: 'bbq.cmd claude-teams' },
+    { platform: 'linux' as const, expected: 'bbq claude-teams' },
+    { platform: 'darwin' as const, expected: 'bbq claude-teams' }
   ])(
     'resolves a startupAgent through the $platform launcher name',
     async ({ platform, expected }) => {

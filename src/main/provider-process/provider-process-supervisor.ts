@@ -1,5 +1,12 @@
+import { randomBytes } from 'node:crypto'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { resolveProviderChildEnv, type ProviderProcessLaunch } from './provider-process-launch'
 import { PROVIDER_SPAWN_FAILURE_MARKER } from './provider-spawn-failure-report'
+
+/** Filename of the supervisor program. It is a real file, not an `-e` argument. */
+export const PROVIDER_SUPERVISOR_SCRIPT_FILENAME = 'bbq-provider-supervisor.cjs'
 
 /** Time the provider gets to exit on its own after its stdin ends, before SIGTERM. */
 export const PROVIDER_STDIN_END_GRACE_MS = 1_000
@@ -20,22 +27,32 @@ export const PROVIDER_OUTPUT_DRAIN_TIMEOUT_MS = 1_000
 export const PROVIDER_SUPERVISOR_MAX_STOP_MS =
   PROVIDER_STDIN_END_GRACE_MS + PROVIDER_SIGTERM_GRACE_MS + PROVIDER_GROUP_REAP_TIMEOUT_MS
 
-/** Inline supervisor source kept dependency-free for the spawned Node child. */
+/**
+ * Supervisor source kept dependency-free for the spawned Node child.
+ * The launch writes this to a file and passes the spec as a second file, so neither
+ * the source nor the spec appears on the process command line or in the environment.
+ */
 export const POSIX_PROVIDER_SUPERVISOR_SCRIPT = `
 const { spawn } = require('node:child_process')
-const spec = JSON.parse(Buffer.from(process.env.ORCA_PROVIDER_SUPERVISOR_SPEC, 'base64').toString())
+const fs = require('node:fs')
+const specPath = process.argv[2]; let spec
+try {
+  spec = JSON.parse(fs.readFileSync(specPath, 'utf8')); fs.unlinkSync(specPath)
+} catch (error) {
+  process.exit(1)
+}
 // The provider's own argv, after this script's '--'.
-const [providerCommand, ...providerArgs] = process.argv.slice(1)
+const providerSeparator = process.argv.indexOf('--')
+if (providerSeparator < 0) process.exit(1)
+const [providerCommand, ...providerArgs] = process.argv.slice(providerSeparator + 1)
 // A detached supervisor is reparented when its owner exits. The new parent may
 // be PID 1 or a platform subreaper, so any other parent means no live owner.
 const ownerGone = () => process.ppid !== spec.ownerPid
 // Registered before the spawn, so a stop that lands while the provider starts still reaps it.
 for (const signal of ['SIGTERM', 'SIGINT', 'SIGHUP']) process.on(signal, () => stopProviderGroup(signal))
-// Orca can die before this runs; spawning then would start a provider nothing watches.
+// The owner can exit before this runs; spawning then would start a provider nothing watches.
 if (ownerGone()) process.exit(1)
-const childEnv = { ...process.env, ...spec.nodeEnv }
-delete childEnv.ORCA_PROVIDER_SUPERVISOR_SPEC
-delete childEnv.ELECTRON_RUN_AS_NODE
+const childEnv = { ...process.env, ...spec.nodeEnv }; delete childEnv.ELECTRON_RUN_AS_NODE
 // The owner sees only this pid's exit; this marked last stderr line says the provider never started.
 const exitWithSpawnFailure = (error, thrown) => {
   const report = { thrown, code: (error && error.code) || 'UNKNOWN', message: String(error && error.message) }
@@ -194,6 +211,58 @@ export type ProviderSupervisorOptions = {
 // The user's Node startup options, as the CLI launchers stash them away from Electron's bootstrap.
 const PROVIDER_ONLY_NODE_ENV_KEYS = ['NODE_OPTIONS', 'NODE_REPL_EXTERNAL_MODULE'] as const
 
+const SUPERVISOR_DIR_NAME = 'bbq-provider-supervisor'
+let cachedSupervisorScriptPath: string | null = null
+
+function supervisorDirectory(): string {
+  const dir = join(tmpdir(), SUPERVISOR_DIR_NAME)
+  mkdirSync(dir, { recursive: true, mode: 0o700 })
+  return dir
+}
+
+/** Path of the on-disk supervisor program. Rewritten when its source changes. */
+export function providerSupervisorScriptPath(): string {
+  if (cachedSupervisorScriptPath) {
+    return cachedSupervisorScriptPath
+  }
+  const path = join(supervisorDirectory(), PROVIDER_SUPERVISOR_SCRIPT_FILENAME)
+  let current = ''
+  try {
+    current = readFileSync(path, 'utf8')
+  } catch {
+    current = ''
+  }
+  if (current !== POSIX_PROVIDER_SUPERVISOR_SCRIPT) {
+    writeFileSync(path, POSIX_PROVIDER_SUPERVISOR_SCRIPT, { mode: 0o600 })
+  }
+  cachedSupervisorScriptPath = path
+  return path
+}
+
+function writeProviderSupervisorSpecFile(spec: unknown): string {
+  const path = join(supervisorDirectory(), `spec-${randomBytes(8).toString('hex')}.json`)
+  writeFileSync(path, JSON.stringify(spec), { mode: 0o600 })
+  return path
+}
+
+export function isProviderSupervisorArgv(args: readonly string[] | undefined): boolean {
+  return (
+    typeof args?.[0] === 'string' &&
+    args[0].endsWith(PROVIDER_SUPERVISOR_SCRIPT_FILENAME) &&
+    typeof args[1] === 'string'
+  )
+}
+
+/** Spec for a supervised launch, or null when `args` is not that launch. */
+export function readProviderSupervisorSpec(
+  args: readonly string[] | undefined
+): Record<string, unknown> | null {
+  if (!isProviderSupervisorArgv(args)) {
+    return null
+  }
+  return JSON.parse(readFileSync(args[1], 'utf8')) as Record<string, unknown>
+}
+
 // A longer grace than the max stop allows would let recovery or close SIGKILL mid-stop.
 function assertGraceWithin(name: string, graceMs: number, maxMs: number): void {
   if (!(graceMs >= 0 && graceMs <= maxMs)) {
@@ -221,8 +290,8 @@ export function supervisedPosixLaunch(
 ): { command: string; args: string[]; env: NodeJS.ProcessEnv } {
   assertGraceWithin('stdin-end', stdinEndGraceMs, PROVIDER_STDIN_END_GRACE_MS)
   assertGraceWithin('SIGTERM', sigtermGraceMs, PROVIDER_SIGTERM_GRACE_MS)
-  // Only small fields ride in the env: Linux caps one env string at 128 KiB, and argv prompts near it.
-  // Electron's Node bootstrap honours these too; held in the spec, they reach only the provider.
+  // The spec is a mode-0600 file, not an environment value. Linux caps one env string,
+  // and a command-line scan must not see the supervisor source or the spec.
   const supervisorEnv = { ...childEnv }
   const nodeEnv: Record<string, string> = {}
   for (const key of PROVIDER_ONLY_NODE_ENV_KEYS) {
@@ -232,26 +301,23 @@ export function supervisedPosixLaunch(
       nodeEnv[key] = value
     }
   }
-  const supervisorSpec = Buffer.from(
-    JSON.stringify({
-      cwd,
-      ownerPid,
-      lifetime,
-      closeRequest,
-      stdinEndGraceMs,
-      sigtermGraceMs,
-      nodeEnv
-    })
-  ).toString('base64')
+  const specPath = writeProviderSupervisorSpecFile({
+    cwd,
+    ownerPid,
+    lifetime,
+    closeRequest,
+    stdinEndGraceMs,
+    sigtermGraceMs,
+    nodeEnv
+  })
   return {
     command: process.execPath,
-    args: ['-e', POSIX_PROVIDER_SUPERVISOR_SCRIPT, '--', launch.command, ...launch.args],
-    // Electron's executable needs Node mode for the inline supervisor. The
-    // marker is removed above so providers never inherit Electron semantics.
+    args: [providerSupervisorScriptPath(), specPath, '--', launch.command, ...launch.args],
+    // Electron's executable needs Node mode to run the supervisor file. The
+    // marker is removed in that file so providers never inherit Electron semantics.
     env: {
       ...supervisorEnv,
-      ELECTRON_RUN_AS_NODE: '1',
-      ORCA_PROVIDER_SUPERVISOR_SPEC: supervisorSpec
+      ELECTRON_RUN_AS_NODE: '1'
     }
   }
 }

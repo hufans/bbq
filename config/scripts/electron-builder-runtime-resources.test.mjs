@@ -470,7 +470,7 @@ describe('packaged runtime resources', () => {
       const previousPath = process.env.PATH
       try {
         const resourcesDir = join(root, 'linux-unpacked', 'resources')
-        const launcherPath = join(resourcesDir, 'bin', 'orca-ide')
+        const launcherPath = join(resourcesDir, 'bin', 'bbq')
         await mkdir(join(resourcesDir, 'bin'), { recursive: true })
         await cp(
           join(process.cwd(), 'resources', 'plugins', 'launch'),
@@ -546,7 +546,7 @@ async function seedClipboardPublisher(resourcesDir, machine) {
   elf.writeUInt16LE(machine, 18)
   elf.writeUInt32LE(1, 20)
   elf.writeUInt16LE(64, 52)
-  await writeFile(join(binDir, 'orca-wayland-clipboard'), elf)
+  await writeFile(join(binDir, 'bbq-wayland-clipboard'), elf)
 }
 
 async function stubObjdump(root) {

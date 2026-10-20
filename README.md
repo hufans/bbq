@@ -1,10 +1,10 @@
 <h1 align="center">
-  <a href="https://onOrca.dev"><img src="resources/build/icon.png" alt="Orca" width="64" valign="middle" /></a> Orca
+  <a href="https://github.com/hufans/bbq"><img src="resources/build/icon.png" alt="BBQ" width="64" valign="middle" /></a> BBQ
 </h1>
 
 <p align="center">
-  <a href="https://github.com/stablyai/orca"><img src="https://img.shields.io/github/stars/stablyai/orca?style=flat&amp;label=%E2%98%85&amp;color=08C" alt="GitHub stars" /></a>
-  <a href="https://github.com/stablyai/orca/releases"><img src="docs/assets/readme-downloads.svg" alt="Total downloads across all releases" /></a>
+  <a href="https://github.com/hufans/bbq"><img src="https://img.shields.io/github/stars/hufans/bbq?style=flat&amp;label=%E2%98%85&amp;color=08C" alt="GitHub stars" /></a>
+  <a href="https://github.com/hufans/bbq/releases"><img src="docs/assets/readme-downloads.svg" alt="Total downloads across all releases" /></a>
   <img src="https://img.shields.io/badge/license-MIT-08C?style=flat" alt="License: MIT" />
   <a href="https://discord.gg/fzjDKHxv8Q"><img src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=white" alt="Join the Orca Discord" /></a>
   <a href="https://x.com/orca_build"><img src="https://img.shields.io/badge/X-000000?logo=x&logoColor=white" alt="Follow Orca on X" /></a>
@@ -20,7 +20,7 @@
   Run Codex, ClaudeCode, OpenCode or Pi side-by-side — each in its own worktree, tracked in one place.
 </p>
 
-<h3 align="center"><a href="https://onorca.dev/download"><ins>Download Orca</ins></a></h3>
+<h3 align="center"><a href="https://github.com/hufans/bbq/releases"><ins>Download BBQ</ins></a></h3>
 
 <p align="center">
   <img src="docs/assets/readme-hero.jpg" alt="Orca desktop app running agents in parallel worktrees, with the Orca mobile companion app in the corner" width="960" />
@@ -164,7 +164,7 @@ Agents drive Orca too — script every workflow with `orca worktree create`, `sn
 - **[Rich repo previews](https://www.onorca.dev/docs/editing/markdown)** — Preview Markdown, images, PDFs, and repo docs in the workspace.
 - **[Computer Use](https://www.onorca.dev/docs/cli/computer-use)** — Let agents operate desktop apps and visible UI when a workflow needs real interaction.
 - **[Notifications and unread state](https://www.onorca.dev/docs/notifications)** — Know when an agent finishes or needs attention, then mark threads unread to come back later.
-- **And many, many more** — we ship daily, so this list is perpetually behind. The [changelog](https://github.com/stablyai/orca/releases) is the real feature list.
+- **And many, many more** — we ship daily, so this list is perpetually behind. The [changelog](https://github.com/hufans/bbq/releases) is the real feature list.
 
 ---
 
@@ -216,17 +216,15 @@ Works with **any CLI agent** — if it runs in a terminal, it runs in Orca.
 
 ### Desktop — macOS, Windows, Linux
 
-- **[Download from onOrca.dev](https://onorca.dev/download)**
-- Or grab a build directly: [macOS Apple Silicon](https://github.com/stablyai/orca/releases/latest/download/orca-macos-arm64.dmg) · [macOS Intel](https://github.com/stablyai/orca/releases/latest/download/orca-macos-x64.dmg) · [Windows (.exe)](https://github.com/stablyai/orca/releases/latest/download/orca-windows-setup.exe) · [Linux AppImage](https://github.com/stablyai/orca/releases/latest/download/orca-linux.AppImage) · [All builds](https://github.com/stablyai/orca/releases/latest)
+- **[Download from GitHub releases](https://github.com/hufans/bbq/releases)**
+- Or grab a build directly: [macOS Apple Silicon](https://github.com/hufans/bbq/releases/latest/download/bbq-macos-arm64.dmg) · [macOS Intel](https://github.com/hufans/bbq/releases/latest/download/bbq-macos-x64.dmg) · [Windows (.exe)](https://github.com/hufans/bbq/releases/latest/download/bbq-windows-setup.exe) · [Linux AppImage](https://github.com/hufans/bbq/releases/latest/download/bbq-linux.AppImage) · [All builds](https://github.com/hufans/bbq/releases/latest)
 
 _Or via a package manager:_
 
 ```bash
-# macOS (Homebrew)
-brew install --cask stablyai/orca/orca
-
-# Arch Linux (AUR) — or stably-orca-git to build from source
-yay -S stably-orca-bin
+# macOS (Homebrew): Casks/bbq.rb in this repo.
+# Not installable until the first hufans/bbq release fills in version and sha256.
+# brew install --cask bbq
 ```
 
 ### Mobile Companion — iOS, Android
@@ -246,9 +244,9 @@ Pair with your desktop app to monitor and steer your agents from your phone.
 
   <img src="docs/assets/wechat-qr-group12.jpg" alt="WeChat group 12 QR code for the Orca community" width="160" />
 
-- **Feedback &amp; Ideas:** We ship fast. Missing something? [Request a new feature](https://github.com/stablyai/orca/issues).
+- **Feedback &amp; Ideas:** We ship fast. Missing something? [Request a new feature](https://github.com/hufans/bbq/issues).
 - **Privacy:** See the [privacy &amp; telemetry docs](https://www.onorca.dev/docs/telemetry) for what anonymous usage data Orca collects and how to opt out.
-- **Show Support:** [Star](https://github.com/stablyai/orca) this repo to follow along with our daily ships.
+- **Show Support:** [Star](https://github.com/hufans/bbq) this repo to follow along with our daily ships.
 
 ---
 
@@ -259,12 +257,12 @@ Want to contribute or run locally? See our [CONTRIBUTING.md](.github/CONTRIBUTIN
 The relay that pairs the mobile app with a desktop host is also in this repository under
 [`cloud/`](cloud/README.md), with a separate pnpm workspace and setup guide.
 
-<a href="https://github.com/stablyai/orca/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=stablyai/orca" alt="Orca contributors" />
+<a href="https://github.com/hufans/bbq/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=hufans/bbq" alt="Orca contributors" />
 </a>
 
 <p align="center">
-  <img src="docs/assets/star-history.png" alt="GitHub star history chart for stablyai/orca" width="880" />
+  <img src="docs/assets/star-history.png" alt="GitHub star history chart for hufans/bbq" width="880" />
 </p>
 
 ## Signed Builds

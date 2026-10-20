@@ -5,8 +5,8 @@ import { computeAgentLaunchFingerprint } from '../agent-launch-operation'
 const BASE = { agent: 'claude', target: { kind: 'existing', worktree: 'id:wt-1' } }
 const ACCOUNT_ENV = {
   CLAUDE_CONFIG_DIR: '/home/u/.orca-claude/a/config',
-  ORCA_CLAUDE_INJECTED_CONFIG_DIR: '/home/u/.orca-claude/a/config',
-  ORCA_CLAUDE_PROFILE_POINTER: '~/.orca-claude/pointer',
+  BBQ_CLAUDE_INJECTED_CONFIG_DIR: '/home/u/.orca-claude/a/config',
+  BBQ_CLAUDE_PROFILE_POINTER: '~/.orca-claude/pointer',
   CODEX_HOME: '/home/u/.orca-codex/b'
 }
 
@@ -47,7 +47,7 @@ describe('agent.launch accountEnv wire compatibility', () => {
     ['a home-relative non-pointer', { CLAUDE_CONFIG_DIR: '~/.claude' }],
     [
       'an injected marker for another folder',
-      { CLAUDE_CONFIG_DIR: '/home/u/a', ORCA_CLAUDE_INJECTED_CONFIG_DIR: '/home/u/b' }
+      { CLAUDE_CONFIG_DIR: '/home/u/a', BBQ_CLAUDE_INJECTED_CONFIG_DIR: '/home/u/b' }
     ]
   ])('refuses %s rather than starting another account', (_label, accountEnv) => {
     expect(AgentLaunch.safeParse({ ...BASE, accountEnv }).success).toBe(false)

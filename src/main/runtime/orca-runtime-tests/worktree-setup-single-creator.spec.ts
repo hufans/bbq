@@ -74,7 +74,7 @@ async function createActivated(options: {
   vi.mocked(shouldRunSetupForCreate).mockReturnValue(true)
   vi.mocked(createSetupRunnerScript).mockReturnValue({
     runnerScriptPath: RUNNER,
-    envVars: { ORCA_ROOT_PATH: '/tmp/repo', ORCA_WORKTREE_PATH: WORKTREE_PATH }
+    envVars: { BBQ_ROOT_PATH: '/tmp/repo', BBQ_WORKTREE_PATH: WORKTREE_PATH }
   })
   vi.mocked(listWorktrees).mockResolvedValue([
     {

@@ -97,7 +97,7 @@ function launch(slotDir: string, runtime: string, userData: string, home: string
       SHELL: '/bin/sh',
       LANG: 'en_US.UTF-8',
       ORCA_BACKGROUND_LAUNCH: '1',
-      ORCA_DISABLE_MACOS_LOGIN_SHELL: '1',
+      BBQ_DISABLE_MACOS_LOGIN_SHELL: '1',
       ORCA_USER_DATA: userData
     },
     timeoutMs: null
@@ -337,19 +337,19 @@ describe.skipIf(skip || process.platform === 'win32')('packaged plain-Node struc
       expect(report.cwd).toBe(home)
       expect(report.env).toMatchObject({
         HOME: home,
-        ORCA_AGENT_SESSION_ID: sessionId,
-        ORCA_STRUCTURED_SESSION: '1',
-        ORCA_USER_DATA_PATH: userData,
+        BBQ_AGENT_SESSION_ID: sessionId,
+        BBQ_STRUCTURED_SESSION: '1',
+        BBQ_USER_DATA_PATH: userData,
         ORCA_SDK_CONTRACT_SCENARIO_PATH: scenarioPath,
         ORCA_SDK_CONTRACT_REPORT_PATH: reportPath
       })
       expect(report.env.CLAUDE_CONFIG_DIR).toBe(join(home, 'claude-config'))
-      expect(report.env).not.toHaveProperty('ORCA_PANE_KEY')
+      expect(report.env).not.toHaveProperty('BBQ_PANE_KEY')
       expect(report.userMessages).toHaveLength(1)
       expect(report.userMessages[0]?.message.content).toEqual([
         { type: 'text', text: 'Hello packaged server' }
       ])
-      // Follow-up #26464: assert ORCA_CLI_COMMAND executes the packaged host CLI.
+      // Follow-up #26464: assert BBQ_CLI_COMMAND executes the packaged host CLI.
     } finally {
       subscription?.close()
       await killChildAndWait(server.child)

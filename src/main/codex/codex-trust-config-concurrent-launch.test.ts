@@ -51,8 +51,8 @@ let runtimeHomeDir: string
 beforeEach(() => {
   testState.fakeHomeDir = mkdtempSync(join(tmpdir(), 'orca-concurrent-home-'))
   testState.userDataDir = mkdtempSync(join(tmpdir(), 'orca-concurrent-userdata-'))
-  testState.previousUserDataPath = process.env.ORCA_USER_DATA_PATH
-  process.env.ORCA_USER_DATA_PATH = testState.userDataDir
+  testState.previousUserDataPath = process.env.BBQ_USER_DATA_PATH
+  process.env.BBQ_USER_DATA_PATH = testState.userDataDir
   runtimeHomeDir = join(testState.userDataDir, 'codex-runtime-home', 'home')
   mkdirSync(runtimeHomeDir, { recursive: true })
   writeFileSync(join(runtimeHomeDir, 'hooks.json'), '{"hooks":{}}\n', 'utf-8')
@@ -66,9 +66,9 @@ afterEach(() => {
   setCodexTrustGrantTelemetry(() => {})
   codexAppServerCapabilityCache.clear()
   if (testState.previousUserDataPath === undefined) {
-    delete process.env.ORCA_USER_DATA_PATH
+    delete process.env.BBQ_USER_DATA_PATH
   } else {
-    process.env.ORCA_USER_DATA_PATH = testState.previousUserDataPath
+    process.env.BBQ_USER_DATA_PATH = testState.previousUserDataPath
   }
   delete process.env.ORCA_DISABLE_CODEX_TRUST_RPC
   rmSync(testState.fakeHomeDir, { recursive: true, force: true })

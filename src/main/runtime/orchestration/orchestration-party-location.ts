@@ -75,8 +75,8 @@ function locateDispatchAssignee(
   deps: PartyLocationDeps
 ): OrchestrationPartyLocationResult {
   const dispatch = deps.db?.getDispatchContextById(dispatchId)
-  if (dispatch?.assignee_orca_session_id) {
-    return locateSession(dispatch.assignee_orca_session_id, deps.records)
+  if (dispatch?.assignee_bbq_session_id) {
+    return locateSession(dispatch.assignee_bbq_session_id, deps.records)
   }
   const remote = dispatch ? undefined : deps.db?.getRemoteDispatchAttachment(dispatchId)
   const paneKey = dispatch?.assignee_pane_key ?? remote?.pane_key

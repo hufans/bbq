@@ -238,6 +238,7 @@ describe('createManagedCommandMatcher', () => {
       match('/bin/sh "/Users/alice/Library/Application Support/Orca/agent-hooks/claude-hook.sh"')
     ).toBe(true)
     expect(match('/bin/sh "/some/other/location/agent-hooks/claude-hook.sh"')).toBe(true)
+    expect(match('/bin/sh "$HOME/.orca/agent-hooks/claude-hook.sh"')).toBe(true)
   })
 
   it('normalizes Windows backslashes so cmd-style paths still match', () => {
@@ -270,7 +271,7 @@ describe('createManagedCommandMatcher', () => {
   })
 
   it('matches encoded Windows launcher commands by decoding their script path', () => {
-    const command = wrapWindowsHookCommand('C:\\Users\\alice\\.orca\\agent-hooks\\claude-hook.cmd')
+    const command = wrapWindowsHookCommand('C:\\Users\\alice\\.bbq\\agent-hooks\\claude-hook.cmd')
     expect(match(command)).toBe(true)
   })
 
@@ -279,7 +280,7 @@ describe('createManagedCommandMatcher', () => {
     // still recognize them, or an upgrade would leave the stale entry beside the new one.
     expect(
       match(
-        'if [ -z "$HOME" ]; then :; else if [ -f "$HOME/.orca/agent-hooks/claude-hook.sh" ]; then /bin/sh "$HOME/.orca/agent-hooks/claude-hook.sh"; fi; fi'
+        'if [ -z "$HOME" ]; then :; else if [ -f "$HOME/.bbq/agent-hooks/claude-hook.sh" ]; then /bin/sh "$HOME/.bbq/agent-hooks/claude-hook.sh"; fi; fi'
       )
     ).toBe(true)
   })
@@ -288,11 +289,11 @@ describe('createManagedCommandMatcher', () => {
     const matchPosix = createManagedCommandMatcher('copilot-hook.sh')
     const matchPowerShell = createManagedCommandMatcher('copilot-hook.ps1')
 
-    expect(matchPosix("& 'C:\\Users\\alice\\.orca\\agent-hooks\\copilot-hook.ps1'")).toBe(true)
+    expect(matchPosix("& 'C:\\Users\\alice\\.bbq\\agent-hooks\\copilot-hook.ps1'")).toBe(true)
     expect(
-      matchPosix(wrapWindowsHookCommand('C:\\Users\\alice\\.orca\\agent-hooks\\copilot-hook.ps1'))
+      matchPosix(wrapWindowsHookCommand('C:\\Users\\alice\\.bbq\\agent-hooks\\copilot-hook.ps1'))
     ).toBe(true)
-    expect(matchPowerShell("/bin/sh '/home/alice/.orca/agent-hooks/copilot-hook.sh'")).toBe(true)
+    expect(matchPowerShell("/bin/sh '/home/alice/.bbq/agent-hooks/copilot-hook.sh'")).toBe(true)
   })
 })
 
@@ -356,7 +357,7 @@ describe('removeManagedCommands', () => {
                 'C:\\Windows\\System32\\cmd.exe',
                 '/d',
                 '/c',
-                'C:\\Users\\alice\\.orca\\agent-hooks\\copilot-hook.cmd'
+                'C:\\Users\\alice\\.bbq\\agent-hooks\\copilot-hook.cmd'
               ]
             },
             { type: 'command', command: 'echo keep me' }
@@ -421,7 +422,7 @@ describe('hookDefinitionHasManagedCommand', () => {
             {
               type: 'command',
               command: 'C:\\Windows\\System32\\conhost.exe',
-              args: ['--headless', 'C:\\Users\\alice\\.orca\\agent-hooks\\copilot-hook.cmd']
+              args: ['--headless', 'C:\\Users\\alice\\.bbq\\agent-hooks\\copilot-hook.cmd']
             }
           ]
         },
@@ -447,9 +448,9 @@ describe('hookDefinitionHasManagedCommand', () => {
 })
 
 describe('getSharedManagedScriptPath', () => {
-  it("returns ~/.orca/agent-hooks/<scriptFileName> rooted at the user's home", () => {
+  it("returns ~/.bbq/agent-hooks/<scriptFileName> rooted at the user's home", () => {
     expect(getSharedManagedScriptPath('claude-hook.sh')).toBe(
-      join(homedir(), '.orca', 'agent-hooks', 'claude-hook.sh')
+      join(homedir(), '.bbq', 'agent-hooks', 'claude-hook.sh')
     )
   })
 })
@@ -490,10 +491,10 @@ describe('wrapPosixHookCommand', () => {
 
   it('can scope environment variables to the guarded script invocation', () => {
     const cmd = wrapPosixHookCommand('/does/not/exist.sh', {
-      ORCA_COPILOT_HOOK_EVENT: 'UserPromptSubmit'
+      BBQ_COPILOT_HOOK_EVENT: 'UserPromptSubmit'
     })
     expect(cmd).toBe(
-      `if [ -f '/does/not/exist.sh' ] && [ -r '/does/not/exist.sh' ] && [ -x '/does/not/exist.sh' ]; then ORCA_COPILOT_HOOK_EVENT='UserPromptSubmit' /bin/sh '/does/not/exist.sh'; else ${POSIX_HOOK_STDIN_DRAIN_COMMAND}; fi`
+      `if [ -f '/does/not/exist.sh' ] && [ -r '/does/not/exist.sh' ] && [ -x '/does/not/exist.sh' ]; then BBQ_COPILOT_HOOK_EVENT='UserPromptSubmit' /bin/sh '/does/not/exist.sh'; else ${POSIX_HOOK_STDIN_DRAIN_COMMAND}; fi`
     )
   })
 
@@ -605,29 +606,29 @@ function expectedDecodedWindowsHookCommand(scriptPath: string): string {
 
 describe('wrapWindowsHookCommand', () => {
   it('invokes the .cmd through an encoded PowerShell command', () => {
-    const command = wrapWindowsHookCommand('C:\\Users\\alice\\.orca\\agent-hooks\\codex-hook.cmd')
+    const command = wrapWindowsHookCommand('C:\\Users\\alice\\.bbq\\agent-hooks\\codex-hook.cmd')
     expect(command).toMatch(qualifiedWindowsPowerShellCommand)
     expect(command).not.toMatch(/^powershell\b/i)
     expect(decodeWindowsHookCommand(command)).toBe(
-      expectedDecodedWindowsHookCommand('C:\\Users\\alice\\.orca\\agent-hooks\\codex-hook.cmd')
+      expectedDecodedWindowsHookCommand('C:\\Users\\alice\\.bbq\\agent-hooks\\codex-hook.cmd')
     )
   })
 
   it('doubles typographic single quotes in the script path literal', () => {
     const decoded = decodeWindowsHookCommand(
-      wrapWindowsHookCommand('C:\\Users\\O\u2019Brien\\.orca\\agent-hooks\\codex-hook.cmd')
+      wrapWindowsHookCommand('C:\\Users\\O\u2019Brien\\.bbq\\agent-hooks\\codex-hook.cmd')
     )
     expect(decoded).toContain(
-      "Test-Path -LiteralPath 'C:\\Users\\O\u2019\u2019Brien\\.orca\\agent-hooks\\codex-hook.cmd'"
+      "Test-Path -LiteralPath 'C:\\Users\\O\u2019\u2019Brien\\.bbq\\agent-hooks\\codex-hook.cmd'"
     )
   })
 
   it('scopes environment variables inside the encoded launcher', () => {
     const command = wrapWindowsHookCommand('C:\\hooks\\copilot-hook.ps1', {
-      ORCA_COPILOT_HOOK_EVENT: 'UserPromptSubmit'
+      BBQ_COPILOT_HOOK_EVENT: 'UserPromptSubmit'
     })
     expect(decodeWindowsHookCommand(command)).toContain(
-      "$env:ORCA_COPILOT_HOOK_EVENT = 'UserPromptSubmit'; if (Test-Path"
+      "$env:BBQ_COPILOT_HOOK_EVENT = 'UserPromptSubmit'; if (Test-Path"
     )
   })
 
@@ -662,7 +663,7 @@ describe('wrapWindowsHookCommand', () => {
   it.skipIf(process.platform !== 'win32')(
     'executes a script path containing a cmd.exe caret literally',
     () => {
-      const scriptDir = join(tmpDir, 'home with ^ caret', '.orca', 'agent-hooks')
+      const scriptDir = join(tmpDir, 'home with ^ caret', '.bbq', 'agent-hooks')
       mkdirSync(scriptDir, { recursive: true })
       const scriptPath = join(scriptDir, 'codex-hook.cmd')
       writeFileSync(scriptPath, '@echo off\r\nexit /b 7\r\n', 'utf-8')
@@ -683,8 +684,8 @@ describe('wrapRuntimeHomeHookCommand', () => {
     expect(command).toContain('case "${OSTYPE-}" in msys*|cygwin*|win32*)')
     expect(command).toContain('case "${HOME-}" in *\\&*|*\\^*|*\\(*|*\\)*|*\\;*|*,*|*=*|*%*|*\\!*)')
     expect(command).not.toContain('uname')
-    expect(command).toContain('"${HOME-}/.orca/agent-hooks/claude-hook.cmd"')
-    expect(command).toContain('/bin/sh "${HOME-}/.orca/agent-hooks/claude-hook.sh"')
+    expect(command).toContain('"${HOME-}/.bbq/agent-hooks/claude-hook.cmd"')
+    expect(command).toContain('/bin/sh "${HOME-}/.bbq/agent-hooks/claude-hook.sh"')
     expect(command).not.toMatch(/[A-Z]:[\\/]|\/Users\/|\/home\//)
   })
 
@@ -723,8 +724,8 @@ describe('wrapRuntimeHomeHookCommand', () => {
   it('executes the destination HOME script for the current runtime', () => {
     const sourceHome = join(tmpDir, 'source profile')
     const destinationHome = join(tmpDir, "destination $HOME ' & profile")
-    const sourceScriptDir = join(sourceHome, '.orca', 'agent-hooks')
-    const destinationScriptDir = join(destinationHome, '.orca', 'agent-hooks')
+    const sourceScriptDir = join(sourceHome, '.bbq', 'agent-hooks')
+    const destinationScriptDir = join(destinationHome, '.bbq', 'agent-hooks')
     mkdirSync(sourceScriptDir, { recursive: true })
     mkdirSync(destinationScriptDir, { recursive: true })
     const windowsExitCode = process.platform === 'win32' ? 7 : 9
@@ -761,7 +762,7 @@ describe('wrapRuntimeHomeHookCommand', () => {
 
   it.skipIf(process.platform !== 'win32')('keeps common Windows profiles on the fast path', () => {
     const destinationHome = join(tmpDir, 'destination 国際 profile')
-    const scriptDir = join(destinationHome, '.orca', 'agent-hooks')
+    const scriptDir = join(destinationHome, '.bbq', 'agent-hooks')
     mkdirSync(scriptDir, { recursive: true })
     writeFileSync(join(scriptDir, 'claude-hook.cmd'), '@echo off\r\nexit /b 7\r\n', 'utf-8')
     const gitBash = join(process.env.ProgramFiles ?? 'C:\\Program Files', 'Git', 'bin', 'bash.exe')
@@ -814,8 +815,8 @@ describe('buildWindowsAgentHookPostCommand', () => {
     expect(command).toContain('"%SystemRoot%\\System32\\curl.exe" -sS -X POST')
     expect(command).toContain('--connect-timeout 0.5 --max-time 1.5')
     expect(command).toContain('-H "Content-Type: application/x-www-form-urlencoded"')
-    expect(command).toContain('-H "X-Orca-Agent-Hook-Token: %ORCA_AGENT_HOOK_TOKEN%"')
-    expect(command).toContain('--data-urlencode "paneKey=%ORCA_PANE_KEY%"')
+    expect(command).toContain('-H "X-Bbq-Agent-Hook-Token: %BBQ_AGENT_HOOK_TOKEN%"')
+    expect(command).toContain('--data-urlencode "paneKey=%BBQ_PANE_KEY%"')
     expect(command).toContain('--data-urlencode "payload@-"')
     expect(command).toContain('/hook/codex')
     expect(command).not.toContain('powershell')
@@ -834,16 +835,16 @@ describe('buildPosixAgentHookPostCommand', () => {
   it('uses raw JSON only when the listener advertises support', () => {
     const command = buildPosixAgentHookPostCommand('claude').join('\n')
 
-    expect(command).toContain('ORCA_AGENT_HOOK_TRANSPORT:-}')
+    expect(command).toContain('BBQ_AGENT_HOOK_TRANSPORT:-}')
     expect(command).toContain('raw-json-v1')
     expect(command).toContain('command -v base64')
     expect(command).toContain('command -v tr')
     expect(command).toContain('Content-Type: application/json')
-    expect(command).toContain('X-Orca-Agent-Hook-Meta-Encoding: base64')
-    expect(command).toContain('X-Orca-Agent-Hook-Meta: ${orca_hook_metadata}')
+    expect(command).toContain('X-Bbq-Agent-Hook-Meta-Encoding: base64')
+    expect(command).toContain('X-Bbq-Agent-Hook-Meta: ${bbq_hook_metadata}')
     expect(command).toContain("printf '%s\\037%s\\037%s\\037%s\\037%s\\037%s'")
-    expect(command).toContain('$ORCA_PANE_KEY')
-    expect(command).toContain('$ORCA_WORKTREE_ID')
+    expect(command).toContain('$BBQ_PANE_KEY')
+    expect(command).toContain('$BBQ_WORKTREE_ID')
     expect(command).toContain('--data-binary @-')
     expect(command).toContain('Content-Type: application/x-www-form-urlencoded')
     expect(command).toContain('--data-urlencode "payload@-"')
@@ -858,11 +859,11 @@ describe('buildWindowsAgentHookCurlPostCommand', () => {
     // is the regression this replaces.
     expect(command).not.toMatch(/powershell/i)
     expect(command).toContain('%SystemRoot%\\System32\\curl.exe')
-    expect(command).toContain('http://127.0.0.1:%ORCA_AGENT_HOOK_PORT%/hook/codex')
+    expect(command).toContain('http://127.0.0.1:%BBQ_AGENT_HOOK_PORT%/hook/codex')
     expect(command).toContain('-H "Content-Type: application/x-www-form-urlencoded"')
-    expect(command).toContain('-H "X-Orca-Agent-Hook-Token: %ORCA_AGENT_HOOK_TOKEN%"')
-    expect(command).toContain('--data-urlencode "paneKey=%ORCA_PANE_KEY%"')
-    expect(command).toContain('--data-urlencode "worktreeId=%ORCA_WORKTREE_ID%"')
+    expect(command).toContain('-H "X-Bbq-Agent-Hook-Token: %BBQ_AGENT_HOOK_TOKEN%"')
+    expect(command).toContain('--data-urlencode "paneKey=%BBQ_PANE_KEY%"')
+    expect(command).toContain('--data-urlencode "worktreeId=%BBQ_WORKTREE_ID%"')
     // Why: `payload@-` makes curl read raw bytes from stdin and urlencode them,
     // so UTF-8 prompts survive without a code-page conversion.
     expect(command).toContain('--data-urlencode "payload@-"')

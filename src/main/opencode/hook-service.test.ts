@@ -32,7 +32,7 @@ import {
 import { resolveOpenCodeConfigDirectory } from '../../shared/opencode-config-directory'
 
 beforeEach(() => {
-  vi.stubEnv('ORCA_OPENCODE_PLUGIN_API', 'v2')
+  vi.stubEnv('BBQ_OPENCODE_PLUGIN_API', 'v2')
   setAppEnvironment({
     getPath: getPathMock,
     getAppPath: () => process.cwd(),

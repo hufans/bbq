@@ -144,16 +144,17 @@ function appImageEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
     'APPDIR',
     'ARGV0',
     'OWD',
+    'BBQ_CLI_LAUNCH_REDIRECTED',
     'ORCA_CLI_LAUNCH_REDIRECTED'
   ]) {
     delete next[name]
   }
   // Why: node mode moved the user's NODE_OPTIONS aside; the new launch moves it aside again.
-  if (env.ORCA_NODE_OPTIONS) {
-    next.NODE_OPTIONS = env.ORCA_NODE_OPTIONS
+  if (env.BBQ_NODE_OPTIONS) {
+    next.NODE_OPTIONS = env.BBQ_NODE_OPTIONS
   }
-  if (env.ORCA_NODE_REPL_EXTERNAL_MODULE) {
-    next.NODE_REPL_EXTERNAL_MODULE = env.ORCA_NODE_REPL_EXTERNAL_MODULE
+  if (env.BBQ_NODE_REPL_EXTERNAL_MODULE) {
+    next.NODE_REPL_EXTERNAL_MODULE = env.BBQ_NODE_REPL_EXTERNAL_MODULE
   }
   return next
 }

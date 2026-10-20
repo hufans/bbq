@@ -48,9 +48,9 @@ function getManagedScript(target: 'local' | 'posix' = 'local'): string {
       '@echo off',
       'setlocal',
       // Why: same scrub as POSIX — restore the canonical names from their aliases first.
-      'if not defined ORCA_PANE_KEY if defined ORCA_AGENT_PANE set "ORCA_PANE_KEY=%ORCA_AGENT_PANE%"',
-      'if not defined ORCA_AGENT_LAUNCH_TOKEN if defined ORCA_AGENT_LAUNCH set "ORCA_AGENT_LAUNCH_TOKEN=%ORCA_AGENT_LAUNCH%"',
-      'if defined ORCA_AGENT_HOOK_ENDPOINT if exist "%ORCA_AGENT_HOOK_ENDPOINT%" call "%ORCA_AGENT_HOOK_ENDPOINT%" 2>nul',
+      'if not defined BBQ_PANE_KEY if defined BBQ_AGENT_PANE set "BBQ_PANE_KEY=%BBQ_AGENT_PANE%"',
+      'if not defined BBQ_AGENT_LAUNCH_TOKEN if defined BBQ_AGENT_LAUNCH set "BBQ_AGENT_LAUNCH_TOKEN=%BBQ_AGENT_LAUNCH%"',
+      'if defined BBQ_AGENT_HOOK_ENDPOINT if exist "%BBQ_AGENT_HOOK_ENDPOINT%" call "%BBQ_AGENT_HOOK_ENDPOINT%" 2>nul',
       ...buildWindowsHookEnvironmentGuardLines(),
       buildWindowsAgentHookCurlPostCommand('dsh'),
       'exit /b 0',
@@ -62,21 +62,21 @@ function getManagedScript(target: 'local' | 'posix' = 'local'): string {
   return [
     '#!/bin/sh',
     // Why first: DSH's shell executor drops every env var whose NAME contains KEY, TOKEN,
-    // SECRET or PASSWORD before the hook starts, which takes ORCA_PANE_KEY and
-    // ORCA_AGENT_LAUNCH_TOKEN with it. Orca mirrors both onto scrub-safe aliases at spawn
+    // SECRET or PASSWORD before the hook starts, which takes BBQ_PANE_KEY and
+    // BBQ_AGENT_LAUNCH_TOKEN with it. Orca mirrors both onto scrub-safe aliases at spawn
     // (see agent-hook-scrub-safe-env.ts); restore the canonical names from them so every
     // line below — including the shared spool and post builders — is unchanged.
-    ': "${ORCA_PANE_KEY:=${ORCA_AGENT_PANE:-}}"',
-    ': "${ORCA_AGENT_LAUNCH_TOKEN:=${ORCA_AGENT_LAUNCH:-}}"',
-    'export ORCA_PANE_KEY ORCA_AGENT_LAUNCH_TOKEN',
+    ': "${BBQ_PANE_KEY:=${BBQ_AGENT_PANE:-}}"',
+    ': "${BBQ_AGENT_LAUNCH_TOKEN:=${BBQ_AGENT_LAUNCH:-}}"',
+    'export BBQ_PANE_KEY BBQ_AGENT_LAUNCH_TOKEN',
     ...buildPosixHookPayloadCapture(),
     ...buildPosixHookSpoolLines('dsh'),
     // Why: the endpoint file holds the live port/token; a PTY that outlived an Orca
     // restart carries stale env, so source it to reach the new server.
-    'if [ -n "$ORCA_AGENT_HOOK_ENDPOINT" ] && [ -r "$ORCA_AGENT_HOOK_ENDPOINT" ]; then',
-    '  . "$ORCA_AGENT_HOOK_ENDPOINT" 2>/dev/null || :',
+    'if [ -n "$BBQ_AGENT_HOOK_ENDPOINT" ] && [ -r "$BBQ_AGENT_HOOK_ENDPOINT" ]; then',
+    '  . "$BBQ_AGENT_HOOK_ENDPOINT" 2>/dev/null || :',
     'fi',
-    'if [ -z "$ORCA_AGENT_HOOK_PORT" ] || [ -z "$ORCA_AGENT_HOOK_TOKEN" ] || [ -z "$ORCA_PANE_KEY" ]; then',
+    'if [ -z "$BBQ_AGENT_HOOK_PORT" ] || [ -z "$BBQ_AGENT_HOOK_TOKEN" ] || [ -z "$BBQ_PANE_KEY" ]; then',
     '  spool_hook_event',
     '  exit 0',
     'fi',
@@ -213,7 +213,7 @@ export class DshHookService {
   /** Install on an SSH execution host, where DSH's shell contract is always POSIX. */
   async installRemote(sftp: SFTPWrapper, remoteHome: string): Promise<AgentHookInstallStatus> {
     const remoteConfigPath = getDshRemoteConfigPath(remoteHome)
-    const remoteScriptPath = `${remoteHome.replace(/\/$/, '')}/.orca/agent-hooks/dsh-hook.sh`
+    const remoteScriptPath = `${remoteHome.replace(/\/$/, '')}/.bbq/agent-hooks/dsh-hook.sh`
     const remoteManagedHooksPath = getDshRemoteManagedHooksPath(remoteHome)
     try {
       const body = (await readTextFileRemote(sftp, remoteConfigPath)) ?? ''

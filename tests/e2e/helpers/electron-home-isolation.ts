@@ -8,16 +8,16 @@ const RESTRICTED_ENV_KEYS = new Set([
   'HOMEDRIVE',
   'HOMEPATH',
   'CODEX_HOME',
-  'ORCA_CODEX_HOME',
+  'BBQ_CODEX_HOME',
   'ZCODE_DATA_BASE_DIR',
   'ZCODE_PERSONAL_PROVIDER_CONFIG_FILE',
   // Why: Orca's spawn hook writes Claude folder trust into the config this names.
   'CLAUDE_CONFIG_DIR',
   'ORCA_E2E_USER_DATA_DIR',
   'ORCA_E2E_HOME_DIR',
-  'ORCA_DISABLE_MACOS_LOGIN_SHELL',
+  'BBQ_DISABLE_MACOS_LOGIN_SHELL',
   'ZDOTDIR',
-  'ORCA_ORIG_ZDOTDIR',
+  'BBQ_ORIG_ZDOTDIR',
   'BASH_ENV',
   'ENV'
 ])
@@ -103,7 +103,7 @@ export function createElectronHomeIsolation({
       ORCA_E2E_USER_DATA_DIR: userDataDir,
       ORCA_E2E_HOME_DIR: isolatedHome,
       // macOS login resets HOME to the native account before the shell starts.
-      ...(process.platform === 'darwin' ? { ORCA_DISABLE_MACOS_LOGIN_SHELL: '1' } : {})
+      ...(process.platform === 'darwin' ? { BBQ_DISABLE_MACOS_LOGIN_SHELL: '1' } : {})
     }
   }
 }

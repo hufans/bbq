@@ -22,6 +22,8 @@ describe('orca serve service', () => {
     home = await mkdtemp(join(tmpdir(), 'orca-serve-service-'))
     bin = join(home, 'bin')
     await mkdir(bin)
+    await writeFile(join(bin, 'bbq'), '#!/bin/sh\n')
+    await chmod(join(bin, 'bbq'), 0o755)
     await writeFile(join(bin, 'orca'), '#!/bin/sh\n')
     await chmod(join(bin, 'orca'), 0o755)
     await writeFile(join(bin, 'orca-ide'), '#!/bin/sh\n')
@@ -38,7 +40,7 @@ describe('orca serve service', () => {
     platform,
     env: {
       PATH: `/nonexistent:${bin}`,
-      ORCA_USER_DATA_PATH: join(home, 'profile'),
+      BBQ_USER_DATA_PATH: join(home, 'profile'),
       ELECTRON_RUN_AS_NODE: '1'
     },
     homeDir: home,
@@ -55,9 +57,13 @@ describe('orca serve service', () => {
     await writeFile(serveSupervisorBrakePath(join(home, 'profile')), '{}')
     const result = await installServeService({ command: null, dryRun: false }, deps('darwin'))
     const unitPath = String(result.unitPath)
-    expect(await readFile(unitPath, 'utf8')).toContain(`<string>${join(bin, 'orca')}</string>`)
+    expect(await readFile(unitPath, 'utf8')).toContain(`<string>${join(bin, 'bbq')}</string>`)
     expect(calls).toEqual([
-      expect.stringMatching(/^launchctl bootout gui\/501\/com\.stablyai\.orca\.serve\./),
+      'launchctl bootout gui/501/com.stablyai.orca.serve',
+      expect.stringMatching(
+        /^launchctl bootout gui\/501\/com\.stablyai\.orca\.serve\.[0-9a-f]{8}$/
+      ),
+      expect.stringMatching(/^launchctl bootout gui\/501\/com\.hufans\.bbq\.serve\./),
       `launchctl bootstrap gui/501 ${unitPath}`
     ])
     expect(existsSync(serveSupervisorBrakePath(join(home, 'profile')))).toBe(false)
@@ -68,10 +74,12 @@ describe('orca serve service', () => {
     answers.set('loginctl show-user 501 --property=Linger --value', { code: 0, out: 'no\n' })
     const result = await installServeService({ command: null, dryRun: false }, d)
     expect(result.linger).toBe('no')
-    expect(calls.slice(0, 3)).toEqual([
+    expect(calls.slice(0, 5)).toEqual([
+      'systemctl --user disable --now orca-serve.service',
+      expect.stringMatching(/^systemctl --user disable --now orca-serve-[0-9a-f]{8}\.service$/),
       'systemctl --user daemon-reload',
-      expect.stringMatching(/^systemctl --user enable orca-serve-[0-9a-f]{8}\.service$/),
-      expect.stringMatching(/^systemctl --user restart orca-serve-/)
+      expect.stringMatching(/^systemctl --user enable bbq-serve-[0-9a-f]{8}\.service$/),
+      expect.stringMatching(/^systemctl --user restart bbq-serve-/)
     ])
   })
 
@@ -115,7 +123,9 @@ describe('orca serve service', () => {
     calls = []
     await expect(uninstallServeService(d)).resolves.toMatchObject({ removed: true })
     expect(existsSync(String(result.unitPath))).toBe(false)
-    expect(calls[0]).toMatch(/^systemctl --user disable --now orca-serve-/)
+    expect(calls[0]).toBe('systemctl --user disable --now orca-serve.service')
+    expect(calls[1]).toMatch(/^systemctl --user disable --now orca-serve-[0-9a-f]{8}\.service$/)
+    expect(calls[2]).toMatch(/^systemctl --user disable --now bbq-serve-/)
   })
 
   it('never picks a version-scoped launcher from the profile or a mounted AppImage', async () => {
@@ -126,10 +136,10 @@ describe('orca serve service', () => {
     expect(
       resolveServiceCommand(null, {
         platform: 'darwin',
-        env: { PATH: `${scoped}:${bin}`, ORCA_USER_DATA_PATH: join(home, 'profile') }
+        env: { PATH: `${scoped}:${bin}`, BBQ_USER_DATA_PATH: join(home, 'profile') }
       })
-    ).toBe(join(bin, 'orca'))
-    // Linux takes only orca-ide, never a bare `orca` (often the screen reader).
+    ).toBe(join(bin, 'bbq'))
+    // The service command is `bbq`. A directory that only has `orca` is not selected.
     const onlyOrca = join(home, 'only-orca')
     await mkdir(onlyOrca)
     await writeFile(join(onlyOrca, 'orca'), '#!/bin/sh\n')
@@ -137,7 +147,7 @@ describe('orca serve service', () => {
     expect(() =>
       resolveServiceCommand(null, {
         platform: 'linux',
-        env: { PATH: onlyOrca, ORCA_USER_DATA_PATH: join(home, 'profile') }
+        env: { PATH: onlyOrca, BBQ_USER_DATA_PATH: join(home, 'profile') }
       })
     ).toThrow(/PATH/)
   })
@@ -164,10 +174,10 @@ describe('orca serve service', () => {
     await chmod(join(scoped, 'orca'), 0o755)
     await expect(
       installServeService({ command: null, dryRun: false }, serverCli('linux', scoped))
-    ).rejects.toThrow(/install the Orca app.*`orca-ide serve service install`/i)
+    ).rejects.toThrow(/install the BBQ app.*`bbq serve service install`/i)
     await expect(
       installServeService({ command: null, dryRun: true }, serverCli('darwin', scoped))
-    ).rejects.toThrow(/`orca serve service install`/)
+    ).rejects.toThrow(/`bbq serve service install`/)
     expect(calls).toEqual([])
     // An installed app's launcher on PATH (or named by --command) still works from that terminal.
     await expect(
@@ -189,7 +199,7 @@ describe('orca serve service', () => {
     expect(() =>
       resolveServiceCommand(join(scoped, 'orca'), {
         platform: 'darwin',
-        env: { ORCA_USER_DATA_PATH: join(home, 'profile') }
+        env: { BBQ_USER_DATA_PATH: join(home, 'profile') }
       })
     ).toThrow(/one Orca version/)
   })

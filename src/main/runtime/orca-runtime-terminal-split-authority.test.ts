@@ -345,19 +345,19 @@ describe('remote runtime terminal split authority', () => {
     harness.runtime.setHostAccountLaunchEnv({
       wslDistro: 'Ubuntu',
       claude: {},
-      terminal: { CODEX_HOME: '/home/u/.orca/codex/b', ORCA_CLAUDE_PROFILE_POINTER: '~/p' }
+      terminal: { CODEX_HOME: '/home/u/.orca/codex/b', BBQ_CLAUDE_PROFILE_POINTER: '~/p' }
     })
 
     await harness.runtime.splitTerminal(harness.handle, {
       direction: 'vertical',
-      env: { ORCA_CLAUDE_PROFILE_POINTER: '~/caller' }
+      env: { BBQ_CLAUDE_PROFILE_POINTER: '~/caller' }
     })
 
     expect(harness.spawn).toHaveBeenCalledWith(
       expect.objectContaining({
         env: expect.objectContaining({
           CODEX_HOME: '/home/u/.orca/codex/b',
-          ORCA_CLAUDE_PROFILE_POINTER: '~/caller'
+          BBQ_CLAUDE_PROFILE_POINTER: '~/caller'
         })
       })
     )

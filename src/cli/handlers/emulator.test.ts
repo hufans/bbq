@@ -30,7 +30,7 @@ import { okFixture, queueFixtures } from '../test-fixtures'
 
 describe('orca emulator CLI handlers', () => {
   const originalWorkspaceId = process.env.ORCA_WORKSPACE_ID
-  const originalWorktreeId = process.env.ORCA_WORKTREE_ID
+  const originalWorktreeId = process.env.BBQ_WORKTREE_ID
 
   beforeEach(() => {
     vi.restoreAllMocks()
@@ -48,9 +48,9 @@ describe('orca emulator CLI handlers', () => {
       process.env.ORCA_WORKSPACE_ID = originalWorkspaceId
     }
     if (originalWorktreeId === undefined) {
-      delete process.env.ORCA_WORKTREE_ID
+      delete process.env.BBQ_WORKTREE_ID
     } else {
-      process.env.ORCA_WORKTREE_ID = originalWorktreeId
+      process.env.BBQ_WORKTREE_ID = originalWorktreeId
     }
   })
 
@@ -91,7 +91,7 @@ describe('orca emulator CLI handlers', () => {
 
   it('uses the folder workspace exported by the current Orca terminal', async () => {
     process.env.ORCA_WORKSPACE_ID = 'folder:folder-1'
-    delete process.env.ORCA_WORKTREE_ID
+    delete process.env.BBQ_WORKTREE_ID
     callMock.mockResolvedValue(
       okFixture('req_attach', {
         attached: true,
@@ -111,7 +111,7 @@ describe('orca emulator CLI handlers', () => {
 
   it('uses the current git worktree exported by the Orca terminal', async () => {
     process.env.ORCA_WORKSPACE_ID = 'folder:stale-parent'
-    process.env.ORCA_WORKTREE_ID = 'repo-1::/repo/project '
+    process.env.BBQ_WORKTREE_ID = 'repo-1::/repo/project '
     callMock.mockResolvedValue(
       okFixture('req_attach', {
         attached: true,

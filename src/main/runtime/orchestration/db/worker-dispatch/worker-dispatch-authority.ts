@@ -52,7 +52,7 @@ export function prepareStartingWorkerAuthority(
     const contextUpdate = this.db
       .prepare(
         `UPDATE dispatch_contexts
-         SET assignee_handle = ?, assignee_pane_key = ?, assignee_orca_session_id = ?,
+         SET assignee_handle = ?, assignee_pane_key = ?, assignee_bbq_session_id = ?,
              process_incarnation = ?, host_scope = ?,
              launch_token_hash = COALESCE(launch_token_hash, ?),
              capability_revoked_at = NULL,

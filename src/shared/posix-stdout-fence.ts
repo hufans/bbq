@@ -38,9 +38,9 @@ export function buildPosixStdoutFence(
       // Markers are [A-Za-z0-9_] only, so they need no quoting.
       `printf %s ${printBegin.join(' ')}`,
       command,
-      '_orca_capture_status=$?',
+      '_bbq_capture_status=$?',
       `printf %s ${printEnd.join(' ')}`,
-      'exit $_orca_capture_status'
+      'exit $_bbq_capture_status'
     ].join('\n')
   }
 }

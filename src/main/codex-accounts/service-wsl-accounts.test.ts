@@ -227,7 +227,7 @@ describe('CodexAccountService config sync', () => {
         expect(spec.loginPath).toBe('none')
         return wslOk('Debian\n/home/alice\n')
       }
-      if (script.includes('_orca_lookup_command=')) {
+      if (script.includes('_bbq_lookup_command=')) {
         // 'preferred': a PATH lookup. Under 'none' an nvm-installed codex is
         // invisible and a working install is reported absent (#9725).
         expect(spec.loginPath).toBe('preferred')
@@ -357,7 +357,7 @@ describe('CodexAccountService config sync', () => {
       if (script.includes('WSL_DISTRO_NAME')) {
         return wslOk('Debian\n/home/alice\n')
       }
-      if (script.includes('_orca_lookup_command=')) {
+      if (script.includes('_bbq_lookup_command=')) {
         expect(script).toBe(buildWslCodexAvailabilityScript())
         return wslFailed(1, 'codex missing')
       }
@@ -435,7 +435,7 @@ describe('CodexAccountService config sync', () => {
       if (script.includes('WSL_DISTRO_NAME')) {
         return wslOk('Debian\n/home/alice\n')
       }
-      if (script.includes('_orca_lookup_command=')) {
+      if (script.includes('_bbq_lookup_command=')) {
         expect(script).toBe(buildWslCodexAvailabilityScript())
         return { ...wslFailed(1, 'codex missing'), environmentResolved: false }
       }

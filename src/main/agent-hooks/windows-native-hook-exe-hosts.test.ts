@@ -37,7 +37,7 @@ async function startListener(reply: 'now' | 'never' | number = 'now'): Promise<L
       const form = new URLSearchParams(Buffer.concat(chunks).toString('utf8'))
       posts.push({
         path: req.url ?? '',
-        token: req.headers['x-orca-agent-hook-token']?.toString(),
+        token: req.headers['x-bbq-agent-hook-token']?.toString(),
         type: req.headers['content-type'],
         form: JSON.stringify([...form.entries()])
       })
@@ -97,14 +97,14 @@ function hookEnv(extra: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
 
 function paneEnv(listener: Listener, extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
   return hookEnv({
-    ORCA_AGENT_HOOK_PORT: String(listener.port),
-    ORCA_AGENT_HOOK_TOKEN: 'native-token',
-    ORCA_PANE_KEY: 'tab-1:leaf-1',
-    ORCA_TAB_ID: 'tab-1',
-    ORCA_AGENT_LAUNCH_TOKEN: 'launch-1',
-    ORCA_WORKTREE_ID: 'repo::C:/src/repo',
-    ORCA_AGENT_HOOK_ENV: 'production',
-    ORCA_AGENT_HOOK_VERSION: '1',
+    BBQ_AGENT_HOOK_PORT: String(listener.port),
+    BBQ_AGENT_HOOK_TOKEN: 'native-token',
+    BBQ_PANE_KEY: 'tab-1:leaf-1',
+    BBQ_TAB_ID: 'tab-1',
+    BBQ_AGENT_LAUNCH_TOKEN: 'launch-1',
+    BBQ_WORKTREE_ID: 'repo::C:/src/repo',
+    BBQ_AGENT_HOOK_ENV: 'production',
+    BBQ_AGENT_HOOK_VERSION: '1',
     ...extra
   })
 }
@@ -185,7 +185,7 @@ describe.skipIf(process.platform !== 'win32' || !tempIsCmdSafe)('native agent ho
     const listener = await listen()
     for (const env of [
       hookEnv({}),
-      paneEnv(listener, { ORCA_PANE_KEY: '' }),
+      paneEnv(listener, { BBQ_PANE_KEY: '' }),
       paneEnv(listener, { CLAUDE_JOB_DIR: join(dir, 'job') })
     ]) {
       const result = await run(exePath, ['claude'], env, 'abandon')
@@ -221,18 +221,18 @@ describe.skipIf(process.platform !== 'win32' || !tempIsCmdSafe)('native agent ho
     writeFileSync(
       endpoint,
       [
-        `set ORCA_AGENT_HOOK_PORT=${listener.port}`,
-        'set ORCA_AGENT_HOOK_TOKEN=fresh-token',
-        'set ORCA_AGENT_HOOK_ENV=development',
-        'set ORCA_AGENT_HOOK_VERSION=2',
-        'set ORCA_AGENT_HOOK_TRANSPORT=raw-json-v1',
+        `set BBQ_AGENT_HOOK_PORT=${listener.port}`,
+        'set BBQ_AGENT_HOOK_TOKEN=fresh-token',
+        'set BBQ_AGENT_HOOK_ENV=development',
+        'set BBQ_AGENT_HOOK_VERSION=2',
+        'set BBQ_AGENT_HOOK_TRANSPORT=raw-json-v1',
         ''
       ].join('\r\n')
     )
     const stale = paneEnv(listener, {
-      ORCA_AGENT_HOOK_PORT: '1',
-      ORCA_AGENT_HOOK_TOKEN: 'stale-token',
-      ORCA_AGENT_HOOK_ENDPOINT: endpoint
+      BBQ_AGENT_HOOK_PORT: '1',
+      BBQ_AGENT_HOOK_TOKEN: 'stale-token',
+      BBQ_AGENT_HOOK_ENDPOINT: endpoint
     })
     expect((await run(exePath, ['claude'], stale)).code).toBe(0)
     expect(listener.posts).toHaveLength(1)
@@ -261,7 +261,7 @@ describe.skipIf(process.platform !== 'win32' || !tempIsCmdSafe)('native agent ho
     expect(result.ms).toBeGreaterThanOrEqual(1400)
     expect(result.ms).toBeLessThan(5000)
 
-    const refused = await run(exePath, ['claude'], paneEnv(listener, { ORCA_AGENT_HOOK_PORT: '1' }))
+    const refused = await run(exePath, ['claude'], paneEnv(listener, { BBQ_AGENT_HOOK_PORT: '1' }))
     expect(refused.code).toBe(0)
     expect(refused.stdout.trim()).toBe('{}')
   })

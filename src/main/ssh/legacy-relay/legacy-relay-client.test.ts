@@ -230,7 +230,7 @@ describe('the legacy relay client', () => {
       cliServer: { cli, postOutput },
       openTransport: async () => ({ write: () => true, onData: () => {}, onClose: () => {} })
     })
-    const params = { argv: ['orchestration', 'check'], env: { ORCA_TERMINAL_HANDLE: 'term_a' } }
+    const params = { argv: ['orchestration', 'check'], env: { BBQ_TERMINAL_HANDLE: 'term_a' } }
     await expect(fake.requestHandlers.get('orca.cli')?.(params)).resolves.toEqual({
       stdout: 'ok\n',
       stderr: '',

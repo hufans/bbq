@@ -147,7 +147,7 @@ export function createPtyIpcSuiteEnvironment(): PtyIpcSuiteEnvironment {
     chmodSyncMock.mockReset()
     linuxCliShimMock.mockReset()
     linuxCliShimMock.mockImplementation((options: { userDataPath: string }) =>
-      join(options.userDataPath, 'linux-orca-cli-shim')
+      join(options.userDataPath, 'linux-bbq-cli-shim')
     )
     getPathMock.mockReset()
     loginPreflightExecFileMock.mockReset()
@@ -209,8 +209,8 @@ export function createPtyIpcSuiteEnvironment(): PtyIpcSuiteEnvironment {
       }
     })
     getPathMock.mockReturnValue('/tmp/orca-user-data')
-    // Why: wrapper roots resolve from ORCA_USER_DATA_PATH; mirror the mocked userData so ZDOTDIR/wrapper assertions match.
-    process.env.ORCA_USER_DATA_PATH = '/tmp/orca-user-data'
+    // Why: wrapper roots resolve from BBQ_USER_DATA_PATH; mirror the mocked userData so ZDOTDIR/wrapper assertions match.
+    process.env.BBQ_USER_DATA_PATH = '/tmp/orca-user-data'
     existsSyncMock.mockReturnValue(true)
     // size: the shell wrapper writer verifies each generated file is non-empty.
     statSyncMock.mockReturnValue({ isDirectory: () => true, mode: 0o755, size: 1 })
@@ -235,8 +235,8 @@ export function createPtyIpcSuiteEnvironment(): PtyIpcSuiteEnvironment {
       MIMOCODE_HOME: existingHome ? '/tmp/orca-mimocode-overlay' : '/tmp/orca-mimocode-shared'
     }))
     buildAgentHookEnvMock.mockReturnValue({
-      ORCA_AGENT_HOOK_PORT: '5678',
-      ORCA_AGENT_HOOK_TOKEN: 'agent-token'
+      BBQ_AGENT_HOOK_PORT: '5678',
+      BBQ_AGENT_HOOK_TOKEN: 'agent-token'
     })
     piBuildPtyEnvMock.mockImplementation(
       (
@@ -250,13 +250,13 @@ export function createPtyIpcSuiteEnvironment(): PtyIpcSuiteEnvironment {
           // Why: bare shells no longer create ~/.omp; only a userData status path is set (#10196).
           if (!existingAgentDir && !materializeDefaultHome) {
             return {
-              ORCA_OMP_STATUS_EXTENSION:
+              BBQ_OMP_STATUS_EXTENSION:
                 '/tmp/orca-user-data/omp-managed-status-extension/orca-agent-status.ts'
             }
           }
           return {
-            ORCA_OMP_SOURCE_AGENT_DIR: existingAgentDir ?? '/tmp/default-omp-agent',
-            ORCA_OMP_STATUS_EXTENSION: `${existingAgentDir ?? '/tmp/default-omp-agent'}/extensions/orca-agent-status.ts`
+            BBQ_OMP_SOURCE_AGENT_DIR: existingAgentDir ?? '/tmp/default-omp-agent',
+            BBQ_OMP_STATUS_EXTENSION: `${existingAgentDir ?? '/tmp/default-omp-agent'}/extensions/orca-agent-status.ts`
           }
         }
         if (kind === 'prime-agent') {
@@ -264,14 +264,14 @@ export function createPtyIpcSuiteEnvironment(): PtyIpcSuiteEnvironment {
             return {}
           }
           return {
-            ORCA_PRIME_AGENT_SOURCE_AGENT_DIR: existingAgentDir ?? '/tmp/default-prime-agent'
+            BBQ_PRIME_AGENT_SOURCE_AGENT_DIR: existingAgentDir ?? '/tmp/default-prime-agent'
           }
         }
         if (!existingAgentDir && !materializeDefaultHome) {
           return {}
         }
         return {
-          ORCA_PI_SOURCE_AGENT_DIR: existingAgentDir ?? '/tmp/default-pi-agent'
+          BBQ_PI_SOURCE_AGENT_DIR: existingAgentDir ?? '/tmp/default-pi-agent'
         }
       }
     )

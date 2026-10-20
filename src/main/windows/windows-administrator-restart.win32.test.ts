@@ -24,7 +24,7 @@ describe.runIf(process.platform === 'win32')('native Windows administrator resta
     const launcher = join(root, 'native', 'windows-cli-launcher', '.build', 'orca.exe')
     const restartLauncher = join(
       root,
-      'native/windows-cli-launcher/.build/orca-administrator-restart.exe'
+      'native/windows-cli-launcher/.build/bbq-administrator-restart.exe'
     )
     const status = await runProcess({ program: launcher, args: ['--orca-administrator-status'] })
     expect(status.code).toBe(0)

@@ -11,6 +11,7 @@ import { stripPiProcessOwnerEnv } from '../pty/pi-process-owner-env'
 import { removeInheritedNoColor } from '../pty/terminal-color-env'
 import { isWindowsGitBashShellPath } from '../git-bash'
 import { applyScrubSafeAgentEnvAliases } from '../../shared/agent-hook-scrub-safe-env'
+import { stripLegacyExportedProductEnv } from '../../shared/product-brand'
 import { removeUnspecifiedPaneIdentityEnv } from './local-pty-launch-helpers'
 import type { LocalPtyLaunchPlan } from './local-pty-launch-plan'
 import type { LocalPtyProviderOptions } from './local-pty-provider-types'
@@ -30,10 +31,10 @@ export function buildLocalPtySpawnEnvironment(args: {
     ...mergeGitConfigEnvProtocol(inheritedEnv, spawn.env),
     TERM: 'xterm-256color',
     COLORTERM: 'truecolor',
-    TERM_PROGRAM: 'Orca',
+    TERM_PROGRAM: 'BBQ',
     // Why: TUIs feature-gate on TERM_PROGRAM_VERSION; the fallback keeps tests and non-Electron runs working.
-    TERM_PROGRAM_VERSION: process.env.ORCA_APP_VERSION ?? '0.0.0-dev',
-    // Why: supports-hyperlinks rejects TERM_PROGRAM=Orca, so tools drop OSC 8 links; force it since xterm.js parses them.
+    TERM_PROGRAM_VERSION: process.env.BBQ_APP_VERSION ?? '0.0.0-dev',
+    // Why: supports-hyperlinks rejects an unknown TERM_PROGRAM, so tools drop OSC 8 links; force it since xterm.js parses them.
     FORCE_HYPERLINK: '1',
     [ORCA_IMAGE_PROTOCOL_ENV]: ORCA_IMAGE_PROTOCOL_VALUE
   } satisfies Record<string, string>
@@ -62,18 +63,24 @@ export function buildLocalPtySpawnEnvironment(args: {
     }
   }
 
+  stripLegacyExportedProductEnv(spawnEnv)
   if (!getOptions().buildSpawnEnv) {
     return spawnEnv
   }
-  return getOptions().buildSpawnEnv!(id, spawnEnv, {
-    explicitEnv: spawn.env ?? {},
-    command: spawn.command,
-    launchAgent: spawn.launchAgent,
-    codexHomePathOverride: spawn.codexHomePathOverride,
-    cwd: plan.cwd,
-    shellPath: plan.shellPath,
-    isWsl: plan.isWslShell,
-    wslDistro: plan.launchWslDistro
+  return Promise.resolve(
+    getOptions().buildSpawnEnv!(id, spawnEnv, {
+      explicitEnv: spawn.env ?? {},
+      command: spawn.command,
+      launchAgent: spawn.launchAgent,
+      codexHomePathOverride: spawn.codexHomePathOverride,
+      cwd: plan.cwd,
+      shellPath: plan.shellPath,
+      isWsl: plan.isWslShell,
+      wslDistro: plan.launchWslDistro
+    })
+  ).then((env) => {
+    stripLegacyExportedProductEnv(env)
+    return env
   })
 }
 
@@ -89,4 +96,5 @@ export function enforceLocalPtySpawnEnvironmentOverrides(
   if (spawn.env?.TERM) {
     finalEnv.TERM = spawn.env.TERM
   }
+  stripLegacyExportedProductEnv(finalEnv)
 }

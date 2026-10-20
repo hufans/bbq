@@ -20,12 +20,12 @@ import {
 
 function orgMembersScopedArgs(args: unknown): { orgId: string; record: Record<string, unknown> } {
   if (!args || typeof args !== 'object') {
-    throw new Error('invalid_orca_profile_org_selection')
+    throw new Error('invalid_bbq_profile_org_selection')
   }
   const record = args as Record<string, unknown>
   const orgId = typeof record.orgId === 'string' ? record.orgId.trim() : ''
   if (!orgId) {
-    throw new Error('invalid_orca_profile_org_selection')
+    throw new Error('invalid_bbq_profile_org_selection')
   }
   return { orgId, record }
 }
@@ -34,13 +34,13 @@ function orgRoleFromUnknown(value: unknown): OrcaOrgRole {
   if (value === 'owner' || value === 'admin' || value === 'member') {
     return value
   }
-  throw new Error('invalid_orca_org_role')
+  throw new Error('invalid_bbq_org_role')
 }
 
 function orgEmailFromUnknown(value: unknown): string {
   const email = typeof value === 'string' ? value.trim() : ''
   if (!email) {
-    throw new Error('invalid_orca_org_member_email')
+    throw new Error('invalid_bbq_org_member_email')
   }
   return email
 }
@@ -48,7 +48,7 @@ function orgEmailFromUnknown(value: unknown): string {
 function orgUserIdFromUnknown(value: unknown): string {
   const userId = typeof value === 'string' ? value.trim() : ''
   if (!userId) {
-    throw new Error('invalid_orca_org_member_user')
+    throw new Error('invalid_bbq_org_member_user')
   }
   return userId
 }

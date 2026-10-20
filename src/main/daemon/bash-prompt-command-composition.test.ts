@@ -29,7 +29,7 @@ function runInteractiveBash(
     {
       input,
       encoding: 'utf8',
-      env: { ...process.env, HOME: tempHome, ORCA_SHELL_FEATURES: 'ready', TERM: 'xterm' },
+      env: { ...process.env, HOME: tempHome, BBQ_SHELL_FEATURES: 'ready', TERM: 'xterm' },
       timeout: 5000
     }
   )
@@ -160,7 +160,7 @@ PROMPT_COMMAND=(__status_a __status_b)
     expect(output.split('PROMPT_BACKSLASH:<\\>')).toHaveLength(
       bashPreservesOddTerminalBackslash ? 4 : 1
     )
-    expect(output).not.toContain('PROMPT_BACKSLASH:<__orca_')
+    expect(output).not.toContain('PROMPT_BACKSLASH:<__bbq_')
     expectLifecycle(output)
   })
 
@@ -174,7 +174,7 @@ PROMPT_COMMAND=(__status_a __status_b)
       bashPreservesOddTerminalBackslash ? 4 : 1
     )
     expect(output.split('PROMPT_ARRAY_NEXT')).toHaveLength(4)
-    expect(output).not.toContain('PROMPT_ARRAY_BACKSLASH:<__orca_')
+    expect(output).not.toContain('PROMPT_ARRAY_BACKSLASH:<__bbq_')
     expectLifecycle(output)
   })
 
@@ -241,8 +241,8 @@ PROMPT_COMMAND='printf "PROMPT_REMATCH:<%s>\\n" "\${BASH_REMATCH[1]-unset}"'
     const output = runInteractiveBash(profile, tempHome)
 
     expect(output.match(/PROMPT_HOOK\r?\n/g)).toHaveLength(3)
-    expect(output).not.toContain('PROMPT_DEBUG:<(( __orca_exit_code == 0 ))>')
-    expect(output).not.toContain('PROMPT_DEBUG:<__orca_restore_prompt_status')
+    expect(output).not.toContain('PROMPT_DEBUG:<(( __bbq_exit_code == 0 ))>')
+    expect(output).not.toContain('PROMPT_DEBUG:<__bbq_restore_prompt_status')
     expectLifecycle(output)
   })
 
@@ -254,9 +254,9 @@ PROMPT_COMMAND='printf "PROMPT_REMATCH:<%s>\\n" "\${BASH_REMATCH[1]-unset}"'
     const output = runInteractiveBash(profile, tempHome)
 
     expect(output.split('PROMPT_DEBUG:<printf "PROMPT_HOOK\\n">')).toHaveLength(4)
-    expect(output).not.toContain('PROMPT_DEBUG:<(( __orca_exit_code == 0 ))>')
-    expect(output).not.toContain('PROMPT_DEBUG:<__orca_restore_prompt_status')
-    expect(output).not.toContain('PROMPT_DEBUG:<eval "$__orca_prompt_part">')
+    expect(output).not.toContain('PROMPT_DEBUG:<(( __bbq_exit_code == 0 ))>')
+    expect(output).not.toContain('PROMPT_DEBUG:<__bbq_restore_prompt_status')
+    expect(output).not.toContain('PROMPT_DEBUG:<eval "$__bbq_prompt_part">')
     expectLifecycle(output)
   })
 
@@ -282,9 +282,9 @@ PROMPT_COMMAND='printf "PROMPT_REMATCH:<%s>\\n" "\${BASH_REMATCH[1]-unset}"'
       '\x1b]133;A\x07',
       '\x1b]133;C\x07'
     ])
-    expect(output).not.toContain('PROMPT_DEBUG:<__orca_prompt_status=')
-    expect(output).not.toContain('PROMPT_DEBUG:<__orca_prompt_had_functrace="">')
-    expect(output).not.toContain('PROMPT_DEBUG:<__orca_outer_debug_trap_spec=')
+    expect(output).not.toContain('PROMPT_DEBUG:<__bbq_prompt_status=')
+    expect(output).not.toContain('PROMPT_DEBUG:<__bbq_prompt_had_functrace="">')
+    expect(output).not.toContain('PROMPT_DEBUG:<__bbq_outer_debug_trap_spec=')
   })
 
   itWithBash('forwards a DEBUG trap replaced after startup', () => {
@@ -357,7 +357,7 @@ PROMPT_COMMAND='printf "PROMPT_REMATCH:<%s>\\n" "\${BASH_REMATCH[1]-unset}"'
 
   itWithBash('does not recurse when a user trap installs Orca preexec', () => {
     const profile = [
-      `trap 'trap '\\''__orca_osc133_preexec'\\'' DEBUG 2>/dev/null; printf "PRIVATE_TRAP\\n"' DEBUG`,
+      `trap 'trap '\\''__bbq_osc133_preexec'\\'' DEBUG 2>/dev/null; printf "PRIVATE_TRAP\\n"' DEBUG`,
       'PROMPT_COMMAND=\'printf "HOOK_PRIVATE\\n"\''
     ].join('\n')
     const output = runInteractiveBash(profile, tempHome)
@@ -374,7 +374,7 @@ PROMPT_COMMAND='printf "PROMPT_REMATCH:<%s>\\n" "\${BASH_REMATCH[1]-unset}"'
     ].join('\n')
     const output = runInteractiveBash(profile, tempHome)
 
-    expect(output).not.toContain('PROMPT_RETURN:<__orca_run_prompt_command_array>')
+    expect(output).not.toContain('PROMPT_RETURN:<__bbq_run_prompt_command_array>')
     expectLifecycle(output)
   })
 
@@ -385,14 +385,10 @@ PROMPT_COMMAND='printf "PROMPT_REMATCH:<%s>\\n" "\${BASH_REMATCH[1]-unset}"'
       '__bp_arm() { __bp_armed=1; }',
       'PROMPT_COMMAND=__bp_arm'
     ].join('\n')
-    const output = runInteractiveBash(
-      profile,
-      tempHome,
-      'echo __orca_osc133_probe\nfalse\nexit 0\n'
-    )
+    const output = runInteractiveBash(profile, tempHome, 'echo __bbq_osc133_probe\nfalse\nexit 0\n')
     const commands = [...output.matchAll(/PROMPT_PREEXEC:<([^>]+)>/g)].map((match) => match[1])
 
-    expect(commands).toEqual(['echo __orca_osc133_probe', 'false', 'exit 0'])
+    expect(commands).toEqual(['echo __bbq_osc133_probe', 'false', 'exit 0'])
     expectLifecycle(output)
   })
 
@@ -404,9 +400,9 @@ PROMPT_COMMAND='printf "PROMPT_REMATCH:<%s>\\n" "\${BASH_REMATCH[1]-unset}"'
   })
 
   itWithBash.each([
-    ['status capture', '__orca_prompt_status=$?'],
-    ['trap capture', '__orca_outer_debug_trap_spec="$(trap -p DEBUG)"'],
-    ['trap re-arm', 'trap "__orca_osc133_preexec" DEBUG']
+    ['status capture', '__bbq_prompt_status=$?'],
+    ['trap capture', '__bbq_outer_debug_trap_spec="$(trap -p DEBUG)"'],
+    ['trap re-arm', 'trap "__bbq_osc133_preexec" DEBUG']
   ])('does not suppress lifecycle for an exact foreground %s', (_name, command) => {
     const output = runInteractiveBash('', tempHome, `${command}\nfalse\nexit 0\n`)
 

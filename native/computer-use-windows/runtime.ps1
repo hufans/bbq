@@ -848,7 +848,7 @@ function Get-OrcaWindowList([string]$Query) {
 function Get-OrcaHandshake {
     [pscustomobject]@{
         platform = "win32"
-        provider = "orca-computer-use-windows"
+        provider = "bbq-computer-use-windows"
         providerVersion = "1.0.0"
         protocolVersion = 1
         supports = [pscustomobject]@{

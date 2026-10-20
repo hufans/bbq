@@ -596,7 +596,7 @@ describe('PTY WSL working-directory validation', () => {
   it('spawns a plain POSIX login shell and queues startup commands for the live session', async () => {
     const originalPlatform = process.platform
     const originalHome = process.env.HOME
-    const originalOrcaOrigZdotdir = process.env.ORCA_ORIG_ZDOTDIR
+    const originalOrcaOrigZdotdir = process.env.BBQ_ORIG_ZDOTDIR
     const originalShell = process.env.SHELL
     const originalZdotdir = process.env.ZDOTDIR
 
@@ -606,7 +606,7 @@ describe('PTY WSL working-directory validation', () => {
     })
     // Why: this test simulates macOS even when Vitest runs on a Windows host.
     process.env.HOME = '/Users/test'
-    delete process.env.ORCA_ORIG_ZDOTDIR
+    delete process.env.BBQ_ORIG_ZDOTDIR
     process.env.SHELL = '/bin/zsh'
     delete process.env.ZDOTDIR
 
@@ -621,7 +621,7 @@ describe('PTY WSL working-directory validation', () => {
       // Why absent: this HOME holds no zsh startup file, so there is no user
       // config dir to hand back and Orca must not invent one — the wrapper
       // leaves ZDOTDIR unset, exactly as an unwrapped login zsh would.
-      expect(options.env.ORCA_ORIG_ZDOTDIR).toBeUndefined()
+      expect(options.env.BBQ_ORIG_ZDOTDIR).toBeUndefined()
     } finally {
       Object.defineProperty(process, 'platform', {
         configurable: true,
@@ -633,9 +633,9 @@ describe('PTY WSL working-directory validation', () => {
         process.env.HOME = originalHome
       }
       if (originalOrcaOrigZdotdir === undefined) {
-        delete process.env.ORCA_ORIG_ZDOTDIR
+        delete process.env.BBQ_ORIG_ZDOTDIR
       } else {
-        process.env.ORCA_ORIG_ZDOTDIR = originalOrcaOrigZdotdir
+        process.env.BBQ_ORIG_ZDOTDIR = originalOrcaOrigZdotdir
       }
       if (originalShell === undefined) {
         delete process.env.SHELL

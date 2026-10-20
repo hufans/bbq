@@ -55,13 +55,13 @@ describe('CliInstaller', () => {
       })
 
       const status = await installer.getStatus()
-      expect(status.commandPath).toBe(join(homePath, '.local', 'bin', 'orca'))
+      expect(status.commandPath).toBe(join(homePath, '.local', 'bin', 'bbq'))
       expect(status.state).toBe('not_installed')
       expect(status.supported).toBe(true)
 
       const installed = await installer.install()
       expect(installed.state).toBe('installed')
-      expect(installed.commandPath).toBe(join(homePath, '.local', 'bin', 'orca'))
+      expect(installed.commandPath).toBe(join(homePath, '.local', 'bin', 'bbq'))
       expect(installed.pathConfigured).toBe(true)
     }
   )
@@ -107,7 +107,7 @@ describe('CliInstaller', () => {
       const userLocalBin = join(homePath, '.local', 'bin')
       const defaultInstallPath = join(usrLocalBin, 'orca')
       const userInstallPath = join(userLocalBin, 'orca')
-      const launcherPath = join(resourcesPath, 'bin', 'orca')
+      const launcherPath = join(resourcesPath, 'bin', 'bbq')
       await mkdir(usrLocalBin, { recursive: true })
       await mkdir(userLocalBin, { recursive: true })
       await symlink(launcherPath, userInstallPath)
@@ -148,7 +148,7 @@ describe('CliInstaller', () => {
       const userLocalBin = join(homePath, '.local', 'bin')
       const defaultInstallPath = join(usrLocalBin, 'orca')
       const userInstallPath = join(userLocalBin, 'orca')
-      const launcherPath = join(resourcesPath, 'bin', 'orca')
+      const launcherPath = join(resourcesPath, 'bin', 'bbq')
       const oldLauncherPath = join(fixture.root, 'Old.app', 'Contents', 'Resources', 'bin', 'orca')
       await mkdir(usrLocalBin, { recursive: true })
       await mkdir(userLocalBin, { recursive: true })
@@ -193,7 +193,7 @@ describe('CliInstaller', () => {
       const userLocalBin = join(homePath, '.local', 'bin')
       const defaultInstallPath = join(usrLocalBin, 'orca')
       const userInstallPath = join(userLocalBin, 'orca')
-      const launcherPath = join(resourcesPath, 'bin', 'orca')
+      const launcherPath = join(resourcesPath, 'bin', 'bbq')
       await mkdir(usrLocalBin, { recursive: true })
       await mkdir(userLocalBin, { recursive: true })
       await symlink(launcherPath, defaultInstallPath)
@@ -229,7 +229,7 @@ describe('CliInstaller', () => {
       const userLocalBin = join(homePath, '.local', 'bin')
       const defaultInstallPath = join(usrLocalBin, 'orca')
       const userInstallPath = join(userLocalBin, 'orca')
-      const launcherPath = join(resourcesPath, 'bin', 'orca')
+      const launcherPath = join(resourcesPath, 'bin', 'bbq')
       await mkdir(usrLocalBin, { recursive: true })
       await mkdir(userLocalBin, { recursive: true })
       await symlink(launcherPath, userInstallPath)
@@ -268,7 +268,7 @@ describe('CliInstaller', () => {
       const userLocalBin = join(homePath, '.local', 'bin')
       const defaultInstallPath = join(usrLocalBin, 'orca')
       const userInstallPath = join(userLocalBin, 'orca')
-      const launcherPath = join(resourcesPath, 'bin', 'orca')
+      const launcherPath = join(resourcesPath, 'bin', 'bbq')
       await mkdir(usrLocalBin, { recursive: true })
       await mkdir(userLocalBin, { recursive: true })
       await writeFile(defaultInstallPath, '#!/usr/bin/env bash\necho other-orca\n', 'utf8')
@@ -308,7 +308,7 @@ describe('CliInstaller', () => {
       const userLocalBin = join(homePath, '.local', 'bin')
       const defaultInstallPath = join(usrLocalBin, 'orca')
       const userInstallPath = join(userLocalBin, 'orca')
-      const launcherPath = join(resourcesPath, 'bin', 'orca')
+      const launcherPath = join(resourcesPath, 'bin', 'bbq')
       await mkdir(usrLocalBin, { recursive: true })
       await mkdir(userLocalBin, { recursive: true })
       await writeFile(userInstallPath, '#!/usr/bin/env bash\necho other-orca\n', {
@@ -352,7 +352,7 @@ describe('CliInstaller', () => {
       const userLocalBin = join(homePath, '.local', 'bin')
       const defaultInstallPath = join(usrLocalBin, 'orca')
       const userInstallPath = join(userLocalBin, 'orca')
-      const launcherPath = join(resourcesPath, 'bin', 'orca')
+      const launcherPath = join(resourcesPath, 'bin', 'bbq')
       await mkdir(usrLocalBin, { recursive: true })
       await mkdir(userLocalBin, { recursive: true })
       await symlink(launcherPath, userInstallPath)
@@ -432,7 +432,7 @@ describe('CliInstaller', () => {
       const userLocalBin = join(homePath, '.local', 'bin')
       const defaultInstallPath = join(usrLocalBin, 'orca')
       const userInstallPath = join(userLocalBin, 'orca')
-      const launcherPath = join(resourcesPath, 'bin', 'orca')
+      const launcherPath = join(resourcesPath, 'bin', 'bbq')
       await mkdir(usrLocalBin, { recursive: true })
       await mkdir(userLocalBin, { recursive: true })
       await writeFile(userInstallPath, '#!/usr/bin/env bash\necho other-orca\n', 'utf8')
@@ -483,7 +483,7 @@ describe('CliInstaller', () => {
       })
 
       const status = await installer.getStatus()
-      expect(status.commandName).toBe('orca')
+      expect(status.commandName).toBe('bbq')
     }
   )
 
@@ -515,7 +515,7 @@ describe('CliInstaller', () => {
 
       expect(s1.commandPath).toBe(s2.commandPath)
       expect(s2.commandPath).toBe(s3.commandPath)
-      expect(s1.commandPath).toBe(join(homePath, '.local', 'bin', 'orca'))
+      expect(s1.commandPath).toBe(join(homePath, '.local', 'bin', 'bbq'))
     }
   )
 
@@ -527,7 +527,7 @@ describe('CliInstaller', () => {
       const homePath = join(fixture.root, 'home')
       const absentUsrLocalBin = join(fixture.root, 'usr', 'local', 'bin', 'orca')
       const resourcesPath = join(fixture.root, 'resources')
-      const bundledLauncher = join(resourcesPath, 'bin', 'orca')
+      const bundledLauncher = join(resourcesPath, 'bin', 'bbq')
       await mkdir(join(resourcesPath, 'bin'), { recursive: true })
       await writeFile(bundledLauncher, '#!/usr/bin/env bash\necho orca\n', {
         encoding: 'utf8',
@@ -547,7 +547,7 @@ describe('CliInstaller', () => {
       })
 
       const status = await installer.getStatus()
-      expect(status.commandPath).toBe(join(homePath, '.local', 'bin', 'orca'))
+      expect(status.commandPath).toBe(join(homePath, '.local', 'bin', 'bbq'))
       expect(status.supported).toBe(true)
     }
   )

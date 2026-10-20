@@ -14,7 +14,7 @@ export type WslGuestIdentity = {
   orcad: string | null
 }
 
-const SECTION = '--orca-identity--'
+const SECTION = '--bbq-identity--'
 const IDENTITY_TIMEOUT_MS = 10_000
 
 /** One exec, so a classification never mixes two distro incarnations. */

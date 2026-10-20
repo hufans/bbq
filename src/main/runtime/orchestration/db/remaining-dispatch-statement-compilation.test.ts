@@ -58,15 +58,15 @@ function fixture(count = 1, version: 'fresh' | 'v41' = 'fresh') {
   })
   if (version === 'v41') {
     writer.db.exec(`
-      DROP INDEX idx_runs_coordinator_orca_session_id;
-      DROP INDEX idx_dispatch_assignee_orca_session_id;
+      DROP INDEX idx_runs_coordinator_bbq_session_id;
+      DROP INDEX idx_dispatch_assignee_bbq_session_id;
       DROP TRIGGER trg_runs_remember_coordinator_insert;
       DROP TRIGGER trg_runs_remember_coordinator_update;
       DROP TRIGGER trg_messages_route_coordinator_mail;
-      ALTER TABLE runs DROP COLUMN coordinator_orca_session_id;
-      ALTER TABLE runs DROP COLUMN coordinator_orca_session_id_generation;
-      ALTER TABLE dispatch_contexts DROP COLUMN assignee_orca_session_id;
-      ALTER TABLE dispatch_contexts DROP COLUMN creator_orca_session_id;
+      ALTER TABLE runs DROP COLUMN coordinator_bbq_session_id;
+      ALTER TABLE runs DROP COLUMN coordinator_bbq_session_id_generation;
+      ALTER TABLE dispatch_contexts DROP COLUMN assignee_bbq_session_id;
+      ALTER TABLE dispatch_contexts DROP COLUMN creator_bbq_session_id;
     `)
     writer.db.pragma('user_version = 41')
     databases.pop()
@@ -180,7 +180,7 @@ describe('remaining dispatch metadata statement compilation', () => {
         throw new Error('Invalid session fixture')
       }
       writer.db
-        .prepare('UPDATE dispatch_contexts SET assignee_orca_session_id = ? WHERE id = ?')
+        .prepare('UPDATE dispatch_contexts SET assignee_bbq_session_id = ? WHERE id = ?')
         .run(sessionId, dispatch.id)
       const compile = vi.spyOn(DatabaseSync.prototype, 'prepare')
       for (let call = 0; call < 10; call += 1) {

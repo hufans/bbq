@@ -5,7 +5,7 @@ import {
   type SetupRunnerShell
 } from '../../../shared/setup-runner-command'
 
-const SETUP_COMPLETION_PREFIX = '__ORCA_SETUP_COMPLETE__:'
+const SETUP_COMPLETION_PREFIX = '__BBQ_SETUP_COMPLETE__:'
 const SETUP_COMPLETION_CARRY_LENGTH = SETUP_COMPLETION_PREFIX.length + 96
 const WINDOWS_SETUP_RUNNER_ENV = 'ORCA_SETUP_RUNNER_PATH'
 

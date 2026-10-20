@@ -705,7 +705,7 @@ def handshake_response():
     has_screenshot = Gdk is not None and GdkPixbuf is not None and not is_wayland
     return {
         "platform": "linux",
-        "provider": "orca-computer-use-linux",
+        "provider": "bbq-computer-use-linux",
         "providerVersion": "1.0.0",
         "protocolVersion": 1,
         "supports": {

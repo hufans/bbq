@@ -1,10 +1,11 @@
 import { spawnSync } from 'node:child_process'
-import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { getFishCodexShellLaunchPreflight } from '../shared/codex-shell-function'
 import { fishRequirementViolation, resolveFishBinary } from '../shared/fish-binary-requirement'
+import { writeShellWrapperFiles } from './shell-wrapper-file-writer'
 import {
   buildFishVendorConfWrapperFile,
   FISH_XDG_DATA_DIRS_PREFIX_ENV,
@@ -71,8 +72,23 @@ describe('fish vendor snippet', () => {
 
   it('lives where fish looks for vendor snippets under the data dir', () => {
     expect(buildFishVendorConfWrapperFile(ROOT)[0]).toBe(
-      `${DATA_DIR}/fish/vendor_conf.d/orca-shell-integration.fish`
+      `${DATA_DIR}/fish/vendor_conf.d/bbq-shell-integration.fish`
     )
+  })
+
+  it('removes a leftover orca-shell-integration.fish when the new snippet is written', () => {
+    const root = mkdtempSync(join(tmpdir(), 'bbq-fish-vendor-'))
+    try {
+      const [path, content] = buildFishVendorConfWrapperFile(root)
+      mkdirSync(dirname(path), { recursive: true })
+      const leftover = `${path.slice(0, -'bbq-shell-integration.fish'.length)}orca-shell-integration.fish`
+      writeFileSync(leftover, 'function leftover; end\n')
+      expect(writeShellWrapperFiles([[path, content]], '[test]')).toBe(true)
+      expect(existsSync(path)).toBe(true)
+      expect(existsSync(leftover)).toBe(false)
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
   })
 })
 
@@ -94,8 +110,8 @@ echo "fake-codex $*"
 const STATE_PROBE = [
   'set -q XDG_DATA_DIRS; and echo "xdg=[$XDG_DATA_DIRS]"; or echo xdg=unset',
   `set -q ${FISH_XDG_DATA_DIRS_PREFIX_ENV}; and echo marker-left`,
-  'env | grep "^XDG_DATA_DIRS=\\|ORCA_FISH"; or echo child-clean',
-  'functions -q __orca_fish_xdg_handoff; and echo handoff-left'
+  'env | grep "^XDG_DATA_DIRS=\\|BBQ_FISH\\|ORCA_FISH"; or echo child-clean',
+  'functions -q __bbq_fish_xdg_handoff; and echo handoff-left'
 ].join('\n')
 
 // Why always run: the shell contracts job sets ORCA_REQUIRE_FISH so a missing fish fails, not skips.
@@ -167,7 +183,7 @@ describe.skipIf(!fish.available)('fish vendor snippet in a real fish', () => {
   it('keeps the opt-out', () => {
     const output = runFish(['-i', '-c', 'emit fish_prompt; codex hi'], {
       ...getFishXdgDataDirsLaunchEnv(root, undefined),
-      ORCA_CODEX_ISOLATE: '0'
+      BBQ_CODEX_ISOLATE: '0'
     })
     expect(output).toContain('fake-codex hi')
   })
@@ -186,7 +202,7 @@ describe.skipIf(!fish.available)('fish vendor snippet in a real fish', () => {
 
   it('defines nothing in a non-interactive fish', () => {
     const output = runFish(
-      ['-c', 'emit fish_prompt; type -t codex; functions -q __orca_define_codex; and echo hook'],
+      ['-c', 'emit fish_prompt; type -t codex; functions -q __bbq_define_codex; and echo hook'],
       getFishXdgDataDirsLaunchEnv(root, undefined)
     )
     // Why a suffix: the emitted event also runs fish's own greeting handler.

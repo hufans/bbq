@@ -64,7 +64,7 @@ const originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform')
 
 function status(
   state: CliInstallState,
-  launcherPath = '/cache/current/resources/bin/orca-ide'
+  launcherPath = '/cache/current/resources/bin/bbq'
 ): CliInstallStatus {
   return {
     platform: 'linux',
@@ -76,7 +76,7 @@ function status(
     installMethod: 'symlink',
     supported: true,
     state,
-    currentTarget: state === 'not_installed' ? null : '/cache/old/resources/bin/orca-ide',
+    currentTarget: state === 'not_installed' ? null : '/cache/old/resources/bin/bbq',
     unsupportedReason: null,
     detail: null
   }
@@ -348,7 +348,7 @@ describe('AppImage CLI registration startup repair', () => {
   it('does not claim a sibling AppImage registration during a status poll', async () => {
     const stale = {
       ...status('stale'),
-      currentTarget: '/cache/current/resources/bin/orca-ide'
+      currentTarget: '/cache/current/resources/bin/bbq'
     }
     mocks.getStatus.mockResolvedValue(stale)
     mocks.isAppImageRegistrationOwnedBySibling.mockReturnValue(true)

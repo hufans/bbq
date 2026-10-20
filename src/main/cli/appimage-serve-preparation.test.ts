@@ -33,7 +33,7 @@ describe('prepareAppImageCopyForServe', () => {
     const { appImagePath, cacheRootPath } = await makeFixture()
     const root = resolveAppImageExtractedRoot({ appImagePath, cacheRootPath })!
     await mkdir(join(root.rootPath, 'resources', 'bin'), { recursive: true })
-    await writeFile(join(root.rootPath, 'resources', 'bin', 'orca-ide'), '', { mode: 0o755 })
+    await writeFile(join(root.rootPath, 'resources', 'bin', 'bbq'), '', { mode: 0o755 })
     const lines: string[] = []
 
     const result = await prepareAppImageCopyForServe({

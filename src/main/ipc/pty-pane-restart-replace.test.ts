@@ -265,7 +265,7 @@ function restartSpawnArgs(extra: { replacesPtyId?: string } = {}) {
     worktreeId,
     tabId,
     leafId,
-    env: { ORCA_PANE_KEY: paneKey, ORCA_TAB_ID: tabId, ORCA_WORKTREE_ID: worktreeId },
+    env: { BBQ_PANE_KEY: paneKey, BBQ_TAB_ID: tabId, BBQ_WORKTREE_ID: worktreeId },
     ...extra
   }
 }

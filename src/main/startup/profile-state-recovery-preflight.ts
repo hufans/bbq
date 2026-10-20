@@ -13,6 +13,7 @@ import {
 import { acquireProfileStateMaintenance } from '../persistence/profile-state/profile-state-access'
 import { rollbackProfileState } from '../persistence/profile-state/profile-state-recovery-command'
 import { applyBackgroundActivationPolicy } from '../window/foreground-activation-policy'
+import { stripLegacyExportedProductEnv } from '../../shared/product-brand'
 import { acquireSingleInstanceLock } from './single-instance-lock'
 
 /** The process owning both locks performs recovery before Electron can initialize a runtime. */
@@ -101,7 +102,8 @@ function runRecoveryRequest(payload: string | undefined): ProfileStateRecoveryRe
     }
     const userDataPath = realpathSync(parsed.data.userDataPath)
     app.setPath('userData', userDataPath)
-    process.env.ORCA_USER_DATA_PATH = userDataPath
+    process.env.BBQ_USER_DATA_PATH = userDataPath
+    stripLegacyExportedProductEnv(process.env)
     const maintenance = acquireProfileStateMaintenance(userDataPath)
     try {
       // Force Electron's lock even when ordinary dev or diagnostic launches would bypass it.

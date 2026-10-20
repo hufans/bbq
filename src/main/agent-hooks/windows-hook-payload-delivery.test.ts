@@ -94,7 +94,7 @@ async function startHookListener(): Promise<{
     })
     req.on('end', () => {
       const form = new URLSearchParams(body)
-      const token = req.headers['x-orca-agent-hook-token']
+      const token = req.headers['x-bbq-agent-hook-token']
       posts.push({
         payload: form.get('payload'),
         paneKey: form.get('paneKey'),
@@ -218,7 +218,7 @@ function readEvent(path: string, event: string): (string | undefined)[] {
 
 // The pre-forward-slash bare path: Git Bash strips its backslashes and exits 127.
 const legacyBackslashEntry = (home: string, script: string): Entry => ({
-  hooks: [{ command: join(home, '.orca', 'agent-hooks', script) }]
+  hooks: [{ command: join(home, '.bbq', 'agent-hooks', script) }]
 })
 
 function writeHooks(
@@ -314,7 +314,7 @@ const PROVIDERS: Provider[] = [
     stdout: '',
     install: () => new DshHookService().install(),
     commands: (home) =>
-      readEvent(join(home, '.orca', 'agent-hooks', 'dsh-hooks.json'), 'UserPromptSubmit'),
+      readEvent(join(home, '.bbq', 'agent-hooks', 'dsh-hooks.json'), 'UserPromptSubmit'),
     runners: [POWERSHELL_DSH]
   },
   {
@@ -432,7 +432,7 @@ describe('Windows managed hook launcher', () => {
   // this keeps a ConPTY host from being reintroduced unnoticed by a POSIX-only CI leg.
   it('does not re-host the hook on a pseudoconsole', () => {
     const hook = getWindowsManagedLifecycleHook(
-      'C:\\Users\\alice\\.orca\\agent-hooks\\claude-hook.cmd'
+      'C:\\Users\\alice\\.bbq\\agent-hooks\\claude-hook.cmd'
     )
     expect(hook.command).not.toMatch(/conhost/i)
     expect(hook.args).toBeUndefined()
@@ -477,7 +477,7 @@ describe.skipIf(process.platform !== 'win32')('Windows managed hook payload deli
         vi.stubEnv(name, undefined)
       }
       seedCmdAutoRunTarget(home)
-      const scriptPath = join(home, '.orca', 'agent-hooks', provider.script)
+      const scriptPath = join(home, '.bbq', 'agent-hooks', provider.script)
       provider.seedStale?.(home, wrapWindowsHookCommand(scriptPath))
       expect(provider.install().state).toBe('installed')
 
@@ -505,9 +505,9 @@ describe.skipIf(process.platform !== 'win32')('Windows managed hook payload deli
       const env = hookEnvironment({
         USERPROFILE: home,
         HOME: home,
-        ORCA_AGENT_HOOK_PORT: String(listener.port),
-        ORCA_AGENT_HOOK_TOKEN: HOOK_TOKEN,
-        ORCA_PANE_KEY: PANE_KEY
+        BBQ_AGENT_HOOK_PORT: String(listener.port),
+        BBQ_AGENT_HOOK_TOKEN: HOOK_TOKEN,
+        BBQ_PANE_KEY: PANE_KEY
       })
       const run = (runner: Runner, runEnv: NodeJS.ProcessEnv) =>
         runProcess({

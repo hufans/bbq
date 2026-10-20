@@ -294,9 +294,9 @@ describe('CLI launch redirect: spawning', () => {
         timeoutMs: null,
         env: expect.objectContaining({
           ELECTRON_RUN_AS_NODE: '1',
-          ORCA_CLI_LAUNCH_REDIRECTED: '1',
-          ORCA_NODE_OPTIONS: '--inspect',
-          ORCA_NODE_REPL_EXTERNAL_MODULE: 'external-loader'
+          BBQ_CLI_LAUNCH_REDIRECTED: '1',
+          BBQ_NODE_OPTIONS: '--inspect',
+          BBQ_NODE_REPL_EXTERNAL_MODULE: 'external-loader'
         })
       })
     )
@@ -310,7 +310,7 @@ describe('CLI launch redirect: spawning', () => {
 
     const result = maybeRedirectCliLaunch({
       argv: [linux.execPath, 'status'],
-      env: { ORCA_CLI_LAUNCH_REDIRECTED: '1' },
+      env: { BBQ_CLI_LAUNCH_REDIRECTED: '1' },
       platform: 'linux',
       isPackaged: true,
       resourcesPath: linux.resourcesPath,
@@ -377,23 +377,23 @@ describe('CLI launch redirect: spawning', () => {
       [linux.execPath, linux.cliEntryPath, 'serve', '--supervise', '--port', '6792'],
       expect.objectContaining({
         ELECTRON_RUN_AS_NODE: '1',
-        ORCA_USER_DATA_PATH: '/home/u/profiles/b1',
-        ORCA_NODE_OPTIONS: '--inspect',
+        BBQ_USER_DATA_PATH: '/home/u/profiles/b1',
+        BBQ_NODE_OPTIONS: '--inspect',
         APPIMAGE: '/home/u/Orca.AppImage'
       })
     )
     const env = execve.mock.calls[0]?.[2]
     // Why: the CLI must still start its Electron server with the caller's --no-sandbox.
-    expect(env).toHaveProperty('ORCA_ELECTRON_NO_SANDBOX', '1')
-    expect(env).not.toHaveProperty('ORCA_CLI_LAUNCH_REDIRECTED')
+    expect(env).toHaveProperty('BBQ_ELECTRON_NO_SANDBOX', '1')
+    expect(env).not.toHaveProperty('BBQ_CLI_LAUNCH_REDIRECTED')
     expect(env).not.toHaveProperty('NODE_OPTIONS')
   })
 
-  it('keeps ORCA_USER_DATA_PATH for a direct serve without --user-data-dir', () => {
+  it('keeps BBQ_USER_DATA_PATH for a direct serve without --user-data-dir', () => {
     const execve = vi.fn<NonNullable<CliLaunchRedirectOptions['execve']>>()
     maybeRedirectCliLaunch({
       argv: [linux.execPath, 'serve', '--no-pairing'],
-      env: { ORCA_USER_DATA_PATH: '/home/u/profiles/b1' },
+      env: { BBQ_USER_DATA_PATH: '/home/u/profiles/b1' },
       platform: 'linux',
       isPackaged: true,
       resourcesPath: linux.resourcesPath,
@@ -405,9 +405,9 @@ describe('CLI launch redirect: spawning', () => {
     expect(execve).toHaveBeenCalledWith(
       linux.execPath,
       [linux.execPath, linux.cliEntryPath, 'serve', '--no-pairing'],
-      expect.objectContaining({ ORCA_USER_DATA_PATH: '/home/u/profiles/b1' })
+      expect.objectContaining({ BBQ_USER_DATA_PATH: '/home/u/profiles/b1' })
     )
-    expect(execve.mock.calls[0]?.[2]).not.toHaveProperty('ORCA_ELECTRON_NO_SANDBOX')
+    expect(execve.mock.calls[0]?.[2]).not.toHaveProperty('BBQ_ELECTRON_NO_SANDBOX')
   })
 
   it('serves in-process when this runtime cannot exec or the exec fails', () => {

@@ -60,7 +60,7 @@ export type PairedWebClient = {
   dispose: () => Promise<void>
 }
 
-const DIRECT_SSH_PROBE_CANARY_TARGET_ID = '__orca_e2e_direct_ssh_probe_canary__'
+const DIRECT_SSH_PROBE_CANARY_TARGET_ID = '__bbq_e2e_direct_ssh_probe_canary__'
 
 function readDirectSshAttemptTargetIds(probePath: string): string[] {
   try {

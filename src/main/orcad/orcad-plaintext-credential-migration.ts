@@ -5,8 +5,8 @@
  * GitHub and GitLab are not here because Orca never stores their tokens; `gh`/`glab` own them.
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
-import { homedir } from 'node:os'
 import { join } from 'node:path'
+import { resolveProductHomeDir } from '../../shared/product-brand'
 import type { SecretStore } from '../../shared/secret-store'
 import { classifyUnenvelopedCredential } from '../../shared/secret-at-rest-protection'
 import { hardenExistingSecureFile, writeSecureFile } from '../../shared/secure-file'
@@ -44,9 +44,9 @@ function encFilesIn(dir: string): string[] {
   }
 }
 
-/** Where every integration store keeps its files, whatever ORCA_USER_DATA says. */
+/** Where every integration store keeps its files, unless a home env var overrides it. */
 export function orcadCredentialRoot(): string {
-  return join(homedir(), '.orca')
+  return resolveProductHomeDir()
 }
 
 export function listPlaintextCredentialTargets(): PlaintextCredentialTarget[] {

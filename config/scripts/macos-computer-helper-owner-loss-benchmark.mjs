@@ -52,9 +52,9 @@ const helperAppPath = path.join(
   'computer-use-macos',
   '.build',
   'release',
-  'Orca Computer Use.app'
+  'BBQ Computer Use.app'
 )
-const helperPath = path.join(helperAppPath, 'Contents', 'MacOS', 'orca-computer-use-macos')
+const helperPath = path.join(helperAppPath, 'Contents', 'MacOS', 'bbq-computer-use-macos')
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))

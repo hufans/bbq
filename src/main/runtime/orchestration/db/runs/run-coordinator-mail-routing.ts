@@ -51,8 +51,8 @@ export function createRunCoordinatorAddressTriggers(db: Database.Database): void
         WHERE ${NEW_COORDINATOR_SESSION_ADDRESS_SQL} IS NOT NULL;
       END;
       CREATE TRIGGER trg_runs_remember_coordinator_update
-      AFTER UPDATE OF coordinator_handle, coordinator_orca_session_id,
-        coordinator_orca_session_id_generation ON runs
+      AFTER UPDATE OF coordinator_handle, coordinator_bbq_session_id,
+        coordinator_bbq_session_id_generation ON runs
       WHEN NEW.legacy = 0
       BEGIN
         INSERT OR IGNORE INTO run_coordinator_handles (run_id, terminal_handle)

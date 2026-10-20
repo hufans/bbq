@@ -9,7 +9,10 @@ import {
 } from '@orca/process-host/process-tree-termination'
 import { probeOpenCodeLaunchModelContext } from './opencode-launch-model-context'
 import { readFetchResponseJsonWithinLimit } from '../../shared/fetch-response-body'
-import { PROVIDER_SUPERVISOR_MAX_STOP_MS } from '../provider-process/provider-process-supervisor'
+import {
+  PROVIDER_SUPERVISOR_MAX_STOP_MS,
+  readProviderSupervisorSpec
+} from '../provider-process/provider-process-supervisor'
 import { terminateProviderProcessTree } from '../provider-process/provider-process-teardown'
 
 vi.mock('@orca/process-host', () => ({ spawnProcess: vi.fn() }))
@@ -69,12 +72,8 @@ function supervisorExits(code: number | null, signal: NodeJS.Signals | null) {
 }
 const options = { executable: '/private/opencode', cwd: directory, env: {} }
 
-function decodedSupervisorSpec(env: unknown): unknown {
-  const encoded =
-    typeof env === 'object' && env !== null && 'ORCA_PROVIDER_SUPERVISOR_SPEC' in env
-      ? String(env.ORCA_PROVIDER_SUPERVISOR_SPEC)
-      : ''
-  return JSON.parse(Buffer.from(encoded, 'base64').toString() || 'null')
+function decodedSupervisorSpec(args: readonly string[] | undefined): unknown {
+  return readProviderSupervisorSpec(args)
 }
 
 async function untilStopRequested(
@@ -166,7 +165,7 @@ describe('OpenCode model probe termination evidence', () => {
       '0'
     ])
     // Its stdin ends at once, so a session lifetime would stop the server a second later.
-    expect(decodedSupervisorSpec(spec.env)).toMatchObject({ lifetime: 'one-shot', cwd: directory })
+    expect(decodedSupervisorSpec(spec.args)).toMatchObject({ lifetime: 'one-shot', cwd: directory })
     expect(child.kill.mock.calls).toEqual([['SIGTERM']])
     // Signalling the supervisor's own group, or SIGKILLing it, would orphan the server's group.
     expect(signalProcessTree).not.toHaveBeenCalled()

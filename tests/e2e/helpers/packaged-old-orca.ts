@@ -192,7 +192,7 @@ export async function runPackagedOrcaCli(
   const result = await runProcess({
     program: executablePath,
     args: [packagedCliEntry(executablePath), ...args],
-    env: { ...process.env, ELECTRON_RUN_AS_NODE: '1', ORCA_USER_DATA_PATH: userDataDir },
+    env: { ...process.env, ELECTRON_RUN_AS_NODE: '1', BBQ_USER_DATA_PATH: userDataDir },
     timeoutMs,
     maxOutputBytes: 4 * 1024 * 1024
   })

@@ -12,14 +12,17 @@ export function appendOrcaRpcOutput(output, chunk, bytes, limit = MAX_ORCA_RPC_O
   }
 }
 
-export function resolveOrcaCliCommand({ env = process.env, platform = process.platform } = {}) {
-  if (env.ORCA_CLI_COMMAND?.trim()) {
-    return env.ORCA_CLI_COMMAND.trim()
+export function resolveOrcaCliCommand({
+  env = process.env,
+  platform: _platform = process.platform
+} = {}) {
+  if (env.BBQ_CLI_COMMAND?.trim()) {
+    return env.BBQ_CLI_COMMAND.trim()
   }
   if (env.ORCA_DEV_REPO_ROOT) {
-    return 'orca-dev'
+    return 'bbq-dev'
   }
-  return platform === 'linux' ? 'orca-ide' : 'orca'
+  return 'bbq'
 }
 
 export function resolveOrcaCliInvocation({
@@ -32,22 +35,25 @@ export function resolveOrcaCliInvocation({
   if (
     platform === 'win32' &&
     env.ORCA_DEV_REPO_ROOT &&
-    (commandName === 'orca-dev' || commandName === 'orca-dev.cmd')
+    (commandName === 'bbq-dev' ||
+      commandName === 'bbq-dev.cmd' ||
+      commandName === 'orca-dev' ||
+      commandName === 'orca-dev.cmd')
   ) {
     const defaultUserDataPath = path.win32.join(
       env.APPDATA ?? path.win32.join(env.USERPROFILE ?? '', 'AppData', 'Roaming'),
-      'orca-dev'
+      'bbq-dev'
     )
     return {
       command: nodeExecutable,
       prefixArgs: [path.win32.join(env.ORCA_DEV_REPO_ROOT, 'out', 'cli', 'index.js')],
       env: {
         ...env,
-        ORCA_USER_DATA_PATH:
-          env.ORCA_USER_DATA_PATH ?? env.ORCA_DEV_USER_DATA_PATH ?? defaultUserDataPath,
+        BBQ_USER_DATA_PATH:
+          env.BBQ_USER_DATA_PATH ?? env.ORCA_DEV_USER_DATA_PATH ?? defaultUserDataPath,
         ORCA_DEV_CLI_INVOCATION: '1',
-        ORCA_APP_EXECUTABLE:
-          env.ORCA_APP_EXECUTABLE ??
+        BBQ_APP_EXECUTABLE:
+          env.BBQ_APP_EXECUTABLE ??
           path.win32.join(
             env.ORCA_DEV_REPO_ROOT,
             'node_modules',
@@ -55,7 +61,7 @@ export function resolveOrcaCliInvocation({
             'dist',
             'electron.exe'
           ),
-        ORCA_APP_EXECUTABLE_NEEDS_APP_ROOT: '1'
+        BBQ_APP_EXECUTABLE_NEEDS_APP_ROOT: '1'
       }
     }
   }

@@ -129,7 +129,7 @@ describe.skipIf(!isWindows || !e2eOptIn)('computer-use Windows e2e (Notepad)', (
     expect(envelope.result.screenshot?.format).toBe('png')
     expect(envelope.result.screenshot?.data).toBeUndefined()
     expect(envelope.result.screenshot?.dataOmitted).toBe(true)
-    expect(envelope.result.screenshot?.path).toContain('orca-computer-use')
+    expect(envelope.result.screenshot?.path).toContain('bbq-computer-use')
   })
 
   test('paste-text mutates the test-owned document', async () => {

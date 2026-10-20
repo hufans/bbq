@@ -265,12 +265,12 @@ export function addListenerToMap<T>(
 }
 
 export const AGENT_HOOK_RUNTIME_ENV_KEYS = [
-  'ORCA_AGENT_HOOK_PORT',
-  'ORCA_AGENT_HOOK_TOKEN',
-  'ORCA_AGENT_HOOK_ENV',
-  'ORCA_AGENT_HOOK_VERSION',
-  'ORCA_AGENT_HOOK_TRANSPORT',
-  'ORCA_AGENT_HOOK_ENDPOINT'
+  'BBQ_AGENT_HOOK_PORT',
+  'BBQ_AGENT_HOOK_TOKEN',
+  'BBQ_AGENT_HOOK_ENV',
+  'BBQ_AGENT_HOOK_VERSION',
+  'BBQ_AGENT_HOOK_TRANSPORT',
+  'BBQ_AGENT_HOOK_ENDPOINT'
 ] as const
 
 // Why: notificationSeq is the desktop-assigned monotonic sequence used for

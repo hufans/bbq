@@ -3,4 +3,4 @@
  * fence, so an update or rollback in flight keeps the server up. User-started servers never
  * carry it. Dependency-free so the orcad launcher can read it.
  */
-export const ORCAD_MANAGED_ACTIVATION_ROOT_ENV = 'ORCA_ORCAD_MANAGED_ACTIVATION_ROOT'
+export const ORCAD_MANAGED_ACTIVATION_ROOT_ENV = 'BBQ_ORCAD_MANAGED_ACTIVATION_ROOT'

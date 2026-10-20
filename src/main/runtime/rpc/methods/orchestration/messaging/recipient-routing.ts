@@ -49,11 +49,11 @@ export function currentDispatchAssigneeRun(
   ) {
     return undefined
   }
-  if (dispatch.assignee_orca_session_id !== null) {
+  if (dispatch.assignee_bbq_session_id !== null) {
     return db.getCurrentRunForCoordinator({
       terminalHandle: dispatch.assignee_handle,
       paneKey: null,
-      orcaSessionId: dispatch.assignee_orca_session_id
+      orcaSessionId: dispatch.assignee_bbq_session_id
     })
   }
   if (dispatch.assignee_handle === null) {

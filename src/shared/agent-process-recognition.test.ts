@@ -97,13 +97,13 @@ describe('agent process recognition', () => {
 
   it('recognizes cmd fresh OMP lines built before the by-name guard', () => {
     const legacy =
-      'if exist "%ORCA_OMP_FRESH_CONFIG%" (if not exist "%ORCA_OMP_FRESH_CONFIG%\\*" (omp --config "%ORCA_OMP_FRESH_CONFIG%") else (x)) else (x)'
+      'if exist "%BBQ_OMP_FRESH_CONFIG%" (if not exist "%BBQ_OMP_FRESH_CONFIG%\\*" (omp --config "%BBQ_OMP_FRESH_CONFIG%") else (x)) else (x)'
     expect(recognizeAgentProcessFromCommandLine(legacy)?.agent).toBe('omp')
   })
 
   it('does not classify embedded fresh-launch text as an agent command', () => {
     for (const command of [
-      `echo 'omp --config "$ORCA_OMP_FRESH_CONFIG"'`,
+      `echo 'omp --config "$BBQ_OMP_FRESH_CONFIG"'`,
       `echo '${withFreshOmpLaunch('omp', 'posix')}'`
     ]) {
       expect(recognizeAgentProcessFromCommandLine(command)).toBeNull()

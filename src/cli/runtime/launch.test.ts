@@ -110,31 +110,29 @@ describe('serveOrcaApp', () => {
   beforeEach(() => {
     spawnMock.mockReset()
     spawnSyncMock.mockReset()
-    process.env.ORCA_APP_EXECUTABLE = '/Applications/Orca.app/Contents/MacOS/Orca'
+    process.env.BBQ_APP_EXECUTABLE = '/Applications/Orca.app/Contents/MacOS/Orca'
     // These cover Electron serve itself; the orcad default is in launch-serve-runtime.test.ts.
-    process.env.ORCA_SERVE_RUNTIME = 'electron'
-    process.env.ORCA_USER_DATA_PATH = PROFILE
+    process.env.BBQ_SERVE_RUNTIME = 'electron'
+    process.env.BBQ_USER_DATA_PATH = PROFILE
   })
 
   afterEach(() => {
     vi.restoreAllMocks()
-    delete process.env.ORCA_SERVE_RUNTIME
-    delete process.env.ORCA_APP_EXECUTABLE
-    delete process.env.ORCA_APP_EXECUTABLE_NEEDS_APP_ROOT
-    delete process.env.ORCA_USER_DATA_PATH
+    delete process.env.BBQ_SERVE_RUNTIME
+    delete process.env.BBQ_APP_EXECUTABLE
+    delete process.env.BBQ_APP_EXECUTABLE_NEEDS_APP_ROOT
+    delete process.env.BBQ_USER_DATA_PATH
     return Promise.all(
       temporaryDirectories.splice(0).map((directory) => rm(directory, { recursive: true }))
     )
   })
 
   it('names what to run when this orca is not an Orca app (an SSH host server CLI)', () => {
-    delete process.env.ORCA_APP_EXECUTABLE
+    delete process.env.BBQ_APP_EXECUTABLE
     const previous = process.env.ELECTRON_RUN_AS_NODE
     delete process.env.ELECTRON_RUN_AS_NODE
     try {
-      expect(() => serveOrcaApp({ supervise: true })).toThrow(
-        /Install the Orca app on this machine/
-      )
+      expect(() => serveOrcaApp({ supervise: true })).toThrow(/Install the BBQ app on this machine/)
       expect(spawnMock).not.toHaveBeenCalled()
     } finally {
       restoreEnv('ELECTRON_RUN_AS_NODE', previous)
@@ -213,8 +211,8 @@ describe('serveOrcaApp', () => {
         infoPlistPath,
         '<plist><dict><key>CFBundleShortVersionString</key><string>1.0.51</string></dict></plist>'
       )
-      process.env.ORCA_APP_EXECUTABLE = executable
-      process.env.ORCA_USER_DATA_PATH = userDataPath
+      process.env.BBQ_APP_EXECUTABLE = executable
+      process.env.BBQ_USER_DATA_PATH = userDataPath
 
       const oldOwner = new FakeChildProcess()
       const replacementOwner = new FakeChildProcess()
@@ -292,8 +290,8 @@ describe('serveOrcaApp', () => {
           servingPid: 4101
         })
       )
-      process.env.ORCA_APP_EXECUTABLE = executable
-      process.env.ORCA_USER_DATA_PATH = userDataPath
+      process.env.BBQ_APP_EXECUTABLE = executable
+      process.env.BBQ_USER_DATA_PATH = userDataPath
       const replacementOwner = new FakeChildProcess()
       replacementOwner.pid = 4102
       spawnMock.mockReturnValue(replacementOwner)
@@ -346,8 +344,8 @@ describe('serveOrcaApp', () => {
           servingPid: 4101
         })
       )
-      process.env.ORCA_APP_EXECUTABLE = executable
-      process.env.ORCA_USER_DATA_PATH = userDataPath
+      process.env.BBQ_APP_EXECUTABLE = executable
+      process.env.BBQ_USER_DATA_PATH = userDataPath
       const replacementOwner = new FakeChildProcess()
       spawnMock.mockReturnValue(replacementOwner)
       vi.spyOn(process.stderr, 'write').mockImplementation(() => true)
@@ -394,8 +392,8 @@ describe('serveOrcaApp', () => {
           servingPid: 4101
         })
       )
-      process.env.ORCA_APP_EXECUTABLE = executable
-      process.env.ORCA_USER_DATA_PATH = userDataPath
+      process.env.BBQ_APP_EXECUTABLE = executable
+      process.env.BBQ_USER_DATA_PATH = userDataPath
       const replacementOwner = new FakeChildProcess()
       spawnMock.mockReturnValue(replacementOwner)
       vi.spyOn(process.stderr, 'write').mockImplementation(() => true)
@@ -492,8 +490,8 @@ describe('serveOrcaApp', () => {
   })
 
   it('passes the app root before serve flags for dev Electron executables', async () => {
-    process.env.ORCA_APP_EXECUTABLE = '/repo/node_modules/.bin/electron'
-    process.env.ORCA_APP_EXECUTABLE_NEEDS_APP_ROOT = '1'
+    process.env.BBQ_APP_EXECUTABLE = '/repo/node_modules/.bin/electron'
+    process.env.BBQ_APP_EXECUTABLE_NEEDS_APP_ROOT = '1'
     const child = {
       kill: vi.fn(),
       once: vi.fn(
@@ -527,12 +525,12 @@ describe('serveOrcaApp', () => {
   })
 
   it("re-applies a direct launch's --no-sandbox to the Electron it starts, not to terminals", () => {
-    process.env.ORCA_ELECTRON_NO_SANDBOX = '1'
+    process.env.BBQ_ELECTRON_NO_SANDBOX = '1'
     try {
       expect(getExecutableAppArgs('/opt/Orca/orca-ide')).toEqual(['--no-sandbox'])
-      expect(stripElectronRunAsNode(process.env)).not.toHaveProperty('ORCA_ELECTRON_NO_SANDBOX')
+      expect(stripElectronRunAsNode(process.env)).not.toHaveProperty('BBQ_ELECTRON_NO_SANDBOX')
     } finally {
-      delete process.env.ORCA_ELECTRON_NO_SANDBOX
+      delete process.env.BBQ_ELECTRON_NO_SANDBOX
     }
   })
 
@@ -561,7 +559,7 @@ describe('serveOrcaApp', () => {
       temporaryDirectories.push(root)
       const executable = join(root, 'orca-ide')
       await writeFile(join(root, 'AppRun'), '', { mode: 0o755 })
-      process.env.ORCA_APP_EXECUTABLE = executable
+      process.env.BBQ_APP_EXECUTABLE = executable
       Object.defineProperty(process, 'platform', { value: 'linux' })
       Object.defineProperty(process, 'getuid', { configurable: true, value: () => 1000 })
       spawnSyncMock.mockReturnValue(userNamespaceResult)
@@ -719,7 +717,7 @@ describe('serveOrcaApp', () => {
   it('runs a Windows command-shim Electron executable through cmd.exe without a raw shell', async () => {
     const platformDescriptor = Object.getOwnPropertyDescriptor(process, 'platform')
     Object.defineProperty(process, 'platform', { value: 'win32' })
-    process.env.ORCA_APP_EXECUTABLE = 'C:\\repo\\node_modules\\.bin\\electron.cmd'
+    process.env.BBQ_APP_EXECUTABLE = 'C:\\repo\\node_modules\\.bin\\electron.cmd'
     const child = {
       kill: vi.fn(),
       once: vi.fn(
@@ -754,18 +752,18 @@ describe('launchOrcaApp', () => {
   beforeEach(() => {
     spawnMock.mockReset()
     spawnSyncMock.mockReset()
-    process.env.ORCA_USER_DATA_PATH = PROFILE
+    process.env.BBQ_USER_DATA_PATH = PROFILE
   })
 
   afterEach(() => {
-    delete process.env.ORCA_USER_DATA_PATH
+    delete process.env.BBQ_USER_DATA_PATH
     delete process.env.ORCA_OPEN_COMMAND
-    delete process.env.ORCA_APP_EXECUTABLE
-    delete process.env.ORCA_APP_EXECUTABLE_NEEDS_APP_ROOT
+    delete process.env.BBQ_APP_EXECUTABLE
+    delete process.env.BBQ_APP_EXECUTABLE_NEEDS_APP_ROOT
   })
 
   it('handles asynchronous detached spawn errors without throwing', async () => {
-    process.env.ORCA_APP_EXECUTABLE = '/missing/Orca'
+    process.env.BBQ_APP_EXECUTABLE = '/missing/Orca'
     const child = new FakeChildProcess()
     spawnMock.mockReturnValue(child)
 
@@ -784,7 +782,7 @@ describe('launchOrcaApp', () => {
 
     try {
       await writeFile(join(root, 'AppRun'), '')
-      process.env.ORCA_APP_EXECUTABLE = executable
+      process.env.BBQ_APP_EXECUTABLE = executable
       process.env.ELECTRON_RUN_AS_NODE = '1'
       Object.defineProperty(process, 'platform', { configurable: true, value: 'linux' })
       Object.defineProperty(process, 'getuid', { configurable: true, value: () => 1000 })

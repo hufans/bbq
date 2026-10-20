@@ -68,7 +68,7 @@ export abstract class AgentHookServerLifecycle extends AgentHookServerStatusHook
         return
       }
       // Why: authenticate before spending work reading an untrusted body.
-      if (req.headers['x-orca-agent-hook-token'] !== this.token) {
+      if (req.headers['x-bbq-agent-hook-token'] !== this.token) {
         res.writeHead(403)
         res.end()
         return

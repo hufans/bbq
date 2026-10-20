@@ -82,7 +82,7 @@ const FISH_STATE_PROBE = `if functions -q codex; and functions codex | string ma
 else
   echo -n wrapper=NO
 end
-echo " var=[$__orca_codex_type]"`
+echo " var=[$__bbq_codex_type]"`
 
 function writeExecutable(path: string, content: string): void {
   writeFileSync(path, content)
@@ -131,8 +131,8 @@ function runAliasLaunch(
         ...process.env,
         PATH: `${bin}:${process.env.PATH ?? ''}`,
         CODEX_HOME: home,
-        ORCA_CODEX_HOME: home,
-        ORCA_CODEX_LAUNCH_PREFLIGHT: join(bin, 'orca-test')
+        BBQ_CODEX_HOME: home,
+        BBQ_CODEX_LAUNCH_PREFLIGHT: join(bin, 'orca-test')
       }
     }
   ).trim()
@@ -178,7 +178,7 @@ function expectNamedAliasSurvives(shell: string, enableAliases: string): void {
       env: {
         ...process.env,
         PATH: `${bin}${delimiter}${process.env.PATH ?? ''}`,
-        ORCA_CODEX_LAUNCH_PREFLIGHT: join(bin, 'orca-test')
+        BBQ_CODEX_LAUNCH_PREFLIGHT: join(bin, 'orca-test')
       }
     }
   )
@@ -274,7 +274,7 @@ describe.skipIf(process.platform === 'win32')('Codex shell launch preflight', ()
           ],
           {
             encoding: 'utf-8',
-            env: { ...process.env, PATH: root, ORCA_CODEX_LAUNCH_PREFLIGHT: 'orca-test' }
+            env: { ...process.env, PATH: root, BBQ_CODEX_LAUNCH_PREFLIGHT: 'orca-test' }
           }
         )
 
@@ -290,7 +290,7 @@ describe.skipIf(process.platform === 'win32')('Codex shell launch preflight', ()
         '--no-config',
         '-c',
         [
-          'set -gx ORCA_CODEX_LAUNCH_PREFLIGHT missing-preflight',
+          'set -gx BBQ_CODEX_LAUNCH_PREFLIGHT missing-preflight',
           'function codex; echo custom-codex; end',
           getFishCodexShellLaunchPreflight(),
           'codex'
@@ -318,7 +318,7 @@ describe.skipIf(process.platform === 'win32')('Codex shell launch preflight', ()
     const result = spawnSync(
       join(bin, 'fish'),
       ['--no-config', '-l', '-C', getFishCodexShellLaunchPreflight(), '-c', FISH_STATE_PROBE],
-      { encoding: 'utf-8', env: { PATH: bin, ORCA_CODEX_LAUNCH_PREFLIGHT: preflight } }
+      { encoding: 'utf-8', env: { PATH: bin, BBQ_CODEX_LAUNCH_PREFLIGHT: preflight } }
     )
 
     expect(result.stderr).not.toContain('Missing argument')
@@ -333,7 +333,7 @@ describe.skipIf(process.platform === 'win32')('Codex shell launch preflight', ()
     const output = execFileSync(
       join(bin, 'fish'),
       ['--no-config', '-l', '-C', getFishCodexShellLaunchPreflight(), '-c', 'codex hi'],
-      { encoding: 'utf-8', env: { PATH: bin, ORCA_CODEX_LAUNCH_PREFLIGHT: preflight } }
+      { encoding: 'utf-8', env: { PATH: bin, BBQ_CODEX_LAUNCH_PREFLIGHT: preflight } }
     )
 
     expect(output.trim()).toBe('real codex hi')
@@ -354,7 +354,7 @@ describe.skipIf(process.platform === 'win32')('Codex shell launch preflight', ()
         '-c',
         FISH_STATE_PROBE
       ],
-      { encoding: 'utf-8', env: { PATH: bin, ORCA_CODEX_LAUNCH_PREFLIGHT: preflight } }
+      { encoding: 'utf-8', env: { PATH: bin, BBQ_CODEX_LAUNCH_PREFLIGHT: preflight } }
     )
 
     expect(result.stderr).not.toContain('Missing argument')
@@ -402,7 +402,7 @@ describe('PowerShell Codex shell launch preflight', () => {
         env: {
           ...process.env,
           PATH: `${bin}${delimiter}${process.env.PATH ?? ''}`,
-          ORCA_CODEX_LAUNCH_PREFLIGHT: join(bin, `orca-test${executableSuffix}`)
+          BBQ_CODEX_LAUNCH_PREFLIGHT: join(bin, `orca-test${executableSuffix}`)
         }
       }
     )
@@ -525,7 +525,7 @@ describe.skipIf(process.platform === 'win32')('Codex preflight paths containing 
         env: {
           ...process.env,
           PATH: `${bin}${delimiter}${process.env.PATH ?? ''}`,
-          ORCA_CODEX_LAUNCH_PREFLIGHT: preflightPath
+          BBQ_CODEX_LAUNCH_PREFLIGHT: preflightPath
         }
       }
     )
@@ -545,7 +545,7 @@ describe.skipIf(process.platform === 'win32')('Codex preflight paths containing 
       env: {
         ...process.env,
         PATH: `${bin}${delimiter}${process.env.PATH ?? ''}`,
-        ORCA_CODEX_LAUNCH_PREFLIGHT: preflightPath
+        BBQ_CODEX_LAUNCH_PREFLIGHT: preflightPath
       }
     })
 
@@ -570,7 +570,7 @@ describe.skipIf(process.platform === 'win32')('Codex preflight paths containing 
           env: {
             ...process.env,
             PATH: `${bin}${delimiter}${process.env.PATH ?? ''}`,
-            ORCA_CODEX_LAUNCH_PREFLIGHT: preflightPath
+            BBQ_CODEX_LAUNCH_PREFLIGHT: preflightPath
           }
         }
       )

@@ -41,20 +41,20 @@ describe('configureOrcaUserDataPathEnv on a serve launch', () => {
     vi.doMock('electron', () => ({ app: { getPath: () => '/default/orca' } }))
     const { configureOrcaUserDataPathEnv } = await import('./configure-process')
     const argv = process.argv
-    const previous = process.env.ORCA_USER_DATA_PATH
+    const previous = process.env.BBQ_USER_DATA_PATH
     process.argv = [...argv, '--serve']
     process.env.ORCA_SERVE_USER_DATA_PATH = '/isolated/profile'
-    process.env.ORCA_USER_DATA_PATH = '/isolated/profile'
+    process.env.BBQ_USER_DATA_PATH = '/isolated/profile'
     try {
       expect(() => configureOrcaUserDataPathEnv()).toThrow('/isolated/profile')
-      expect(process.env.ORCA_USER_DATA_PATH).toBe('/isolated/profile')
+      expect(process.env.BBQ_USER_DATA_PATH).toBe('/isolated/profile')
     } finally {
       process.argv = argv
       delete process.env.ORCA_SERVE_USER_DATA_PATH
       if (previous === undefined) {
-        delete process.env.ORCA_USER_DATA_PATH
+        delete process.env.BBQ_USER_DATA_PATH
       } else {
-        process.env.ORCA_USER_DATA_PATH = previous
+        process.env.BBQ_USER_DATA_PATH = previous
       }
       vi.doUnmock('electron')
     }

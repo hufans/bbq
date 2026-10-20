@@ -242,7 +242,7 @@ function buildRecipeEnv(
     ORCA_RECIPE_ID: context.recipeId,
     ORCA_PROJECT_ID: context.projectId ?? '',
     ORCA_WORKSPACE_ID: context.workspaceId ?? '',
-    ORCA_WORKSPACE_NAME: context.workspaceName ?? '',
+    BBQ_WORKSPACE_NAME: context.workspaceName ?? '',
     ORCA_REPO_PATH: context.repoPath,
     ORCA_REPO_URL: context.repoUrl ?? '',
     ORCA_REPO_BRANCH: context.branch ?? '',

@@ -293,7 +293,7 @@ async function main() {
     ORCA_E2E_HOME_DIR: isolatedHome
   }
   delete env.CODEX_HOME
-  delete env.ORCA_CODEX_HOME
+  delete env.BBQ_CODEX_HOME
   if (args.headless) {
     env.ORCA_E2E_HEADLESS = '1'
     console.warn(

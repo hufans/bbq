@@ -200,7 +200,7 @@ async function runValidation(mode) {
       ELECTRON_RUN_AS_NODE: _unused,
       DISPLAY: _display,
       CODEX_HOME: _codexHome,
-      ORCA_CODEX_HOME: _orcaCodexHome,
+      BBQ_CODEX_HOME: _orcaCodexHome,
       ...env
     } = process.env
     void _unused

@@ -55,7 +55,7 @@ describe('canonicalizeWslLinuxPath', () => {
       () => '/'
     )
 
-    expect(plan?.commandScriptPath).toBe('/.orca/agent-hooks/codex-hook.sh')
+    expect(plan?.commandScriptPath).toBe('/.bbq/agent-hooks/codex-hook.sh')
     expect(plan?.trustConfigPath).toBe('/hooks.json')
   })
 
@@ -79,7 +79,7 @@ describe('canonicalizeWslLinuxPath', () => {
       '--exec',
       'sh',
       '-c',
-      `if [ ! -d "$1" ]; then printf '%s\\n' '__ORCA_WSL_PATH_MISSING__'; exit 0; fi; readlink -f -- "$1"`,
+      `if [ ! -d "$1" ]; then printf '%s\\n' '__BBQ_WSL_PATH_MISSING__'; exit 0; fi; readlink -f -- "$1"`,
       'sh',
       '/home/alias'
     ])
@@ -118,7 +118,7 @@ describe('canonicalizeWslLinuxPath', () => {
       '--exec',
       'sh',
       '-c',
-      `resolved=$(wslpath -a -u "$1") || exit; if [ ! -d "$resolved" ]; then printf '%s\\n' '__ORCA_WSL_PATH_MISSING__'; exit 0; fi; readlink -f -- "$resolved"`,
+      `resolved=$(wslpath -a -u "$1") || exit; if [ ! -d "$resolved" ]; then printf '%s\\n' '__BBQ_WSL_PATH_MISSING__'; exit 0; fi; readlink -f -- "$resolved"`,
       'sh',
       windowsPath
     ])
@@ -192,7 +192,7 @@ describe('canonicalizeWslLinuxPath', () => {
       error: Error | null,
       stdout: string
     ) => void
-    secondCallback(null, '__ORCA_WSL_PATH_MISSING__\n')
+    secondCallback(null, '__BBQ_WSL_PATH_MISSING__\n')
 
     expect(settled).toHaveBeenCalledWith({ status: 'missing' })
     expect(_internals.canonicalizeWslLinuxPath('Ubuntu', '/home/alias')).toBeNull()

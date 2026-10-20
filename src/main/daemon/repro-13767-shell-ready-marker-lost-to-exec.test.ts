@@ -139,10 +139,10 @@ async function startFixture(
   extraFiles: Record<string, string> = {},
   pathEnv: string = process.env.PATH ?? '/usr/bin:/bin'
 ): Promise<RunningFixture> {
-  const tempHome = mkdtempSync(join(tmpdir(), 'orca-shell-ready-exec-'))
+  const tempHome = mkdtempSync(join(tmpdir(), 'bbq-shell-ready-exec-'))
   const previousHome = process.env.HOME
   const previousZdotdir = process.env.ZDOTDIR
-  const previousOrigZdotdir = process.env.ORCA_ORIG_ZDOTDIR
+  const previousOrigZdotdir = process.env.BBQ_ORIG_ZDOTDIR
   let subprocess: Awaited<ReturnType<typeof createPtySubprocess>> | undefined
   let session: Session | undefined
   let consoleWarnSpy: { mockRestore: () => void } | undefined
@@ -153,7 +153,7 @@ async function startFixture(
     }
     process.env.HOME = tempHome
     delete process.env.ZDOTDIR
-    delete process.env.ORCA_ORIG_ZDOTDIR
+    delete process.env.BBQ_ORIG_ZDOTDIR
     consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
     subprocess = await createPtySubprocess({
@@ -169,7 +169,7 @@ async function startFixture(
         SHELL: fixture.shellPath,
         TERM: 'xterm-256color'
       },
-      envToDelete: ['ORCA_EXEC_REPRO_DONE', 'ORCA_ORIG_ZDOTDIR', 'ZDOTDIR']
+      envToDelete: ['ORCA_EXEC_REPRO_DONE', 'BBQ_ORIG_ZDOTDIR', 'ZDOTDIR']
     })
     session = new Session({
       sessionId: `repro-13767-${fixture.startupFile}`,
@@ -236,7 +236,7 @@ function restoreEnvironment(
 ): void {
   setEnvironmentValue('HOME', home)
   setEnvironmentValue('ZDOTDIR', zdotdir)
-  setEnvironmentValue('ORCA_ORIG_ZDOTDIR', originalZdotdir)
+  setEnvironmentValue('BBQ_ORIG_ZDOTDIR', originalZdotdir)
 }
 
 function setEnvironmentValue(key: string, value: string | undefined): void {
@@ -261,7 +261,7 @@ fi
     expect(running.session.shellState).toBe('ready')
     expect(count(running.output(), COMMAND_OUTPUT)).toBe(1)
     expect(running.output()).toContain(fixture.instrumentationOutput)
-    expect(running.output()).not.toContain('orca-shell-start')
+    expect(running.output()).not.toContain('bbq-shell-start')
   } finally {
     await running.cleanup()
   }
@@ -278,7 +278,7 @@ async function runReadOracle(fixture: ShellFixture, child: boolean): Promise<voi
     running.subprocess.write('x\r')
     await waitForOutput(running.subscribe, () => running.output().includes(COMMAND_OUTPUT))
     expect(count(running.output(), COMMAND_OUTPUT)).toBe(1)
-    expect(running.output()).not.toContain('orca-shell-start')
+    expect(running.output()).not.toContain('bbq-shell-start')
   } finally {
     await running.cleanup()
   }
@@ -453,7 +453,7 @@ fi
         await waitForOutput(running.subscribe, () => running.output().includes(COMMAND_OUTPUT))
         expect(running.session.shellState).toBe('ready')
         expect(count(running.output(), COMMAND_OUTPUT)).toBe(1)
-        expect(running.output()).not.toContain('orca-shell-start')
+        expect(running.output()).not.toContain('bbq-shell-start')
       } finally {
         await running.cleanup()
       }

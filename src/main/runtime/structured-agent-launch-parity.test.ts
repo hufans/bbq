@@ -2,6 +2,7 @@
 // boundary, with production's own dependency wiring. A refactor of the launch path must leave the
 // snapshot file unchanged.
 
+import { readFileSync } from 'node:fs'
 import { chmod, mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -111,6 +112,7 @@ vi.mock('electron', () => ({
   app: { getPath: vi.fn(() => '/tmp') }
 }))
 
+import { antigravityBrowserScriptPath } from '../antigravity/antigravity-browser-helper'
 import { setAppEnvironment } from '../../shared/app-environment'
 import { AGENT_SESSION_RECORD_SCHEMA_VERSION } from '../../shared/agent-session-record'
 import type { AgentSessionAccountHome, AgentSessionRecord } from '../../shared/agent-session-record'
@@ -321,21 +323,21 @@ function inheritedEnvironment(): Record<string, string> {
     HOME: join(root, 'home'),
     LANG: 'en_US.UTF-8',
     INHERITED_ONLY: 'process',
-    ORCA_PANE_KEY: 'tab_parent:parent-pane',
-    ORCA_TAB_ID: 'tab_parent',
-    ORCA_WORKTREE_ID: 'parent-worktree',
-    ORCA_AGENT_LAUNCH_TOKEN: 'parent-launch-token',
+    BBQ_PANE_KEY: 'tab_parent:parent-pane',
+    BBQ_TAB_ID: 'tab_parent',
+    BBQ_WORKTREE_ID: 'parent-worktree',
+    BBQ_AGENT_LAUNCH_TOKEN: 'parent-launch-token',
     [ORCA_SCRUB_SAFE_PANE_ENV]: 'parent-scrub-safe-pane',
     [ORCA_SCRUB_SAFE_LAUNCH_ENV]: 'parent-scrub-safe-launch',
-    ORCA_TERMINAL_HANDLE: 'term_parent',
-    ORCA_AGENT_SESSION_SPAWN_TOKEN: 'parent-spawn-token',
+    BBQ_TERMINAL_HANDLE: 'term_parent',
+    BBQ_AGENT_SESSION_SPAWN_TOKEN: 'parent-spawn-token',
     [NATIVE_CHAT_SCRATCH_DIR_ENV]: '/parent/scratch',
     [LEGACY_NATIVE_CHAT_VISUALS_DIR_ENV]: '/parent/visuals',
-    ORCA_CLI_COMMAND: '/parent/orca',
-    ORCA_CLI_BIN_DIR: '/parent/bin',
-    ORCA_USER_DATA_PATH: '/parent/user-data',
-    ORCA_OPENCODE_CONFIG_DIR: '/parent/opencode-overlay',
-    ORCA_DATA_ACCOUNT_PROVIDER: 'parent-account',
+    BBQ_CLI_COMMAND: '/parent/orca',
+    BBQ_CLI_BIN_DIR: '/parent/bin',
+    BBQ_USER_DATA_PATH: '/parent/user-data',
+    BBQ_OPENCODE_CONFIG_DIR: '/parent/opencode-overlay',
+    BBQ_DATA_ACCOUNT_PROVIDER: 'parent-account',
     CLAUDE_CONFIG_DIR: '/parent/claude',
     CLAUDE_CODE_SESSION_ID: 'parent-claude-session',
     ANTHROPIC_API_KEY: 'parent-api-key',
@@ -508,7 +510,15 @@ function postureOf(launch: unknown): Record<string, unknown> {
 
 /** Paths under the run's temp root and this process's own binary read the same on every run. */
 function normalized(value: string): string {
+  const antigravityScript = antigravityBrowserScriptPath()
+  const encodedAntigravityScript = antigravityScript
+    .replaceAll('\\', '\\\\')
+    .replaceAll(':', '\\072')
   return value
+    .split(encodedAntigravityScript)
+    .join('<antigravity-browser>')
+    .split(antigravityScript)
+    .join('<antigravity-browser>')
     .split(root)
     .join('<root>')
     .split(process.execPath)
@@ -534,13 +544,12 @@ function sortedEnv(env: NodeJS.ProcessEnv): Record<string, string> {
 function childOf(capture: { spec: ProcessSpec; envToDelete: readonly string[] }) {
   const { spec } = capture
   const env = { ...spec.env }
-  const encoded = env.ORCA_PROVIDER_SUPERVISOR_SPEC
-  delete env.ORCA_PROVIDER_SUPERVISOR_SPEC
   delete env.ELECTRON_RUN_AS_NODE
-  const supervised = spec.args?.[0] === '-e' && encoded !== undefined
-  const argv = supervised ? (spec.args ?? []).slice((spec.args ?? []).indexOf('--') + 1) : []
+  const args = spec.args ?? []
+  const supervised = typeof args[0] === 'string' && args[0].endsWith('bbq-provider-supervisor.cjs')
+  const argv = supervised ? args.slice(args.indexOf('--') + 1) : []
   const supervisor: Record<string, unknown> | null = supervised
-    ? JSON.parse(Buffer.from(encoded, 'base64').toString('utf8'))
+    ? (JSON.parse(readFileSync(args[1] ?? '', 'utf8')) as Record<string, unknown>)
     : null
   return {
     command: normalized(supervised ? (argv[0] ?? '') : spec.program),

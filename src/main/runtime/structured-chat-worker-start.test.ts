@@ -115,7 +115,7 @@ describe('worker-start --terminal names a chat', () => {
     expect(task).not.toMatch(/exit the shell/i)
     expect(db.getDispatchContextById(dispatchId)).toMatchObject({
       assignee_handle: WORKER,
-      assignee_orca_session_id: PEER_CHAT,
+      assignee_bbq_session_id: PEER_CHAT,
       assignee_pane_key: null,
       process_incarnation: null
     })

@@ -20,7 +20,7 @@ function quoteWindowsArg(value) {
   return `"${value.replace(/"/g, '""')}"`
 }
 
-// Why: under a Git Bash setup runner, Orca exports ORCA_WORKTREE_PATH in MSYS form (/c/...), which
+// Why: under a Git Bash setup runner, Orca exports BBQ_WORKTREE_PATH in MSYS form (/c/...), which
 // cmd.exe cannot resolve. This is the migration pattern for any setup script feeding a native exe.
 function posixShellPathToNativeWindowsPath(value) {
   const driveMatch = value.match(/^\/([A-Za-z])\/(.*)$/)
@@ -69,7 +69,7 @@ export function runInternalDevSetup({
 
   // Why: this hook is an optional local accelerator; failures should not block
   // creating a worktree or running the normal dependency install.
-  spawnOptionalSetup(spawn, setupPath, env.ORCA_WORKTREE_PATH || cwd, platform, env)
+  spawnOptionalSetup(spawn, setupPath, env.BBQ_WORKTREE_PATH || cwd, platform, env)
 
   return 0
 }

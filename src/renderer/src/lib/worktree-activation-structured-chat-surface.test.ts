@@ -24,7 +24,7 @@ afterEach(() => {
 
 const setup = {
   runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
-  envVars: { ORCA_WORKTREE_PATH: '/tmp/worktrees/wt-1' }
+  envVars: { BBQ_WORKTREE_PATH: '/tmp/worktrees/wt-1' }
 }
 
 // Why: a native-chat create used to land the user on a bare "Terminal 1" beside the chat,

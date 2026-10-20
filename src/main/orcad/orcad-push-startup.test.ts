@@ -194,7 +194,7 @@ vi.mock('../runtime/push/push-gateway-client', () => ({
 
 beforeEach(() => {
   // startOrcad canonicalizes this; stubbing restores the prior value after each test.
-  vi.stubEnv('ORCA_USER_DATA_PATH', '')
+  vi.stubEnv('BBQ_USER_DATA_PATH', '')
   state.onSettingsChanged.mockReturnValue(state.removeSettingsListener)
 })
 

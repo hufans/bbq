@@ -135,9 +135,9 @@ describe.skipIf(process.platform !== 'win32')('Claude statusLine delivery on Win
           TEMP: home,
           TMP: home,
           ORCA_BACKGROUND_LAUNCH: '1',
-          ORCA_AGENT_HOOK_PORT: String(listener.port),
-          ORCA_AGENT_HOOK_TOKEN: HOOK_TOKEN,
-          ORCA_PANE_KEY: `tab-1:00000000-0000-4000-8000-00000000000${paneId}`
+          BBQ_AGENT_HOOK_PORT: String(listener.port),
+          BBQ_AGENT_HOOK_TOKEN: HOOK_TOKEN,
+          BBQ_PANE_KEY: `tab-1:00000000-0000-4000-8000-00000000000${paneId}`
         }
       })
     return { command, posts: listener.posts, run }
@@ -148,7 +148,7 @@ describe.skipIf(process.platform !== 'win32')('Claude statusLine delivery on Win
       statusLine: { type: 'command', command: LEGACY_COMMAND }
     })
     expect(command).toBe(
-      join(home, '.orca', 'agent-hooks', 'claude-statusline.cmd').replaceAll('\\', '/')
+      join(home, '.bbq', 'agent-hooks', 'claude-statusline.cmd').replaceAll('\\', '/')
     )
 
     // Pinned so this suite proves the regression it guards.

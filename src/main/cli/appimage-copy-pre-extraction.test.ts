@@ -79,7 +79,7 @@ describe('startAppImageCopyPreExtraction', () => {
     const copy = resolveAppImageExtractedRoot({ appImagePath, cacheRootPath })!
     const earlier = join(dirname(copy.rootPath), 'a'.repeat(24))
     await mkdir(join(earlier, 'resources', 'bin'), { recursive: true })
-    await writeFile(join(earlier, 'resources', 'bin', 'orca-ide'), '', { mode: 0o755 })
+    await writeFile(join(earlier, 'resources', 'bin', 'bbq'), '', { mode: 0o755 })
 
     const started = preExtraction.startAppImageCopyPreExtraction({
       appImagePath,

@@ -52,7 +52,8 @@ export function createChildTerminationExpectation(
 /** The argv a spawn started as the agent: past the supervisor script's '--' when supervised. */
 export function spawnedAgentArgv([file, args]: readonly unknown[]): unknown[] {
   const argv: unknown[] = Array.isArray(args) ? args : []
-  return file === process.execPath && argv[0] === '-e'
+  const supervised = typeof argv[0] === 'string' && argv[0].endsWith('bbq-provider-supervisor.cjs')
+  return file === process.execPath && supervised
     ? argv.slice(argv.indexOf('--') + 1)
     : [file, ...argv]
 }

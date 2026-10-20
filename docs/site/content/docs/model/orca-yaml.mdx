@@ -92,12 +92,12 @@ The setup runner receives:
 
 | Variable                                  | Value                                                             |
 | ----------------------------------------- | ----------------------------------------------------------------- |
-| `ORCA_ROOT_PATH`                          | Primary checkout path.                                            |
-| `ORCA_WORKTREE_PATH`                      | New worktree path.                                                |
-| `ORCA_WORKSPACE_NAME`                     | Worktree directory basename, rather than a renamed display title. |
-| `CONDUCTOR_ROOT_PATH`, `GHOSTX_ROOT_PATH` | Compatibility aliases for `ORCA_ROOT_PATH`.                       |
+| `BBQ_ROOT_PATH`                           | Primary checkout path.                                            |
+| `BBQ_WORKTREE_PATH`                       | New worktree path.                                                |
+| `BBQ_WORKSPACE_NAME`                      | Worktree directory basename, rather than a renamed display title. |
+| `CONDUCTOR_ROOT_PATH`, `GHOSTX_ROOT_PATH` | Compatibility aliases for `BBQ_ROOT_PATH`.                        |
 
-Paths and shell syntax differ by platform. Use `$ORCA_WORKTREE_PATH` in Bash and `%ORCA_WORKTREE_PATH%` in `.cmd` scripts. `wait-for-setup` waits for successful setup before agent startup; either the YAML or local wait setting enables it. This controls startup order, not whether setup runs.
+Paths and shell syntax differ by platform. Use `$BBQ_WORKTREE_PATH` in Bash and `%BBQ_WORKTREE_PATH%` in `.cmd` scripts. `wait-for-setup` waits for successful setup before agent startup; either the YAML or local wait setting enables it. This controls startup order, not whether setup runs.
 
 Archive hooks run before local removal; the CLI requires `--run-hooks` to enable them. A failed archive hook blocks removal unless the caller explicitly accepts that failure.
 

@@ -4,12 +4,12 @@ import { getDevInstanceIdentity, shouldApplyPreReadyAppName } from './dev-instan
 describe('dev-instance-identity', () => {
   it('keeps packaged identity stable', () => {
     expect(getDevInstanceIdentity(false, {})).toMatchObject({
-      name: 'Orca',
-      appName: 'Orca',
+      name: 'BBQ',
+      appName: 'BBQ',
       isDev: false,
       devLabel: null,
       dockBadgeLabel: null,
-      appUserModelId: 'com.stablyai.orca'
+      appUserModelId: 'com.hufans.bbq'
     })
   })
 
@@ -20,9 +20,9 @@ describe('dev-instance-identity', () => {
     // Per-branch label differs (window title / app menu)...
     expect(a.name).not.toBe(b.name)
     // ...but the Keychain-driving appName is identical and distinct from prod.
-    expect(a.appName).toBe('Orca Dev')
-    expect(b.appName).toBe('Orca Dev')
-    expect(a.appName).not.toBe('Orca')
+    expect(a.appName).toBe('BBQ Dev')
+    expect(b.appName).toBe('BBQ Dev')
+    expect(a.appName).not.toBe('BBQ')
   })
 
   it('never renames a packaged build before ready', () => {

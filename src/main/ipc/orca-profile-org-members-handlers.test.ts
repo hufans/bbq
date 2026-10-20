@@ -85,20 +85,20 @@ describe('registerOrcaProfileOrgMemberHandlers', () => {
   it('rejects an invite with a missing org id', async () => {
     await expect(
       invoke('orcaProfiles:orgMemberInvite', { email: 'a@b.com', role: 'member' })
-    ).rejects.toThrow('invalid_orca_profile_org_selection')
+    ).rejects.toThrow('invalid_bbq_profile_org_selection')
     expect(inviteOrcaProfileOrgMemberMock).not.toHaveBeenCalled()
   })
 
   it('rejects an invite with an unknown role', async () => {
     await expect(
       invoke('orcaProfiles:orgMemberInvite', { orgId: 'org-1', email: 'a@b.com', role: 'root' })
-    ).rejects.toThrow('invalid_orca_org_role')
+    ).rejects.toThrow('invalid_bbq_org_role')
   })
 
   it('rejects a role change with a blank user id', async () => {
     await expect(
       invoke('orcaProfiles:orgMemberChangeRole', { orgId: 'org-1', userId: '  ', role: 'admin' })
-    ).rejects.toThrow('invalid_orca_org_member_user')
+    ).rejects.toThrow('invalid_bbq_org_member_user')
   })
 
   it('forwards remove and revoke with validated args', async () => {

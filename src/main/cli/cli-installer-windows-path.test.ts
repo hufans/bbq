@@ -64,8 +64,8 @@ describe('CliInstaller', () => {
     expect(wrapperContent).toContain('ORCA_LAUNCHER=')
     expect(wrapperContent).toContain('orca.cmd')
     const launcherContent = await readFile(installed.launcherPath as string, 'utf8')
-    expect(launcherContent).toContain(`set "ORCA_USER_DATA_PATH=${fixture.userDataPath}"`)
-    expect(launcherContent).toContain('set "ORCA_APP_EXECUTABLE=%ELECTRON%"')
+    expect(launcherContent).toContain(`set "BBQ_USER_DATA_PATH=${fixture.userDataPath}"`)
+    expect(launcherContent).toContain('set "BBQ_APP_EXECUTABLE=%ELECTRON%"')
 
     const removed = await installer.remove()
     expect(removed.state).toBe('not_installed')

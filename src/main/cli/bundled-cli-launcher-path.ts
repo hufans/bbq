@@ -1,7 +1,8 @@
 import { join } from 'node:path'
+import { PRODUCT_COMMAND } from '../../shared/product-brand'
 
-// Why `orca-ide` on Linux: GNOME Orca ships /usr/bin/orca, so the CLI never claims that name.
-export const LINUX_CLI_COMMAND_NAME = 'orca-ide'
+// `bbq` does not collide with GNOME Orca's /usr/bin/orca, so Linux uses the same command.
+export const LINUX_CLI_COMMAND_NAME = PRODUCT_COMMAND
 
 /** Absolute path of the CLI launcher this app ships in its own resources bundle.
  *  Lives apart from cli-installer so callers that only need the path (PTY env
@@ -10,14 +11,11 @@ export function getBundledLauncherPath(
   platform: NodeJS.Platform,
   resourcesPath: string
 ): string | null {
-  if (platform === 'darwin') {
-    return join(resourcesPath, 'bin', 'orca')
-  }
-  if (platform === 'linux') {
-    return join(resourcesPath, 'bin', LINUX_CLI_COMMAND_NAME)
+  if (platform === 'darwin' || platform === 'linux') {
+    return join(resourcesPath, 'bin', PRODUCT_COMMAND)
   }
   if (platform === 'win32') {
-    return join(resourcesPath, 'bin', 'orca.exe')
+    return join(resourcesPath, 'bin', `${PRODUCT_COMMAND}.exe`)
   }
   return null
 }

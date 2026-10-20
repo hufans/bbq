@@ -19,8 +19,8 @@ describe('ensureWorktreeHasInitialTerminal', () => {
     ensureWorktreeHasInitialTerminal(store, 'wt-1', undefined, {
       runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
       envVars: {
-        ORCA_ROOT_PATH: '/tmp/repo',
-        ORCA_WORKTREE_PATH: '/tmp/worktrees/wt-1'
+        BBQ_ROOT_PATH: '/tmp/repo',
+        BBQ_WORKTREE_PATH: '/tmp/worktrees/wt-1'
       }
     })
 
@@ -33,8 +33,8 @@ describe('ensureWorktreeHasInitialTerminal', () => {
     expect(createdTabStartups(store)['tab-2']).toEqual({
       command: 'bash /tmp/repo/.git/orca/setup-runner.sh',
       env: {
-        ORCA_ROOT_PATH: '/tmp/repo',
-        ORCA_WORKTREE_PATH: '/tmp/worktrees/wt-1'
+        BBQ_ROOT_PATH: '/tmp/repo',
+        BBQ_WORKTREE_PATH: '/tmp/worktrees/wt-1'
       }
     })
   })
@@ -48,16 +48,16 @@ describe('ensureWorktreeHasInitialTerminal', () => {
       runnerScriptPath: 'C:\\repo\\.git\\orca\\setup-runner.sh',
       shell: { family: 'posix' },
       envVars: {
-        ORCA_ROOT_PATH: 'C:\\repo',
-        ORCA_WORKTREE_PATH: 'C:\\worktrees\\wt-1'
+        BBQ_ROOT_PATH: 'C:\\repo',
+        BBQ_WORKTREE_PATH: 'C:\\worktrees\\wt-1'
       }
     })
 
     expect(createdTabStartups(store)['tab-2']).toEqual({
       command: 'bash /c/repo/.git/orca/setup-runner.sh',
       env: {
-        ORCA_ROOT_PATH: 'C:\\repo',
-        ORCA_WORKTREE_PATH: 'C:\\worktrees\\wt-1'
+        BBQ_ROOT_PATH: 'C:\\repo',
+        BBQ_WORKTREE_PATH: 'C:\\worktrees\\wt-1'
       }
     })
   })
@@ -74,7 +74,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
     const result = ensureWorktreeHasInitialTerminal(store, 'wt-1', undefined, {
       runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
       command: 'bash -lc wrapped-setup',
-      envVars: { ORCA_ROOT_PATH: '/tmp/repo' }
+      envVars: { BBQ_ROOT_PATH: '/tmp/repo' }
     })
 
     expect(result).toBe('tab-1')
@@ -85,7 +85,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
     })
     expect(createdTabStartups(store)['tab-2']).toEqual({
       command: 'bash -lc wrapped-setup',
-      env: { ORCA_ROOT_PATH: '/tmp/repo' }
+      env: { BBQ_ROOT_PATH: '/tmp/repo' }
     })
   })
 
@@ -104,7 +104,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
       { command: 'claude' },
       {
         runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
-        envVars: { ORCA_ROOT_PATH: '/tmp/repo' },
+        envVars: { BBQ_ROOT_PATH: '/tmp/repo' },
         waitForAgentStartup: true
       }
     )
@@ -132,16 +132,16 @@ describe('ensureWorktreeHasInitialTerminal', () => {
       runnerScriptPath: 'C:\\repo\\.git\\orca\\setup-runner.sh',
       shell: { family: 'posix', executable: 'wsl.exe' },
       envVars: {
-        ORCA_ROOT_PATH: 'C:\\repo',
-        ORCA_WORKTREE_PATH: 'C:\\worktrees\\wt-1'
+        BBQ_ROOT_PATH: 'C:\\repo',
+        BBQ_WORKTREE_PATH: 'C:\\worktrees\\wt-1'
       }
     })
 
     expect(createdTabStartups(store)['tab-2']).toEqual({
       command: 'bash /mnt/c/repo/.git/orca/setup-runner.sh',
       env: {
-        ORCA_ROOT_PATH: 'C:\\repo',
-        ORCA_WORKTREE_PATH: 'C:\\worktrees\\wt-1'
+        BBQ_ROOT_PATH: 'C:\\repo',
+        BBQ_WORKTREE_PATH: 'C:\\worktrees\\wt-1'
       }
     })
   })
@@ -158,7 +158,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
       { command: 'claude' },
       {
         runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
-        envVars: { ORCA_ROOT_PATH: '/tmp/repo' },
+        envVars: { BBQ_ROOT_PATH: '/tmp/repo' },
         waitForAgentStartup: true
       }
     )
@@ -203,7 +203,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
       { command: 'claude' },
       {
         runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
-        envVars: { ORCA_ROOT_PATH: '/tmp/repo' }
+        envVars: { BBQ_ROOT_PATH: '/tmp/repo' }
       }
     )
 
@@ -212,7 +212,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
     })
     expect(createdTabStartups(store)['tab-2']).toEqual({
       command: 'bash /tmp/repo/.git/orca/setup-runner.sh',
-      env: { ORCA_ROOT_PATH: '/tmp/repo' }
+      env: { BBQ_ROOT_PATH: '/tmp/repo' }
     })
   })
 
@@ -226,7 +226,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
       { command: 'claude' },
       {
         runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
-        envVars: { ORCA_ROOT_PATH: '/tmp/repo' },
+        envVars: { BBQ_ROOT_PATH: '/tmp/repo' },
         waitForAgentStartup: true
       }
     )
@@ -240,11 +240,11 @@ describe('ensureWorktreeHasInitialTerminal', () => {
     )
     expect(createdTabStartups(store)['tab-2']).toEqual({
       command: expect.stringContaining('bash /tmp/repo/.git/orca/setup-runner.sh'),
-      env: { ORCA_ROOT_PATH: '/tmp/repo' }
+      env: { BBQ_ROOT_PATH: '/tmp/repo' }
     })
     expect(createdTabStartups(store)['tab-2']).toEqual({
       command: expect.stringContaining('printf'),
-      env: { ORCA_ROOT_PATH: '/tmp/repo' }
+      env: { BBQ_ROOT_PATH: '/tmp/repo' }
     })
   })
 
@@ -259,7 +259,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
       {
         runnerScriptPath: 'C:\\repo\\.git\\orca\\setup-runner.sh',
         shell: { family: 'posix', executable: 'wsl.exe' },
-        envVars: { ORCA_ROOT_PATH: 'C:\\repo' },
+        envVars: { BBQ_ROOT_PATH: 'C:\\repo' },
         waitForAgentStartup: true
       }
     )
@@ -275,7 +275,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
     )
     expect(createdTabStartups(store)['tab-2']).toEqual({
       command: expect.stringContaining('bash /mnt/c/repo/.git/orca/setup-runner.sh'),
-      env: { ORCA_ROOT_PATH: 'C:\\repo' }
+      env: { BBQ_ROOT_PATH: 'C:\\repo' }
     })
   })
 
@@ -286,12 +286,12 @@ describe('ensureWorktreeHasInitialTerminal', () => {
       const store = createMockStore()
       ensureWorktreeHasInitialTerminal(store, 'wt-1', undefined, {
         runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
-        envVars: { ORCA_ROOT_PATH: '/tmp/repo' }
+        envVars: { BBQ_ROOT_PATH: '/tmp/repo' }
       })
       expect(store.createTab).toHaveBeenCalledTimes(2)
       expect(createdTabStartups(store)['tab-2']).toEqual({
         command: 'bash /tmp/repo/.git/orca/setup-runner.sh',
-        env: { ORCA_ROOT_PATH: '/tmp/repo' }
+        env: { BBQ_ROOT_PATH: '/tmp/repo' }
       })
       expect(store.setActiveTab).toHaveBeenLastCalledWith('tab-1')
       expect(store.setTabCustomTitle).toHaveBeenCalledWith('tab-2', 'Setup', {
@@ -308,7 +308,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
 
     ensureWorktreeHasInitialTerminal(store, 'wt-1', undefined, {
       runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
-      envVars: { ORCA_ROOT_PATH: '/tmp/repo' }
+      envVars: { BBQ_ROOT_PATH: '/tmp/repo' }
     })
 
     expect(createTab).toHaveBeenCalledTimes(2)
@@ -321,7 +321,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
     })
     expect(createdTabStartups(store)['tab-2']).toEqual({
       command: 'bash /tmp/repo/.git/orca/setup-runner.sh',
-      env: { ORCA_ROOT_PATH: '/tmp/repo' }
+      env: { BBQ_ROOT_PATH: '/tmp/repo' }
     })
   })
 })

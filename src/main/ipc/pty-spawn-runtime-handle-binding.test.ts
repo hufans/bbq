@@ -71,8 +71,8 @@ describe('registerPtyHandlers', () => {
           PATH: `/tmp/fresh-agent-teams${delimiter}/usr/bin`,
           TMUX: '/tmp/orca-claude-agent-teams/team-fresh,0,1',
           TMUX_PANE: '%1',
-          ORCA_AGENT_TEAMS_TEAM_ID: 'team-fresh',
-          ORCA_AGENT_TEAMS_TOKEN: 'fresh-token'
+          BBQ_AGENT_TEAMS_TEAM_ID: 'team-fresh',
+          BBQ_AGENT_TEAMS_TOKEN: 'fresh-token'
         }
       })),
       registerPreAllocatedHandleForPty: vi.fn(),
@@ -93,14 +93,14 @@ describe('registerPtyHandlers', () => {
       leafId,
       worktreeId: 'wt-1',
       env: {
-        ORCA_PANE_KEY: `tab-1:${leafId}`,
-        ORCA_TAB_ID: 'tab-1',
-        ORCA_WORKTREE_ID: 'wt-1',
+        BBQ_PANE_KEY: `tab-1:${leafId}`,
+        BBQ_TAB_ID: 'tab-1',
+        BBQ_WORKTREE_ID: 'wt-1',
         CLAUDE_PROFILE: 'captured',
         PATH: `/tmp/stale-agent-teams${delimiter}/usr/bin`,
         TMUX: '/tmp/orca-claude-agent-teams/team-stale,0,1',
-        ORCA_AGENT_TEAMS_TEAM_ID: 'team-stale',
-        ORCA_AGENT_TEAMS_TOKEN: 'stale-token',
+        BBQ_AGENT_TEAMS_TEAM_ID: 'team-stale',
+        BBQ_AGENT_TEAMS_TOKEN: 'stale-token',
         TERM_PROGRAM: 'Orca'
       },
       launchConfig: {
@@ -108,8 +108,8 @@ describe('registerPtyHandlers', () => {
         agentArgs: '',
         agentEnv: {
           CLAUDE_PROFILE: 'captured',
-          ORCA_AGENT_TEAMS_TEAM_ID: 'team-stale',
-          ORCA_AGENT_TEAMS_TOKEN: 'stale-token'
+          BBQ_AGENT_TEAMS_TEAM_ID: 'team-stale',
+          BBQ_AGENT_TEAMS_TOKEN: 'stale-token'
         }
       },
       launchAgent: 'claude'
@@ -120,15 +120,15 @@ describe('registerPtyHandlers', () => {
       handle: 'term_agent_teams',
       baseEnv: expect.objectContaining({
         CLAUDE_PROFILE: 'captured',
-        ORCA_AGENT_TEAMS_TEAM_ID: 'team-stale'
+        BBQ_AGENT_TEAMS_TEAM_ID: 'team-stale'
       })
     })
     expect(spawnOptions.env).toMatchObject({
       CLAUDE_PROFILE: 'captured',
       CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS: '1',
-      ORCA_TERMINAL_HANDLE: 'term_agent_teams',
-      ORCA_AGENT_TEAMS_TEAM_ID: 'team-fresh',
-      ORCA_AGENT_TEAMS_TOKEN: 'fresh-token',
+      BBQ_TERMINAL_HANDLE: 'term_agent_teams',
+      BBQ_AGENT_TEAMS_TEAM_ID: 'team-fresh',
+      BBQ_AGENT_TEAMS_TOKEN: 'fresh-token',
       TMUX: '/tmp/orca-claude-agent-teams/team-fresh,0,1',
       TMUX_PANE: '%1'
     })
@@ -137,8 +137,8 @@ describe('registerPtyHandlers', () => {
     expect(result.launchConfig?.agentEnv).toMatchObject({
       CLAUDE_PROFILE: 'captured',
       CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS: '1',
-      ORCA_AGENT_TEAMS_TEAM_ID: 'team-fresh',
-      ORCA_AGENT_TEAMS_TOKEN: 'fresh-token',
+      BBQ_AGENT_TEAMS_TEAM_ID: 'team-fresh',
+      BBQ_AGENT_TEAMS_TOKEN: 'fresh-token',
       TMUX: '/tmp/orca-claude-agent-teams/team-fresh,0,1'
     })
     expect(runtime.registerPreAllocatedHandleForPty).toHaveBeenCalledWith(
@@ -253,10 +253,10 @@ describe('registerPtyHandlers', () => {
       tabId,
       leafId,
       env: {
-        ORCA_PANE_KEY: paneKey,
-        ORCA_TAB_ID: tabId,
-        ORCA_WORKTREE_ID: worktreeId,
-        ORCA_AGENT_LAUNCH_TOKEN: testCase.envLaunchToken
+        BBQ_PANE_KEY: paneKey,
+        BBQ_TAB_ID: tabId,
+        BBQ_WORKTREE_ID: worktreeId,
+        BBQ_AGENT_LAUNCH_TOKEN: testCase.envLaunchToken
       },
       ...(testCase.launchToken ? { launchToken: testCase.launchToken } : {}),
       ...(testCase.hasLaunchConfig
@@ -326,8 +326,8 @@ describe('registerPtyHandlers', () => {
       prepareClaudeAgentTeamsLeaderForHandle: vi.fn(async () => ({
         env: {
           CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS: '1',
-          ORCA_AGENT_TEAMS_TEAM_ID: 'team-fresh',
-          ORCA_AGENT_TEAMS_TOKEN: 'fresh-token'
+          BBQ_AGENT_TEAMS_TEAM_ID: 'team-fresh',
+          BBQ_AGENT_TEAMS_TOKEN: 'fresh-token'
         }
       })),
       registerPreAllocatedHandleForPty: vi.fn(),
@@ -348,9 +348,9 @@ describe('registerPtyHandlers', () => {
       leafId,
       worktreeId: 'wt-1',
       env: {
-        ORCA_PANE_KEY: `tab-1:${leafId}`,
-        ORCA_TAB_ID: 'tab-1',
-        ORCA_WORKTREE_ID: 'wt-1'
+        BBQ_PANE_KEY: `tab-1:${leafId}`,
+        BBQ_TAB_ID: 'tab-1',
+        BBQ_WORKTREE_ID: 'wt-1'
       },
       launchConfig: {
         agentCommand: 'claude',
@@ -401,7 +401,7 @@ describe('registerPtyHandlers', () => {
 
     const spawnCall = spawnMock.mock.calls.at(-1)!
     const env = spawnCall[2].env as Record<string, string>
-    expect(env.ORCA_TERMINAL_HANDLE).toBe('term_expected')
+    expect(env.BBQ_TERMINAL_HANDLE).toBe('term_expected')
     expect(runtime.preAllocateHandleForPty).not.toHaveBeenCalled()
     expect(runtime.registerPreAllocatedHandleForPty).toHaveBeenCalledWith(
       expect.any(String),
@@ -448,7 +448,7 @@ describe('registerPtyHandlers', () => {
       command: 'claude --teammate-mode auto',
       tabId: 'tab-1',
       leafId,
-      env: { ORCA_PANE_KEY: `tab-1:${leafId}`, ORCA_TAB_ID: 'tab-1' },
+      env: { BBQ_PANE_KEY: `tab-1:${leafId}`, BBQ_TAB_ID: 'tab-1' },
       launchConfig: { agentCommand: 'claude --teammate-mode auto', agentArgs: '', agentEnv: {} },
       launchAgent: 'claude'
     }
@@ -517,7 +517,7 @@ describe('registerPtyHandlers', () => {
         tabId: 'tab-1',
         leafId,
         worktreeId: 'wt-1',
-        env: { ORCA_PANE_KEY: `tab-1:${leafId}`, ORCA_TAB_ID: 'tab-1' },
+        env: { BBQ_PANE_KEY: `tab-1:${leafId}`, BBQ_TAB_ID: 'tab-1' },
         launchConfig: { agentCommand: 'claude --teammate-mode auto', agentArgs: '', agentEnv: {} },
         launchAgent: 'claude'
       })

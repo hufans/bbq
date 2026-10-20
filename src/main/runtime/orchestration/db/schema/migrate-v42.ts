@@ -1,10 +1,10 @@
 import type { OrchestrationDb } from '../orchestration-db'
 
 const ORCA_SESSION_ID_COLUMNS = [
-  ['runs', 'coordinator_orca_session_id', 'TEXT'],
-  ['runs', 'coordinator_orca_session_id_generation', 'INTEGER'],
-  ['dispatch_contexts', 'assignee_orca_session_id', 'TEXT'],
-  ['dispatch_contexts', 'creator_orca_session_id', 'TEXT']
+  ['runs', 'coordinator_bbq_session_id', 'TEXT'],
+  ['runs', 'coordinator_bbq_session_id_generation', 'INTEGER'],
+  ['dispatch_contexts', 'assignee_bbq_session_id', 'TEXT'],
+  ['dispatch_contexts', 'creator_bbq_session_id', 'TEXT']
 ] as const
 
 /**
@@ -32,9 +32,9 @@ export function migrateV42(this: OrchestrationDb, current: number): void {
   }
   // A Run lookup that ORs a pane-leaf match with an Orca session id match scans every Run without this index.
   this.db.exec(`
-    CREATE INDEX IF NOT EXISTS idx_runs_coordinator_orca_session_id
-      ON runs(coordinator_orca_session_id) WHERE coordinator_orca_session_id IS NOT NULL;
-    CREATE INDEX IF NOT EXISTS idx_dispatch_assignee_orca_session_id
-      ON dispatch_contexts(assignee_orca_session_id) WHERE assignee_orca_session_id IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_runs_coordinator_bbq_session_id
+      ON runs(coordinator_bbq_session_id) WHERE coordinator_bbq_session_id IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_dispatch_assignee_bbq_session_id
+      ON dispatch_contexts(assignee_bbq_session_id) WHERE assignee_bbq_session_id IS NOT NULL;
   `)
 }

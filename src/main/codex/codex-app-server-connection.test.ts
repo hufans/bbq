@@ -14,7 +14,10 @@ import {
   type CodexAppServerConnection,
   type CodexAppServerConnectionHandlers
 } from './codex-app-server-connection'
-import { PROVIDER_SUPERVISOR_MAX_STOP_MS } from '../provider-process/provider-process-supervisor'
+import {
+  PROVIDER_SUPERVISOR_MAX_STOP_MS,
+  readProviderSupervisorSpec
+} from '../provider-process/provider-process-supervisor'
 import { isCodexAppServerUnsupportedError } from './codex-app-server-session'
 import { isCodexAppServerHandshakeExitUnprovenError } from './codex-app-server-handshake-exit-proof'
 
@@ -174,11 +177,9 @@ describe('openCodexAppServerConnection', () => {
         }
       )
 
-      expect(
-        JSON.parse(
-          Buffer.from(String(specs[0]?.env?.ORCA_PROVIDER_SUPERVISOR_SPEC), 'base64').toString()
-        )
-      ).toMatchObject({ closeRequest: 'stdin-end' })
+      expect(readProviderSupervisorSpec(specs[0]?.args)).toMatchObject({
+        closeRequest: 'stdin-end'
+      })
       await connection.close()
     }
   )

@@ -84,7 +84,7 @@ for (const runtime of ['native', 'wsl'] as const) {
       }
       const command =
         runtime === 'wsl'
-          ? `cat ${payloadFile}; rm -f ${payloadFile}; printf 'WSL_IMAGE_PROTOCOL=%s\\n' "$ORCA_IMAGE_PROTOCOL"`
+          ? `cat ${payloadFile}; rm -f ${payloadFile}; printf 'WSL_IMAGE_PROTOCOL=%s\\n' "$BBQ_IMAGE_PROTOCOL"`
           : nodeTerminalCommand(['-e', `process.stdout.write(Buffer.from('${payload}', 'base64'))`])
       await execInTerminal(orcaPage, ptyId, command)
       await waitForTerminalOutput(orcaPage, marker, 30_000)

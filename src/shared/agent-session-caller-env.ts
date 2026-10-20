@@ -10,11 +10,11 @@
 import { ORCA_SESSION_ADDRESS_PREFIX } from './orca-session-address-prefix'
 import { isStructuredWorkerHandle } from './structured-worker-handle'
 
-export const ORCA_AGENT_SESSION_ID_ENV = 'ORCA_AGENT_SESSION_ID'
+export const ORCA_AGENT_SESSION_ID_ENV = 'BBQ_AGENT_SESSION_ID'
 
 /** The spawn token a structured session's child echoes, so the owner probe can tell a live child
  *  of that reservation from a same-pid stranger. */
-export const ORCA_AGENT_SESSION_SPAWN_TOKEN_ENV = 'ORCA_AGENT_SESSION_SPAWN_TOKEN'
+export const ORCA_AGENT_SESSION_SPAWN_TOKEN_ENV = 'BBQ_AGENT_SESSION_SPAWN_TOKEN'
 
 export function readInjectedAgentSessionId(
   env: Readonly<Record<string, string | undefined>> = process.env
@@ -35,7 +35,7 @@ export function injectedSessionAddress(
   if (!sessionId) {
     return undefined
   }
-  const ownHandle = env.ORCA_TERMINAL_HANDLE
+  const ownHandle = env.BBQ_TERMINAL_HANDLE
   return isStructuredWorkerHandle(ownHandle)
     ? ownHandle
     : `${ORCA_SESSION_ADDRESS_PREFIX}${sessionId}`

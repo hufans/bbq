@@ -288,11 +288,11 @@ export function registerPtyConnectionRemoteRuntimeAttachTests(): void {
           },
           launchToken: expect.stringMatching(new RegExp(`^${UUID_RE}$`)),
           env: expect.objectContaining({
-            ORCA_PANE_KEY: paneKey,
-            ORCA_TAB_ID: 'tab-1',
-            ORCA_WORKTREE_ID: 'wt-1',
+            BBQ_PANE_KEY: paneKey,
+            BBQ_TAB_ID: 'tab-1',
+            BBQ_WORKTREE_ID: 'wt-1',
             ORCA_WORKSPACE_ID: 'wt-1',
-            ORCA_AGENT_LAUNCH_TOKEN: expect.stringMatching(new RegExp(`^${UUID_RE}$`))
+            BBQ_AGENT_LAUNCH_TOKEN: expect.stringMatching(new RegExp(`^${UUID_RE}$`))
           })
         })
       )

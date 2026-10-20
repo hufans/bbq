@@ -1,0 +1,219 @@
+name: Package desktop
+
+# Builds unsigned installers for this fork and publishes them on the GitHub
+# Releases page. Upstream release workflows stay on stablyai/orca: they require
+# signing secrets and private runners this repository does not have.
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: package-desktop-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ORCA_BACKGROUND_LAUNCH: '1'
+  # A hosted runner has no Developer ID or SignPath certificate. Discovery would
+  # otherwise grab a random keychain identity or fail the packager.
+  CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+  HUSKY: '0'
+  NODE_OPTIONS: --max-old-space-size=8192
+
+jobs:
+  package:
+    name: ${{ matrix.label }}
+    if: github.repository == 'hufans/bbq'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: macOS
+            os: macos-latest
+            cpu: current,x64,arm64
+            node_targets: darwin-arm64 darwin-x64
+            builder_args: --mac dmg --arm64 --x64
+            artifact: bbq-macos
+          - label: Windows
+            os: windows-latest
+            cpu: current
+            node_targets: win32-x64
+            builder_args: --win nsis --x64
+            artifact: bbq-windows
+          - label: Linux
+            os: ubuntu-latest
+            cpu: current
+            node_targets: linux-x64
+            builder_args: --linux AppImage --x64
+            artifact: bbq-linux
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/setup@v2
+        with:
+          install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            mobile/pnpm-lock.yaml
+
+      - name: Cache electron-builder downloads on macOS
+        if: runner.os == 'macOS'
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/Library/Caches/electron
+            ~/Library/Caches/electron-builder
+          key: ${{ matrix.artifact }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ matrix.artifact }}-
+
+      - name: Cache electron-builder downloads on Linux
+        if: runner.os == 'Linux'
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cache/electron
+            ~/.cache/electron-builder
+          key: ${{ matrix.artifact }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ matrix.artifact }}-
+
+      - name: Cache electron-builder downloads on Windows
+        if: runner.os == 'Windows'
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~\AppData\Local\electron\Cache
+            ~\AppData\Local\electron-builder\Cache
+          key: ${{ matrix.artifact }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ matrix.artifact }}-
+
+      - name: Install Rust
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (-not (Get-Command cargo -ErrorAction SilentlyContinue)) {
+            Invoke-WebRequest https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe -OutFile rustup-init.exe
+            .\rustup-init.exe -y --profile minimal --default-toolchain stable
+          }
+          Add-Content -Path $env:GITHUB_PATH -Value "$env:USERPROFILE\.cargo\bin"
+
+      - name: Install dependencies
+        uses: nick-fields/retry@v4
+        with:
+          timeout_minutes: 20
+          max_attempts: 3
+          retry_wait_seconds: 30
+          command: pnpm install --frozen-lockfile --cpu=${{ matrix.cpu }}
+
+      - name: Install mobile dependencies
+        uses: ./.github/actions/install-mobile-dependencies
+
+      - name: Build release assets
+        shell: bash
+        run: pnpm run build:release
+
+      - name: Package installer
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON config/scripts/pinned-node-downloads.mjs ${{ matrix.node_targets }}
+          node config/scripts/ensure-native-runtime.mjs --runtime=electron
+          pnpm exec electron-builder --config config/electron-builder.config.cjs ${{ matrix.builder_args }} --publish never
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            dist/bbq-macos-arm64.dmg
+            dist/bbq-macos-x64.dmg
+            dist/bbq-windows-setup.exe
+            dist/bbq-linux.AppImage
+
+  publish:
+    name: Publish GitHub Release
+    needs: package
+    if: github.repository == 'hufans/bbq' && needs.package.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Download installers
+        uses: actions/download-artifact@v8
+        with:
+          pattern: bbq-*
+          path: dist
+          merge-multiple: true
+
+      - name: Publish release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          version="$(node -p 'require("./package.json").version')"
+          short="${RELEASE_SHA:0:12}"
+          tag="build-${RELEASE_SHA}"
+          for required in \
+            dist/bbq-macos-arm64.dmg \
+            dist/bbq-macos-x64.dmg \
+            dist/bbq-windows-setup.exe \
+            dist/bbq-linux.AppImage
+          do
+            if [[ ! -f "$required" ]]; then
+              echo "::error::Missing $required"
+              ls -l dist || true
+              exit 1
+            fi
+          done
+          if gh release view "$tag" --json tagName >/dev/null 2>&1; then
+            gh release delete "$tag" --yes --cleanup-tag
+          fi
+          cat >"$RUNNER_TEMP/release-notes.md" <<EOF
+          Desktop build of \`${short}\` from main.
+
+          - macOS Apple Silicon: \`bbq-macos-arm64.dmg\`
+          - macOS Intel: \`bbq-macos-x64.dmg\`
+          - Windows: \`bbq-windows-setup.exe\`
+          - Linux: \`bbq-linux.AppImage\`
+
+          These installers are not Apple-notarized and not Windows-signed. On macOS, allow the app in System Settings the first time it is opened. Windows SmartScreen warns that the publisher is unknown.
+          EOF
+          gh release create "$tag" \
+            dist/bbq-macos-arm64.dmg \
+            dist/bbq-macos-x64.dmg \
+            dist/bbq-windows-setup.exe \
+            dist/bbq-linux.AppImage \
+            --target "$RELEASE_SHA" \
+            --title "BBQ ${version} (${short})" \
+            --latest \
+            --notes-file "$RUNNER_TEMP/release-notes.md"

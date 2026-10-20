@@ -4,7 +4,10 @@ import type { SpawnOptions as SdkSpawnOptions } from '@anthropic-ai/claude-agent
 import type { PipedProcessSpawner, ProcessSpec } from '@orca/process-host/process-spec'
 
 import type * as ProviderSupervisor from '../provider-process/provider-process-supervisor'
-import { createProviderSpawnSpec } from '../provider-process/provider-process-supervisor'
+import {
+  createProviderSpawnSpec,
+  readProviderSupervisorSpec
+} from '../provider-process/provider-process-supervisor'
 import { createClaudeCodeProcessSpawn } from './claude-agent-sdk-process-spawn'
 import { proveClaudeChildExitWithReaper } from './claude-child-exit-proof-ladder'
 
@@ -72,7 +75,7 @@ describe('claude agent SDK process spawn', () => {
       expect(spawn.supervised).toBe(true)
       expect(spawn.pid).toBe(4321)
       expect(spec.program).toBe(globalThis.process.execPath)
-      expect(spec.args?.[0]).toBe('-e')
+      expect(spec.args?.[0]?.endsWith('bbq-provider-supervisor.cjs')).toBe(true)
       expect(spec.args?.slice(2)).toEqual([
         '--',
         '/usr/local/bin/claude',
@@ -81,9 +84,7 @@ describe('claude agent SDK process spawn', () => {
       ])
       expect(spec.detached).toBe(true)
       expect(spec.cwd).toBe('/work/repo')
-      const supervisorSpec = JSON.parse(
-        Buffer.from(String(spec.env?.ORCA_PROVIDER_SUPERVISOR_SPEC), 'base64').toString()
-      )
+      const supervisorSpec = readProviderSupervisorSpec(spec.args)
       // A gone Orca closes Claude as its own close does (stdin end and SIGTERM), not with the
       // root-only stdin-end drain a managed provider gets by default.
       expect(vi.mocked(createProviderSpawnSpec)).toHaveBeenLastCalledWith(

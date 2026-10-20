@@ -38,7 +38,7 @@ async function writeCli(): Promise<void> {
   await mkdir(dirname(path), { recursive: true })
   await writeFile(
     path,
-    'console.log(JSON.stringify({profile:process.env.ORCA_USER_DATA_PATH, args:process.argv.slice(2), electron:process.env.ELECTRON_RUN_AS_NODE}))'
+    'console.log(JSON.stringify({profile:process.env.BBQ_USER_DATA_PATH, args:process.argv.slice(2), electron:process.env.ELECTRON_RUN_AS_NODE}))'
   )
 }
 
@@ -49,7 +49,7 @@ describe('orcad profile CLI launcher', () => {
       await writeCli()
       await prepareOrcadCliLauncher()
       const launcher = getOrcadCliLauncherPath()
-      expect(launcher).toBe(join(roots.profile, 'cli', 'bin', 'orca'))
+      expect(launcher).toBe(join(roots.profile, 'cli', 'bin', 'bbq'))
       if (!launcher) {
         throw new Error('CLI launcher is missing')
       }
@@ -59,7 +59,7 @@ describe('orcad profile CLI launcher', () => {
         args,
         env: {
           ...process.env,
-          ORCA_USER_DATA_PATH: '/another/owner',
+          BBQ_USER_DATA_PATH: '/another/owner',
           ELECTRON_RUN_AS_NODE: '1',
           NODE_OPTIONS: '--require /missing/inherited/preload'
         },
@@ -85,16 +85,16 @@ describe('orcad profile CLI launcher', () => {
         args: ['status'],
         env: {
           PATH: process.env.PATH,
-          ORCA_ENVIRONMENT: 'other-server',
-          ORCA_PAIRING_CODE: 'other-pairing'
+          BBQ_ENVIRONMENT: 'other-server',
+          BBQ_PAIRING_CODE: 'other-pairing'
         },
         timeoutMs: 5000
       })
       expect(result.code).toBe(0)
       expect(JSON.parse(result.stdout)).toEqual({
-        ORCA_USER_DATA_PATH: roots.profile,
-        ORCA_ENVIRONMENT: 'other-server',
-        ORCA_PAIRING_CODE: 'other-pairing'
+        BBQ_USER_DATA_PATH: roots.profile,
+        BBQ_ENVIRONMENT: 'other-server',
+        BBQ_PAIRING_CODE: 'other-pairing'
       })
     }
   )
@@ -143,7 +143,7 @@ describe('orcad profile CLI launcher', () => {
       await writeLauncher('native launcher v1')
       await prepareOrcadCliLauncher()
       const launcher = getOrcadCliLauncherPath()
-      expect(launcher).toBe(join(binDir(), 'orca.exe'))
+      expect(launcher).toBe(join(binDir(), 'bbq.exe'))
       expect(await readFile(launcher!, 'utf8')).toBe('native launcher v1')
       expect(await readConfig()).toBe(
         [
@@ -155,7 +155,7 @@ describe('orcad profile CLI launcher', () => {
       )
       // cmd.exe reparses `%*`, so no batch or PowerShell proxy may shadow the exe.
       expect((await readdir(binDir())).sort()).toEqual(
-        [ORCAD_WINDOWS_CLI_LAUNCHER_CONFIG_FILENAME, 'orca.exe'].sort()
+        [ORCAD_WINDOWS_CLI_LAUNCHER_CONFIG_FILENAME, 'bbq.exe'].sort()
       )
     })
 
@@ -167,7 +167,7 @@ describe('orcad profile CLI launcher', () => {
       await writeCli()
       await writeLauncher('native launcher v2')
       await prepareOrcadCliLauncher()
-      expect(await readFile(join(binDir(), 'orca.exe'), 'utf8')).toBe('native launcher v2')
+      expect(await readFile(join(binDir(), 'bbq.exe'), 'utf8')).toBe('native launcher v2')
       expect(await readConfig()).toContain(`cli=${join(roots.install, 'out', 'cli', 'index.js')}`)
     })
 

@@ -68,16 +68,16 @@ function guestScript(args: unknown): string {
 
 /** Wrap the payload in the caller's own fence when it asked for one; otherwise hand it over raw. */
 function loginShellStdout(script: string, payload: string): string {
-  const nonce = /__ORCA_WSL_CAPTURE_BEGIN_ ([^_]+)__/.exec(script)?.[1]
+  const nonce = /__BBQ_WSL_CAPTURE_BEGIN_ ([^_]+)__/.exec(script)?.[1]
   return nonce
-    ? `${BANNER}__ORCA_WSL_CAPTURE_BEGIN_${nonce}__${payload}__ORCA_WSL_CAPTURE_END_${nonce}__`
+    ? `${BANNER}__BBQ_WSL_CAPTURE_BEGIN_${nonce}__${payload}__BBQ_WSL_CAPTURE_END_${nonce}__`
     : `${BANNER}${payload}`
 }
 
 function gitCommandLines(): string[] {
   return execFileMock.mock.calls
     .map((call) => guestScript(call[1]))
-    .filter((script) => !script.includes('_orca_git_path='))
+    .filter((script) => !script.includes('_bbq_git_path='))
 }
 
 describe('WSL tracked-path listing behind a login-shell banner', () => {
@@ -90,7 +90,7 @@ describe('WSL tracked-path listing behind a login-shell banner', () => {
     Object.defineProperty(process, 'platform', { configurable: true, value: 'win32' })
     execFileMock.mockImplementation((_command, args, _options, callback) => {
       const script = guestScript(args)
-      if (script.includes('_orca_git_path=')) {
+      if (script.includes('_bbq_git_path=')) {
         // Distro exports GIT_* / XDG_CONFIG_HOME, so the direct-git read probe is rejected for good.
         queueMicrotask(() => callback?.(Object.assign(new Error('probe rejected'), { code: 78 })))
         return createMockChild()

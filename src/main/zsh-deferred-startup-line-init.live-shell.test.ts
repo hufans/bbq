@@ -100,7 +100,7 @@ describe('zsh deferred startup after prompt-hook replacement', () => {
             : stickyPrecmd
               ? `emulate sh -c 'precmd() { O_FIRST_IN="\${O_FIRST_IN:-$?:\${options[shwordsplit]}:\${options[ksharrays]}}"; return 1; }'\n`
               : scheduledPrecmd
-                ? 'zmodload zsh/sched\nO_EVENT() { O_EO=${_orca_deferred_init_done:-0}; }\nsched +0 O_EVENT\nsched +3600 O_EVENT\n'
+                ? 'zmodload zsh/sched\nO_EVENT() { O_EO=${_bbq_deferred_init_done:-0}; }\nsched +0 O_EVENT\nsched +3600 O_EVENT\n'
                 : unavailableSched
                   ? 'zmodload zsh/zleparameter zsh/terminfo\nO_MP=("${module_path[@]}"); module_path=()\n'
                   : nonzeroPrecmd || replacedPrecmd
@@ -128,7 +128,7 @@ describe('zsh deferred startup after prompt-hook replacement', () => {
             : chainedRedraw
               ? `${USER_REDRAW.replace('zle -N zle-line-pre-redraw orca_test_redraw', 'zle -N orca_test_redraw')}autoload -Uz add-zle-hook-widget\nadd-zle-hook-widget line-pre-redraw orca_test_redraw\n`
               : ''
-        }${nonzeroPrecmd ? 'orca_test_array() { O_AC=called; }\nprecmd_functions=(orca_test_array)\nsetopt KSH_ARRAYS NO_UNSET\n' : orderedPrecmd ? 'orca_test_array() { O_AO=${O_AO:-${_orca_deferred_init_done:-0}}; }\nprecmd_functions=(orca_test_array "${precmd_functions[@]}")\n' : replacedPrecmd ? 'precmd() { O_NPC=$((${O_NPC:-0}+1)); O_NPN="$0"; }\n' : ''}`
+        }${nonzeroPrecmd ? 'orca_test_array() { O_AC=called; }\nprecmd_functions=(orca_test_array)\nsetopt KSH_ARRAYS NO_UNSET\n' : orderedPrecmd ? 'orca_test_array() { O_AO=${O_AO:-${_bbq_deferred_init_done:-0}}; }\nprecmd_functions=(orca_test_array "${precmd_functions[@]}")\n' : replacedPrecmd ? 'precmd() { O_NPC=$((${O_NPC:-0}+1)); O_NPN="$0"; }\n' : ''}`
       )
       writeFileSync(join(wrapperDir, '.zshenv'), getZshShellReadyWrapperFile())
       writeFileSync(join(wrapperDir, ZSH_WRAPPER_DIR_MARKER_FILE), '')
@@ -140,7 +140,7 @@ describe('zsh deferred startup after prompt-hook replacement', () => {
         // Stock cases replay this replacement after the fixture installs its own widgets.
         DEBIAN_PREVENT_KEYBOARD_CHANGES: '1',
         ZDOTDIR: wrapperDir,
-        ORCA_HISTFILE: join(home, 'scoped-history')
+        BBQ_HISTFILE: join(home, 'scoped-history')
       }
       const launcher = prependOrcaCliDirToChildPath(env, { isPackaged: false, userDataPath: home })
       const features = selectShellStartupFeatures({
@@ -150,7 +150,7 @@ describe('zsh deferred startup after prompt-hook replacement', () => {
         waitsForShellReady: !historyOnly,
         emitsStartupIdentity: false
       })
-      env.ORCA_SHELL_FEATURES = encodeShellStartupFeatures(features)
+      env.BBQ_SHELL_FEATURES = encodeShellStartupFeatures(features)
       if (!historyOnly) {
         env[POSIX_SHELL_STARTUP_COMMAND_ENV] = 'O_SU=$((${O_SU:-0}+1))'
       }
@@ -167,10 +167,10 @@ describe('zsh deferred startup after prompt-hook replacement', () => {
             ? ['source -- "$HOME/wrapper/.zshenv"', 'source -- "$HOME/wrapper/.zshenv"']
             : []),
           'O_LK=$(command -v orca-dev)',
-          'O_SR=${+widgets[__orca_saved_line_init]}',
+          'O_SR=${+widgets[__bbq_saved_line_init]}',
           ...(scheduleCleanup
             ? [
-                'O_SC=${+functions[__orca_deferred_sched_init]}',
+                'O_SC=${+functions[__bbq_deferred_sched_init]}',
                 'O_SE=${zsh_scheduled_events[*]:-UNSET}'
               ]
             : []),
@@ -207,7 +207,7 @@ describe('zsh deferred startup after prompt-hook replacement', () => {
       expect(result.values.O_SR).toBe('0')
       if (repeatSource) {
         expect(result.output).not.toContain('job table full or recursion limit exceeded')
-        expect(result.values.O_PC).not.toContain('__orca_deferred_init')
+        expect(result.values.O_PC).not.toContain('__bbq_deferred_init')
       }
       if (scheduleCleanup) {
         expect(result.values.O_SC).toBe('0')
@@ -216,7 +216,7 @@ describe('zsh deferred startup after prompt-hook replacement', () => {
       if (unavailableSched) {
         // Stock completion modules can fail before the fixture restores module_path.
         expect(result.output).not.toContain('zsh/sched')
-        expect(result.output).not.toContain('__orca_arm_deferred_line_init:')
+        expect(result.output).not.toContain('__bbq_arm_deferred_line_init:')
         expect(result.values.O_SE).toBe('UNSET')
       }
       if (scheduledPrecmd) {
@@ -262,11 +262,11 @@ describe('zsh deferred startup after prompt-hook replacement', () => {
         expect(result.values.O_SU).toBe('UNSET')
       } else {
         expect(result.output).toContain(MARKERS.ready)
-        expect(result.values.O_LI).toBe('user:__orca_prompt_mark')
+        expect(result.values.O_LI).toBe('user:__bbq_prompt_mark')
         expect(result.values.O_PC).toBe(
           nonzeroPrecmd || orderedPrecmd
-            ? 'orca_test_array __orca_osc133_precmd'
-            : '__orca_osc133_precmd'
+            ? 'orca_test_array __bbq_osc133_precmd'
+            : '__bbq_osc133_precmd'
         )
         expect(result.values.O_SU).toBe('1')
         expect(result.output.split('ORCA_TEST_USER_WIDGET_CALL\r\n').length - 1).toBe(
@@ -314,7 +314,7 @@ zle -N zle-line-init orca_test_app_mode
         DEBIAN_PREVENT_KEYBOARD_CHANGES: '1',
         ZDOTDIR: wrapperDir
       }
-      env.ORCA_SHELL_FEATURES = encodeShellStartupFeatures(
+      env.BBQ_SHELL_FEATURES = encodeShellStartupFeatures(
         selectShellStartupFeatures({
           shellPath: ZSH_PATH,
           env,
@@ -329,9 +329,9 @@ zle -N zle-line-init orca_test_app_mode
         commands: [
           'true',
           'false',
-          '[[ ${functions[orca_test_app_mode]} == *__orca_deferred_line_init* ]]; O_CALL_REF=$?',
-          '__orca_deferred_line_init; O_NOOP=$?',
-          'O_INIT=${+functions[__orca_deferred_init]}'
+          '[[ ${functions[orca_test_app_mode]} == *__bbq_deferred_line_init* ]]; O_CALL_REF=$?',
+          '__bbq_deferred_line_init; O_NOOP=$?',
+          'O_INIT=${+functions[__bbq_deferred_init]}'
         ],
         report: ['O_AM', 'O_CALL_REF', 'O_NOOP', 'O_INIT']
       })

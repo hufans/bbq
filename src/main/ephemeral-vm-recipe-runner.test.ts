@@ -260,7 +260,7 @@ describe('runEphemeralVmRecipeCleanup', () => {
         '    instanceId: payload.instanceId,',
         '    projectRoot: payload.recipeResult.projectRoot,',
         '    envMode: process.env.ORCA_VM_MODE,',
-        '    envWorkspace: process.env.ORCA_WORKSPACE_NAME',
+        '    envWorkspace: process.env.BBQ_WORKSPACE_NAME',
         '  }))',
         '})'
       ].join('\n')

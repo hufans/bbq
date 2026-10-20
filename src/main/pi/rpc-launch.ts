@@ -21,7 +21,7 @@ export type PiRpcLaunchOptions = {
 
 const CALLER_ENV_TO_DELETE = [
   ...ORCA_AGENT_SESSION_CALLER_ENV_KEYS,
-  'ORCA_TERMINAL_HANDLE',
+  'BBQ_TERMINAL_HANDLE',
   ORCA_AGENT_SESSION_SPAWN_TOKEN_ENV
 ]
 
@@ -29,7 +29,7 @@ const CALLER_ENV_TO_DELETE = [
  *  Pi gets no scratch folder, so an inherited one can only name another chat's. */
 export const PI_RPC_SESSION_ENV_TO_DELETE: readonly string[] = [
   ...STRUCTURED_CHILD_ENV_TO_DELETE,
-  'ORCA_TERMINAL_HANDLE',
+  'BBQ_TERMINAL_HANDLE',
   NATIVE_CHAT_SCRATCH_DIR_ENV,
   LEGACY_NATIVE_CHAT_VISUALS_DIR_ENV
 ]

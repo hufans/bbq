@@ -75,15 +75,15 @@ export async function shellScriptTest(
       ...config.env,
       // Why: these examples inspect startup-file discovery, not the PTY-owner
       // protocol stream, so drop the tokens that write to stdout.
-      ORCA_SHELL_FEATURES: (config.env.ORCA_SHELL_FEATURES ?? '')
+      BBQ_SHELL_FEATURES: (config.env.BBQ_SHELL_FEATURES ?? '')
         .split(',')
         .filter((feature) => feature !== 'identity' && feature !== 'markers')
         .join(','),
       // Why: the framework creates user startup files under testHome after
       // computing the wrapper config; route wrapper discovery to that fixture.
       HOME: testHome,
-      ORCA_ORIG_ZDOTDIR: testHome,
-      ORCA_ZSHENV_SOURCE_DIR: testHome
+      BBQ_ORIG_ZDOTDIR: testHome,
+      BBQ_ZSHENV_SOURCE_DIR: testHome
     }
 
     const spawnOptions = {

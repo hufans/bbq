@@ -33,7 +33,7 @@ describe('reexecServeUnderInitReaper', () => {
         'bash',
         '-c',
         SERVE_INIT_REAPER_SCRIPT,
-        'orca-serve-init',
+        'bbq-serve-init',
         '/opt/orca/orca-ide',
         '/opt/orca/resources/cli/index.js',
         'serve',
@@ -64,8 +64,8 @@ describe('reexecServeUnderInitReaper', () => {
         APPDIR: '/tmp/.mount_orcaX',
         APPIMAGE: '/opt/orca/orca.AppImage',
         ELECTRON_RUN_AS_NODE: '1',
-        ORCA_NODE_OPTIONS: '--max-old-space-size=4096',
-        ORCA_NODE_REPL_EXTERNAL_MODULE: ''
+        BBQ_NODE_OPTIONS: '--max-old-space-size=4096',
+        BBQ_NODE_REPL_EXTERNAL_MODULE: ''
       },
       exists: (path) => path === '/bin/bash' || path === '/opt/orca/orca.AppImage'
     })

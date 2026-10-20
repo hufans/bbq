@@ -13,7 +13,7 @@ const IDENTITY = {
 
 describe('claude structured owner identity', () => {
   it('exports the spawn token env and records the observed process identity', async () => {
-    expect(ORCA_AGENT_SESSION_SPAWN_TOKEN_ENV).toBe('ORCA_AGENT_SESSION_SPAWN_TOKEN')
+    expect(ORCA_AGENT_SESSION_SPAWN_TOKEN_ENV).toBe('BBQ_AGENT_SESSION_SPAWN_TOKEN')
     await expect(
       claudeProcessIdentity(
         { identity: IDENTITY, spawnToken: 'spawn-a', pid: 4242 },

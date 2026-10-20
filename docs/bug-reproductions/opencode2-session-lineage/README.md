@@ -6,7 +6,7 @@ every child session was published as if it were a root — and a subagent's ques
 un-evictable "needs input" blocker the lead agent had never asked for.
 
 Captured against the shipped `opencode v2.0.12` binary on macOS: Orca's real generated plugin in
-`~/.config/opencode/plugins/orca-opencode2-status.js`, real `ORCA_PANE_KEY` / hook-token env, a
+`~/.config/opencode/plugins/orca-opencode2-status.js`, real `BBQ_PANE_KEY` / hook-token env, a
 logging hook server on a loopback port, and `opencode2 --standalone` driven in a real PTY.
 
 ## The SDK shape Orca was given
@@ -58,12 +58,12 @@ The subagent still ran in the "after" capture (`ses_f32f2519dffeNSA1jG2Z8JVJyv`,
 
 ```sh
 # Log POSTs on a free loopback port, then:
-ORCA_PANE_KEY=tab:leaf ORCA_OPENCODE_AGENT=opencode2 \
-ORCA_AGENT_HOOK_PORT=<port> ORCA_AGENT_HOOK_TOKEN=<token> \
+BBQ_PANE_KEY=tab:leaf BBQ_OPENCODE_AGENT=opencode2 \
+BBQ_AGENT_HOOK_PORT=<port> BBQ_AGENT_HOOK_TOKEN=<token> \
   opencode2 --standalone --prompt '<delegate something to one subagent>'
 ```
 
-Unset `ORCA_AGENT_HOOK_ENDPOINT` so the plugin reads the port/token from env instead of a live
+Unset `BBQ_AGENT_HOOK_ENDPOINT` so the plugin reads the port/token from env instead of a live
 Orca's endpoint file.
 
 One trap: OpenCode 2 loads both `orca-opencode-status.js` and `orca-opencode2-status.js` from

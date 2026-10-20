@@ -32,10 +32,10 @@ describe('createElectronHomeIsolation', () => {
         HOME: '/real/home',
         USERPROFILE: '/real/home',
         CODEX_HOME: '/real/codex',
-        ORCA_CODEX_HOME: '/real/orca-codex',
+        BBQ_CODEX_HOME: '/real/orca-codex',
         CLAUDE_CONFIG_DIR: '/real/claude',
         ZDOTDIR: '/real/zdotdir',
-        ORCA_DISABLE_MACOS_LOGIN_SHELL: 'false',
+        BBQ_DISABLE_MACOS_LOGIN_SHELL: 'false',
         PATH: '/bin'
       },
       launchEnv: { TEST_TOKEN: 'safe' },
@@ -57,10 +57,10 @@ describe('createElectronHomeIsolation', () => {
       ORCA_E2E_USER_DATA_DIR: userDataDir
     })
     expect(isolation.env.CODEX_HOME).toBeUndefined()
-    expect(isolation.env.ORCA_CODEX_HOME).toBeUndefined()
+    expect(isolation.env.BBQ_CODEX_HOME).toBeUndefined()
     expect(isolation.env.CLAUDE_CONFIG_DIR).toBeUndefined()
     expect(isolation.env.ZDOTDIR).toBeUndefined()
-    expect(isolation.env.ORCA_DISABLE_MACOS_LOGIN_SHELL).toBe(
+    expect(isolation.env.BBQ_DISABLE_MACOS_LOGIN_SHELL).toBe(
       process.platform === 'darwin' ? '1' : undefined
     )
     // Codex always routes to the resolved home, so the post-launch guard must
@@ -102,12 +102,12 @@ describe('createElectronHomeIsolation', () => {
       expect(() =>
         createElectronHomeIsolation({
           inheritedEnv: {},
-          launchEnv: overlay === 'launchEnv' ? { ORCA_DISABLE_MACOS_LOGIN_SHELL: '0' } : {},
-          extraEnv: overlay === 'extraEnv' ? { ORCA_DISABLE_MACOS_LOGIN_SHELL: '0' } : {},
+          launchEnv: overlay === 'launchEnv' ? { BBQ_DISABLE_MACOS_LOGIN_SHELL: '0' } : {},
+          extraEnv: overlay === 'extraEnv' ? { BBQ_DISABLE_MACOS_LOGIN_SHELL: '0' } : {},
           userDataDir: createUserDataDir(),
           realHome: '/real/home'
         })
-      ).toThrow(/ORCA_DISABLE_MACOS_LOGIN_SHELL/)
+      ).toThrow(/BBQ_DISABLE_MACOS_LOGIN_SHELL/)
     }
   )
 })

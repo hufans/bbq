@@ -116,7 +116,7 @@ function buildCall(
           types: flag('types'),
           format: has('format') ? true : undefined,
           inject: has('inject') ? true : undefined,
-          compatibilityCliCommand: 'orca',
+          compatibilityCliCommand: 'bbq',
           run: flag('run'),
           ack: flag('ack'),
           wait: has('wait') ? true : undefined,
@@ -155,7 +155,7 @@ function buildCall(
           resume: flag('resume'),
           options: flag('options'),
           timeoutMs: cappedWait(numberFlag(flags, 'timeout-ms')),
-          compatibilityCliCommand: 'orca'
+          compatibilityCliCommand: 'bbq'
         }
       }
     case 'orchestration reply':
@@ -176,7 +176,7 @@ function buildCall(
 /** Its own receipt namespace per host terminal: a host can never replay another caller's result. */
 function callerFingerprint(targetId: string, env: Record<string, string>): string {
   return createHash('sha256')
-    .update(['legacy-relay-cli-v1', targetId, env.ORCA_TERMINAL_HANDLE ?? ''].join('\0'))
+    .update(['legacy-relay-cli-v1', targetId, env.BBQ_TERMINAL_HANDLE ?? ''].join('\0'))
     .digest('hex')
 }
 
@@ -210,7 +210,7 @@ async function dispatchAsCaller(
     const exactReplay = isExactLegacyRelayCliReplay(runtime, fingerprint, requestId, call)
     const db = runtime.getOrchestrationDb()
     assertLegacyRelayCliScope(db, caller, call, deps.livePane, exactReplay)
-    const launchToken = env.ORCA_AGENT_LAUNCH_TOKEN?.trim()
+    const launchToken = env.BBQ_AGENT_LAUNCH_TOKEN?.trim()
     return await dispatcherFor(runtime).dispatch(
       {
         id: `legacy-relay-cli-${requestId}`,

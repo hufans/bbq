@@ -22,11 +22,18 @@ export function writeShellWrapperFiles(
       mkdirSync(dirname(path), { recursive: true })
       // Why temp+rename: a shell reading the wrapper concurrently sees either
       // the old file or the new one, never a truncated prefix of the new one.
-      const temporaryPath = `${path}.orca-tmp-${process.pid}`
+      const temporaryPath = `${path}.bbq-tmp-${process.pid}`
       try {
         writeFileSync(temporaryPath, content, 'utf8')
         chmodSync(temporaryPath, 0o644)
         renameSync(temporaryPath, path)
+        // Fish loads every vendor_conf.d/*.fish. A leftover old name would still run.
+        if (path.endsWith('/bbq-shell-integration.fish')) {
+          rmSync(
+            `${path.slice(0, -'bbq-shell-integration.fish'.length)}orca-shell-integration.fish`,
+            { force: true }
+          )
+        }
       } catch (error) {
         rmSync(temporaryPath, { force: true })
         throw error

@@ -152,8 +152,8 @@ export function bindRun(
       this.db
         .prepare(
           `UPDATE runs
-           SET coordinator_handle = ?, coordinator_pane_key = ?, coordinator_orca_session_id = ?,
-               coordinator_orca_session_id_generation = consumer_generation + 1,
+           SET coordinator_handle = ?, coordinator_pane_key = ?, coordinator_bbq_session_id = ?,
+               coordinator_bbq_session_id_generation = consumer_generation + 1,
                consumer_generation = consumer_generation + 1,
                updated_at = datetime('now')
            WHERE id = ?`
@@ -172,8 +172,8 @@ export function bindRun(
       // Same coordinator, so no new consumer: correct an Orca session id a writer without the column left.
       this.db
         .prepare(
-          `UPDATE runs SET coordinator_orca_session_id = ?,
-             coordinator_orca_session_id_generation = consumer_generation
+          `UPDATE runs SET coordinator_bbq_session_id = ?,
+             coordinator_bbq_session_id_generation = consumer_generation
            WHERE id = ?`
         )
         .run(coordinator.orcaSessionId, params.runId)

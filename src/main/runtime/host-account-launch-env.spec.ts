@@ -10,11 +10,11 @@ export function registerHostAccountLaunchEnvTests(): void {
     wslDistro: 'Ubuntu',
     claude: {
       CLAUDE_CONFIG_DIR: '/home/u/.orca/claude/a',
-      ORCA_CLAUDE_INJECTED_CONFIG_DIR: '/home/u/.orca/claude/a',
+      BBQ_CLAUDE_INJECTED_CONFIG_DIR: '/home/u/.orca/claude/a',
       CODEX_HOME: '/home/u/.orca/codex/b'
     },
     terminal: {
-      ORCA_CLAUDE_PROFILE_POINTER: '~/.orca/claude-pointer',
+      BBQ_CLAUDE_PROFILE_POINTER: '~/.orca/claude-pointer',
       CODEX_HOME: '/home/u/.orca/codex/b'
     }
   })

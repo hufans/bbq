@@ -69,9 +69,9 @@ test.describe('Quick Command startup recovery', () => {
 const { writeFileSync } = require('node:fs')
 const identity = {
   marker: ${JSON.stringify(marker)},
-  paneKey: process.env.ORCA_PANE_KEY || '',
+  paneKey: process.env.BBQ_PANE_KEY || '',
   pid: process.pid,
-  tabId: process.env.ORCA_TAB_ID || ''
+  tabId: process.env.BBQ_TAB_ID || ''
 }
 writeFileSync(${JSON.stringify(identityPath)}, JSON.stringify(identity), { flag: 'wx' })
 process.stdout.write(${JSON.stringify(`${marker}\n`)})

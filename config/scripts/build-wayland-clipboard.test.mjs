@@ -28,7 +28,7 @@ let root
 let verify
 
 function output(arch = 'x64') {
-  return join(root, 'native', 'wayland-clipboard', '.build', arch, 'orca-wayland-clipboard')
+  return join(root, 'native', 'wayland-clipboard', '.build', arch, 'bbq-wayland-clipboard')
 }
 
 function writeExecutable(arch) {
@@ -212,7 +212,7 @@ describe('Wayland clipboard packaging', () => {
       arch
     ])
     const resource = config.linux.extraResources.find(
-      (entry) => entry.to === 'bin/orca-wayland-clipboard'
+      (entry) => entry.to === 'bin/bbq-wayland-clipboard'
     )
     const target = join(root, 'packaged', resource.to)
     const source = join(root, resource.from.replace('${arch}', arch))
@@ -234,7 +234,7 @@ describe('Wayland clipboard packaging', () => {
       const resources = join(root, 'resources')
       if (state === 'corrupt') {
         mkdirSync(join(resources, 'bin'), { recursive: true })
-        writeFileSync(join(resources, 'bin', 'orca-wayland-clipboard'), 'not ELF')
+        writeFileSync(join(resources, 'bin', 'bbq-wayland-clipboard'), 'not ELF')
       }
       expect(() => finalizePackagedWaylandClipboard(resources)).toThrow(
         'missing its Wayland clipboard executable'

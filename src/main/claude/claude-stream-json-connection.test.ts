@@ -117,7 +117,8 @@ async function open(
 function launchedArgv(spec: ProcessSpec | undefined): string[] {
   const argv = [spec?.program ?? '', ...(spec?.args ?? [])]
   // A supervised launch carries the provider's argv after the supervisor script's '--'.
-  return spec?.env?.ORCA_PROVIDER_SUPERVISOR_SPEC ? argv.slice(argv.indexOf('--') + 1) : argv
+  const supervised = (spec?.args?.[0] ?? '').endsWith('bbq-provider-supervisor.cjs')
+  return supervised ? argv.slice(argv.indexOf('--') + 1) : argv
 }
 
 function childEnv(): Record<string, string | undefined> {
@@ -178,14 +179,14 @@ describe('Claude stream-json connection', () => {
     vi.stubEnv('CLAUDE_CODE_ENTRYPOINT', undefined)
     vi.stubEnv('ORCA_CONNECTION_MARKER', 'inherited')
     // An Orca launched inside another structured session inherits that session's id.
-    vi.stubEnv('ORCA_AGENT_SESSION_ID', 'a0b1c2d3-0000-4000-8000-00000000abcd')
+    vi.stubEnv('BBQ_AGENT_SESSION_ID', 'a0b1c2d3-0000-4000-8000-00000000abcd')
     const scenario = scriptScenario([HOLD_OPEN])
     const connection = await open(
       launchFor(scenario, {
-        ORCA_AGENT_SESSION_ID: 'f7a1c0de-1111-4222-8333-444455556666',
+        BBQ_AGENT_SESSION_ID: 'f7a1c0de-1111-4222-8333-444455556666',
         CLAUDE_CONFIG_DIR: '/accounts/managed/home',
         ANTHROPIC_AUTH_TOKEN: 'configured-token',
-        ORCA_AGENT_SESSION_SPAWN_TOKEN: 'spawn-9',
+        BBQ_AGENT_SESSION_SPAWN_TOKEN: 'spawn-9',
         CLAUDE_CODE_CHILD_SESSION: 'configured-child-session',
         CLAUDE_CODE_SESSION_ID: 'configured-session',
         CLAUDE_CODE_BRIDGE_SESSION_ID: 'configured-bridge-session'
@@ -199,10 +200,10 @@ describe('Claude stream-json connection', () => {
     // The managed home is pinned verbatim: the CLI keys credential lookup on the literal string.
     expect(env.CLAUDE_CONFIG_DIR).toBe('/accounts/managed/home')
     expect(env.ANTHROPIC_AUTH_TOKEN).toBe('configured-token')
-    expect(env.ORCA_AGENT_SESSION_SPAWN_TOKEN).toBe('spawn-9')
+    expect(env.BBQ_AGENT_SESSION_SPAWN_TOKEN).toBe('spawn-9')
     expect(env.ORCA_CONNECTION_MARKER).toBe('inherited')
     // The session's own id reaches the spawned child over the inherited one.
-    expect(env.ORCA_AGENT_SESSION_ID).toBe('f7a1c0de-1111-4222-8333-444455556666')
+    expect(env.BBQ_AGENT_SESSION_ID).toBe('f7a1c0de-1111-4222-8333-444455556666')
     expect(env.ANTHROPIC_API_KEY).toBeUndefined()
     expect(env.CLAUDE_CODE_CHILD_SESSION).toBeUndefined()
     expect(env.CLAUDE_CODE_SESSION_ID).toBeUndefined()
@@ -222,22 +223,22 @@ describe('Claude stream-json connection', () => {
   })
 
   it("strips the launch's inherited keys after Orca's own env is merged in", async () => {
-    vi.stubEnv('ORCA_PANE_KEY', 'tab-1:pane-1')
-    vi.stubEnv('ORCA_AGENT_HOOK_PORT', '4242')
+    vi.stubEnv('BBQ_PANE_KEY', 'tab-1:pane-1')
+    vi.stubEnv('BBQ_AGENT_HOOK_PORT', '4242')
     vi.stubEnv('ORCA_CONNECTION_MARKER', 'inherited')
     const scenario = scriptScenario([HOLD_OPEN])
     await open({
-      ...launchFor(scenario, { ORCA_AGENT_SESSION_ID: 'f7a1c0de-1111-4222-8333-444455556666' }),
-      envToDelete: ['ORCA_PANE_KEY', 'ORCA_AGENT_HOOK_PORT']
+      ...launchFor(scenario, { BBQ_AGENT_SESSION_ID: 'f7a1c0de-1111-4222-8333-444455556666' }),
+      envToDelete: ['BBQ_PANE_KEY', 'BBQ_AGENT_HOOK_PORT']
     })
 
     await until(() => readReportSafely(scenario), 'the scripted CLI report')
     const env = childEnv()
-    expect(env.ORCA_PANE_KEY).toBeUndefined()
-    expect(env.ORCA_AGENT_HOOK_PORT).toBeUndefined()
+    expect(env.BBQ_PANE_KEY).toBeUndefined()
+    expect(env.BBQ_AGENT_HOOK_PORT).toBeUndefined()
     // Only the listed keys go: the rest of the inherited env and the launch's own still arrive.
     expect(env.ORCA_CONNECTION_MARKER).toBe('inherited')
-    expect(env.ORCA_AGENT_SESSION_ID).toBe('f7a1c0de-1111-4222-8333-444455556666')
+    expect(env.BBQ_AGENT_SESSION_ID).toBe('f7a1c0de-1111-4222-8333-444455556666')
   })
 
   it('leaves the default CLI home unpinned so macOS Keychain OAuth keeps working', async () => {

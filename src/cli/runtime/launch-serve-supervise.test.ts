@@ -26,17 +26,17 @@ describe('serveOrcaApp --supervise', () => {
     root = await mkdtemp(join(tmpdir(), 'orca-serve-supervise-'))
     const executable = join(root, 'orca')
     await writeFile(executable, '')
-    process.env.ORCA_APP_EXECUTABLE = executable
-    process.env.ORCA_SERVE_RUNTIME = 'electron'
-    process.env.ORCA_USER_DATA_PATH = join(root, 'profile')
+    process.env.BBQ_APP_EXECUTABLE = executable
+    process.env.BBQ_SERVE_RUNTIME = 'electron'
+    process.env.BBQ_USER_DATA_PATH = join(root, 'profile')
     vi.spyOn(process.stderr, 'write').mockImplementation(() => true)
   })
 
   afterEach(async () => {
     vi.restoreAllMocks()
-    delete process.env.ORCA_APP_EXECUTABLE
-    delete process.env.ORCA_SERVE_RUNTIME
-    delete process.env.ORCA_USER_DATA_PATH
+    delete process.env.BBQ_APP_EXECUTABLE
+    delete process.env.BBQ_SERVE_RUNTIME
+    delete process.env.BBQ_USER_DATA_PATH
     await rm(root, { recursive: true, force: true })
   })
 
@@ -64,7 +64,7 @@ describe('serveOrcaApp --supervise', () => {
 
   it('starts the server from the app, not the copy, once relocated outside it', async () => {
     const appRoot = join(root, 'Orca.app', 'Contents', 'Resources', 'app.asar.unpacked')
-    process.env.ORCA_SERVE_SUPERVISOR_APP_ROOT = appRoot
+    process.env.BBQ_SERVE_SUPERVISOR_APP_ROOT = appRoot
     try {
       const child = new FakeChildProcess()
       child.kill.mockImplementation((signal: NodeJS.Signals) =>
@@ -76,9 +76,9 @@ describe('serveOrcaApp --supervise', () => {
       })
       await expect(serveOrcaApp({ supervise: true })).resolves.toBe(0)
       expect(spawnMock.mock.calls[0][2]).toMatchObject({ cwd: appRoot })
-      expect(spawnMock.mock.calls[0][2].env).not.toHaveProperty('ORCA_SERVE_SUPERVISOR_APP_ROOT')
+      expect(spawnMock.mock.calls[0][2].env).not.toHaveProperty('BBQ_SERVE_SUPERVISOR_APP_ROOT')
     } finally {
-      delete process.env.ORCA_SERVE_SUPERVISOR_APP_ROOT
+      delete process.env.BBQ_SERVE_SUPERVISOR_APP_ROOT
     }
   })
 

@@ -155,10 +155,10 @@ async function runBuiltCli(
   const child = spawn(process.execPath, [CLI_PATH, ...args], {
     env: {
       ...process.env,
-      ORCA_USER_DATA_PATH: userDataPath,
-      ORCA_TERMINAL_HANDLE: TERMINAL_HANDLE,
-      ORCA_PANE_KEY: PANE_KEY,
-      ORCA_AGENT_LAUNCH_TOKEN: LAUNCH_TOKEN
+      BBQ_USER_DATA_PATH: userDataPath,
+      BBQ_TERMINAL_HANDLE: TERMINAL_HANDLE,
+      BBQ_PANE_KEY: PANE_KEY,
+      BBQ_AGENT_LAUNCH_TOKEN: LAUNCH_TOKEN
     },
     stdio: ['ignore', 'pipe', 'pipe']
   })

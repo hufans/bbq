@@ -202,7 +202,7 @@ describe('buildPosixCommandPathLookupScript', () => {
         'set -e',
         buildPosixCommandPathLookupScript({
           kind: 'literal',
-          value: '__orca_missing_command_path_lookup__'
+          value: '__bbq_missing_command_path_lookup__'
         }),
         `printf '%s\\n' survived`
       ].join('\n')
@@ -226,7 +226,7 @@ describe('buildPosixCommandPathLookupScript', () => {
       value: "agent'; echo injected; '"
     })
 
-    expect(script).toContain(`_orca_lookup_command='agent'\\''; echo injected; '\\'''`)
+    expect(script).toContain(`_bbq_lookup_command='agent'\\''; echo injected; '\\'''`)
   })
 
   it.skipIf(!canRunWslSh())(

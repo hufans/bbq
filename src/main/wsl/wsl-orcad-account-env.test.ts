@@ -21,9 +21,9 @@ function claudeLaunch(
     wslDistro: 'Ubuntu',
     wslLinuxConfigDir: CLAUDE_HOME,
     envPatch: {
-      ORCA_CLAUDE_PROFILE_POINTER: POINTER,
+      BBQ_CLAUDE_PROFILE_POINTER: POINTER,
       CLAUDE_CONFIG_DIR: CLAUDE_HOME,
-      ORCA_CLAUDE_INJECTED_CONFIG_DIR: CLAUDE_HOME
+      BBQ_CLAUDE_INJECTED_CONFIG_DIR: CLAUDE_HOME
     },
     provenance: 'profile:acct-a:wsl:Ubuntu',
     ...overrides
@@ -35,7 +35,7 @@ function dependencies(
 ): WslOrcadAccountEnvDependencies {
   return {
     prepareClaudeLaunch: vi.fn(async () => claudeLaunch()),
-    claudeTerminalEnv: vi.fn(() => ({ ORCA_CLAUDE_PROFILE_POINTER: POINTER })),
+    claudeTerminalEnv: vi.fn(() => ({ BBQ_CLAUDE_PROFILE_POINTER: POINTER })),
     prepareCodexHome: vi.fn(async () => '\\\\wsl.localhost\\Ubuntu\\home\\u\\.orca\\codex-b'),
     managedAccountSelected: vi.fn(() => true),
     accountNotApplied: vi.fn(),
@@ -47,9 +47,9 @@ describe('prepareWslOrcadAccountEnv', () => {
   it('gives a Claude launch the selected account folder and the Codex home', async () => {
     const deps = dependencies()
     await expect(prepareWslOrcadAccountEnv('Ubuntu', 'claude', deps)).resolves.toEqual({
-      ORCA_CLAUDE_PROFILE_POINTER: POINTER,
+      BBQ_CLAUDE_PROFILE_POINTER: POINTER,
       CLAUDE_CONFIG_DIR: CLAUDE_HOME,
-      ORCA_CLAUDE_INJECTED_CONFIG_DIR: CLAUDE_HOME,
+      BBQ_CLAUDE_INJECTED_CONFIG_DIR: CLAUDE_HOME,
       CODEX_HOME: '/home/u/.orca/codex-b'
     })
     expect(deps.prepareClaudeLaunch).toHaveBeenCalledWith({ runtime: 'wsl', wslDistro: 'Ubuntu' })
@@ -58,7 +58,7 @@ describe('prepareWslOrcadAccountEnv', () => {
   it('gives every other process only the Claude pointer, never waiting on Claude setup', async () => {
     const deps = dependencies()
     await expect(prepareWslOrcadAccountEnv('Ubuntu', 'codex', deps)).resolves.toEqual({
-      ORCA_CLAUDE_PROFILE_POINTER: POINTER,
+      BBQ_CLAUDE_PROFILE_POINTER: POINTER,
       CODEX_HOME: '/home/u/.orca/codex-b'
     })
     expect(deps.prepareClaudeLaunch).not.toHaveBeenCalled()
@@ -67,11 +67,11 @@ describe('prepareWslOrcadAccountEnv', () => {
   it('sends only the pointer for System default on both', async () => {
     const deps = dependencies({
       prepareClaudeLaunch: async () =>
-        claudeLaunch({ envPatch: { ORCA_CLAUDE_PROFILE_POINTER: POINTER } }),
+        claudeLaunch({ envPatch: { BBQ_CLAUDE_PROFILE_POINTER: POINTER } }),
       prepareCodexHome: async () => null
     })
     await expect(prepareWslOrcadAccountEnv('Ubuntu', 'claude', deps)).resolves.toEqual({
-      ORCA_CLAUDE_PROFILE_POINTER: POINTER
+      BBQ_CLAUDE_PROFILE_POINTER: POINTER
     })
   })
 
@@ -85,7 +85,7 @@ describe('prepareWslOrcadAccountEnv', () => {
   })
 
   it('refuses a home it cannot send', async () => {
-    const deps = dependencies({ claudeTerminalEnv: () => ({ ORCA_CLAUDE_PROFILE_POINTER: 'x' }) })
+    const deps = dependencies({ claudeTerminalEnv: () => ({ BBQ_CLAUDE_PROFILE_POINTER: 'x' }) })
     await expect(prepareWslOrcadAccountEnv('Ubuntu', null, deps)).rejects.toThrow(
       'not a usable path'
     )
@@ -123,7 +123,7 @@ describe('withWslOrcadAccountEnv', () => {
 
   it('adds the env to a plain shell and over a caller-built agent launch', async () => {
     await expect(run('terminal.create', { worktree: 'id:wt' })).resolves.toMatchObject({
-      params: { env: { ORCA_CLAUDE_PROFILE_POINTER: POINTER, CODEX_HOME: '/home/u/.orca/codex-b' } }
+      params: { env: { BBQ_CLAUDE_PROFILE_POINTER: POINTER, CODEX_HOME: '/home/u/.orca/codex-b' } }
     })
     const created = await run('session.tabs.createTerminal', {
       worktree: 'id:wt',
@@ -191,9 +191,9 @@ describe('withWslOrcadAccountEnv', () => {
         params: {
           ...create,
           accountEnv: {
-            ORCA_CLAUDE_PROFILE_POINTER: POINTER,
+            BBQ_CLAUDE_PROFILE_POINTER: POINTER,
             CLAUDE_CONFIG_DIR: CLAUDE_HOME,
-            ORCA_CLAUDE_INJECTED_CONFIG_DIR: CLAUDE_HOME,
+            BBQ_CLAUDE_INJECTED_CONFIG_DIR: CLAUDE_HOME,
             CODEX_HOME: '/home/u/.orca/codex-b'
           }
         }

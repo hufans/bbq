@@ -289,7 +289,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
       { command: 'claude' },
       {
         runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
-        envVars: { ORCA_ROOT_PATH: '/tmp/repo' },
+        envVars: { BBQ_ROOT_PATH: '/tmp/repo' },
         waitForAgentStartup: true
       }
     )

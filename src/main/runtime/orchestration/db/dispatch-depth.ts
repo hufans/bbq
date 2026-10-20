@@ -152,7 +152,7 @@ function findActiveDispatchForCreator(
   const row = this.db
     .prepare(
       `SELECT ${DISPATCH_CONTEXT_COLUMN_LIST} FROM dispatch_contexts
-       WHERE assignee_orca_session_id = ? AND status IN ('pending', 'dispatched')
+       WHERE assignee_bbq_session_id = ? AND status IN ('pending', 'dispatched')
        ORDER BY rowid DESC LIMIT 1`
     )
     .get(creator.orcaSessionId)

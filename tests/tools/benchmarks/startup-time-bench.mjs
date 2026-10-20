@@ -222,7 +222,7 @@ function buildLaunchEnvironment({ fixtureDir, githubRepos, ghShimDir }) {
     ORCA_E2E_HEADLESS: '1'
   }
   delete env.CODEX_HOME
-  delete env.ORCA_CODEX_HOME
+  delete env.BBQ_CODEX_HOME
   if (ghShimDir) {
     env.PATH = `${ghShimDir}${delimiter}${env.PATH ?? ''}`
   }

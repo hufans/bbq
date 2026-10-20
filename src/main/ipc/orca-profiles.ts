@@ -71,28 +71,28 @@ function profileIdFromArgs(args: unknown): string {
       ? args.profileId.trim()
       : ''
   if (!profileId) {
-    throw new Error('invalid_orca_profile_id')
+    throw new Error('invalid_bbq_profile_id')
   }
   return profileId
 }
 
 function findProjectsByPathArgsFromUnknown(args: unknown): FindOrcaProfileProjectsByPathArgs {
   if (!args || typeof args !== 'object') {
-    throw new Error('invalid_orca_profile_project_path')
+    throw new Error('invalid_bbq_profile_project_path')
   }
   const candidate = args as FindOrcaProfileProjectsByPathArgs
   const path = typeof candidate.path === 'string' ? candidate.path.trim() : ''
   if (!path) {
-    throw new Error('invalid_orca_profile_project_path')
+    throw new Error('invalid_bbq_profile_project_path')
   }
   let executionHostId: FindOrcaProfileProjectsByPathArgs['executionHostId'] = null
   if (candidate.executionHostId !== null && candidate.executionHostId !== undefined) {
     if (typeof candidate.executionHostId !== 'string') {
-      throw new Error('invalid_orca_profile_project_path')
+      throw new Error('invalid_bbq_profile_project_path')
     }
     executionHostId = normalizeExecutionHostId(candidate.executionHostId)
     if (!executionHostId) {
-      throw new Error('invalid_orca_profile_project_path')
+      throw new Error('invalid_bbq_profile_project_path')
     }
   }
   return {
@@ -109,11 +109,11 @@ function findProjectsByPathArgsFromUnknown(args: unknown): FindOrcaProfileProjec
 
 function orgIdFromUnknown(args: unknown): string {
   if (!args || typeof args !== 'object') {
-    throw new Error('invalid_orca_profile_org_selection')
+    throw new Error('invalid_bbq_profile_org_selection')
   }
   const orgId = (args as SelectOrcaProfileOrgArgs).orgId?.trim()
   if (!orgId) {
-    throw new Error('invalid_orca_profile_org_selection')
+    throw new Error('invalid_bbq_profile_org_selection')
   }
   return orgId
 }
@@ -219,7 +219,7 @@ export function registerOrcaProfileHandlers(
       const args = transferProjectArgsFromUnknown(rawArgs)
       const current = getOrcaProfileListState()
       if (args.targetProfileId === current.activeProfileId) {
-        throw new Error('active_target_orca_profile_transfer_requires_relaunch')
+        throw new Error('active_target_bbq_profile_transfer_requires_relaunch')
       }
       if (args.mode === 'move' && args.sourceProfileId === current.activeProfileId) {
         // Why: transfer before any relaunch side effect so a duplicate-target

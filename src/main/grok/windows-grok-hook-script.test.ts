@@ -125,12 +125,12 @@ describe.skipIf(process.platform !== 'win32')('buildWindowsGrokHookScript (win32
         const address = server.address()
         const env: NodeJS.ProcessEnv = {
           ...process.env,
-          ORCA_AGENT_HOOK_PORT: String(typeof address === 'object' && address ? address.port : 0),
-          ORCA_AGENT_HOOK_TOKEN: 'test-token',
-          ORCA_PANE_KEY: PANE_KEY,
-          ORCA_WORKTREE_ID: WORKTREE_ID
+          BBQ_AGENT_HOOK_PORT: String(typeof address === 'object' && address ? address.port : 0),
+          BBQ_AGENT_HOOK_TOKEN: 'test-token',
+          BBQ_PANE_KEY: PANE_KEY,
+          BBQ_WORKTREE_ID: WORKTREE_ID
         }
-        delete env.ORCA_AGENT_HOOK_ENDPOINT
+        delete env.BBQ_AGENT_HOOK_ENDPOINT
         delete env.GROK_HOME
         if (grokHome !== undefined) {
           env.GROK_HOME = grokHome

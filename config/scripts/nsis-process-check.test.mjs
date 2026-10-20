@@ -60,7 +60,7 @@ describe.runIf(process.platform === 'win32')(
       "return ((Get-ExecutionPolicy @parameters) -eq 'Restricted')",
       '} catch { return $false } };',
       // A failed getter must not fall through to the query's successful exit.
-      "if ((Test-OrcaRestrictedPolicy '__orca_invalid_scope__') -ne $false) { exit 11 };",
+      "if ((Test-OrcaRestrictedPolicy '__bbq_invalid_scope__') -ne $false) { exit 11 };",
       "if ((Test-OrcaRestrictedPolicy 'Process') -ne $true) { exit 10 };",
       'if ((Test-OrcaRestrictedPolicy) -ne $true) { exit 10 };',
       `[Console]::Out.WriteLine('${policyReceipt}');`

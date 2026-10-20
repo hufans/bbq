@@ -63,7 +63,7 @@ function createWslRunner(
     interopReady?: boolean
   } = {}
 ) {
-  const commandPath = '/home/alice/.local/bin/orca-ide'
+  const commandPath = '/home/alice/.local/bin/bbq'
   const legacyCommandPath = '/home/alice/.local/bin/orca'
   const bridgePath = '/home/alice/.local/share/orca/orca-wsl-bridge.ps1'
   const files = new Map<string, string>()
@@ -175,7 +175,7 @@ describe('WslCliInstaller', () => {
 
     await expect(installer.getStatus()).resolves.toMatchObject({
       state: 'not_installed',
-      commandPath: '/home/alice/.local/bin/orca-ide'
+      commandPath: '/home/alice/.local/bin/bbq'
     })
 
     const installed = await installer.install()
@@ -222,11 +222,14 @@ describe('WslCliInstaller', () => {
     await expect(installer.getStatus()).resolves.toMatchObject({
       supported: true,
       state: 'not_installed',
-      commandPath: '/home/alice/.local/bin/orca-ide'
+      commandPath: '/home/alice/.local/bin/bbq'
     })
   })
 
   it('derives the shared WSL bridge path for current and legacy command names', () => {
+    expect(_internals.getBridgePathFromCommandPath('/home/alice/.local/bin/bbq')).toBe(
+      '/home/alice/.local/share/orca/orca-wsl-bridge.ps1'
+    )
     expect(_internals.getBridgePathFromCommandPath('/home/alice/.local/bin/orca-ide')).toBe(
       '/home/alice/.local/share/orca/orca-wsl-bridge.ps1'
     )
@@ -339,7 +342,7 @@ describe('WslCliInstaller', () => {
     expect(bridge).toContain('$WslCwd = $args[2]')
     expect(bridge).toContain('$ForwardArgs = @($args[$ForwardArgStart..($args.Count - 1)])')
     expect(bridge).toContain('if ([string]::IsNullOrEmpty($WslCwd))')
-    expect(bridge).toContain('$env:ORCA_CLI_CWD = $WslCwd')
+    expect(bridge).toContain('$env:BBQ_CLI_CWD = $WslCwd')
     expect(bridge).toContain('$LauncherDirectory = Split-Path -Parent $OrcaLauncher')
     expect(bridge).toContain('Push-Location -LiteralPath $LauncherDirectory')
     // Why (#16463): Push-Location moves only the PowerShell provider location.
@@ -354,7 +357,7 @@ describe('WslCliInstaller', () => {
     expect(bridge).toContain('$Process.WaitForExit()')
     expect(bridge).toContain('$exitCode = $Process.ExitCode')
     expect(bridge).not.toContain('& $OrcaLauncher @ForwardArgs')
-    expect(bridge).toContain('Remove-Item Env:ORCA_CLI_CWD -ErrorAction SilentlyContinue')
+    expect(bridge).toContain('Remove-Item Env:BBQ_CLI_CWD -ErrorAction SilentlyContinue')
     expect(bridge).toContain('catch')
     expect(bridge).toContain('$exitCode = 1')
     expect(bridge).toContain('exit $exitCode')
@@ -377,7 +380,7 @@ describe('WslCliInstaller', () => {
 
     await expect(installer.getStatus()).resolves.toMatchObject({
       state: 'not_installed',
-      commandPath: '/home/alice/.local/bin/orca-ide'
+      commandPath: '/home/alice/.local/bin/bbq'
     })
   })
 
@@ -693,7 +696,7 @@ describe('WslCliInstaller', () => {
     // Why: the command replace must stay one atomic rename; a mv-based backup
     // would leave a window where a concurrent shell finds no orca-ide at all.
     expect(installCommand).not.toContain('command_backup')
-    expect(installCommand).not.toContain(`mv -f '/home/alice/.local/bin/orca-ide'`)
+    expect(installCommand).not.toContain(`mv -f '/home/alice/.local/bin/bbq'`)
   })
 
   it.skipIf(process.platform === 'win32')(
@@ -701,7 +704,7 @@ describe('WslCliInstaller', () => {
     async () => {
       const root = await mkdtemp(join(tmpdir(), 'orca-wsl-cli-rollback-'))
       const home = join(root, 'home with spaces')
-      const commandPath = join(home, '.local', 'bin', 'orca-ide')
+      const commandPath = join(home, '.local', 'bin', 'bbq')
       const bridgePath = join(home, '.local', 'share', 'orca', 'orca-wsl-bridge.ps1')
       const bridge = _internals.buildWslBridgeScript()
       await mkdir(join(home, '.local', 'bin'), { recursive: true })

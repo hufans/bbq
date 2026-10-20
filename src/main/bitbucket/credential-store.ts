@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, unlinkSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { resolveProductHomeDir } from '../../shared/product-brand'
 import { join } from 'node:path'
 import {
   CredentialDecryptionError,
@@ -51,7 +51,7 @@ let cachedSecret: BitbucketStoredSecret | null = null
 let credentialError: string | null = null
 
 function getOrcaDir(): string {
-  return join(homedir(), '.orca')
+  return resolveProductHomeDir()
 }
 
 function getMetadataPath(): string {

@@ -228,8 +228,8 @@ describe('electron-builder config', () => {
     expect(electronBuilderConfig.mac.extraResources).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          from: 'native/computer-use-macos/.build/release/Orca Computer Use.app',
-          to: 'Orca Computer Use.app'
+          from: 'native/computer-use-macos/.build/release/BBQ Computer Use.app',
+          to: 'BBQ Computer Use.app'
         })
       ])
     )
@@ -248,12 +248,12 @@ describe('electron-builder config', () => {
           to: 'computer-use-windows/runtime.ps1'
         }),
         expect.objectContaining({
-          from: 'native/windows-cli-launcher/.build/orca.exe',
-          to: 'bin/orca.exe'
+          from: 'native/windows-cli-launcher/.build/bbq.exe',
+          to: 'bin/bbq.exe'
         }),
         expect.objectContaining({
-          from: 'native/windows-cli-launcher/.build/orca-administrator-restart.exe',
-          to: 'bin/orca-administrator-restart.exe'
+          from: 'native/windows-cli-launcher/.build/bbq-administrator-restart.exe',
+          to: 'bin/bbq-administrator-restart.exe'
         })
       ])
     )
@@ -330,8 +330,8 @@ describe('electron-builder config', () => {
     expect(electronBuilderConfig.win.extraResources).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          from: 'resources/win32/bin/orca.cmd',
-          to: 'bin/orca.cmd'
+          from: 'resources/win32/bin/bbq.cmd',
+          to: 'bin/bbq.cmd'
         })
       ])
     )
@@ -343,13 +343,13 @@ describe('electron-builder config', () => {
     expect(electronBuilderConfig.mac.extraFiles).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          from: 'native/notification-status-macos/.build/release/orca-notification-status',
-          to: 'MacOS/orca-notification-status'
+          from: 'native/notification-status-macos/.build/release/bbq-notification-status',
+          to: 'MacOS/bbq-notification-status'
         })
       ])
     )
     expect(electronBuilderConfig.mac.extraResources).not.toEqual(
-      expect.arrayContaining([expect.objectContaining({ to: 'orca-notification-status' })])
+      expect.arrayContaining([expect.objectContaining({ to: 'bbq-notification-status' })])
     )
   })
 
@@ -357,13 +357,13 @@ describe('electron-builder config', () => {
     expect(electronBuilderConfig.mac.extraFiles).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          from: 'native/keyboard-layout-macos/.build/release/orca-keyboard-layout',
-          to: 'MacOS/orca-keyboard-layout'
+          from: 'native/keyboard-layout-macos/.build/release/bbq-keyboard-layout',
+          to: 'MacOS/bbq-keyboard-layout'
         })
       ])
     )
     expect(electronBuilderConfig.mac.extraResources).not.toEqual(
-      expect.arrayContaining([expect.objectContaining({ to: 'orca-keyboard-layout' })])
+      expect.arrayContaining([expect.objectContaining({ to: 'bbq-keyboard-layout' })])
     )
   })
 
@@ -444,17 +444,17 @@ describe('electron-builder config', () => {
   })
 
   it('matches the Linux desktop entry to Electron window class', () => {
-    expect(electronBuilderConfig.linux.desktop.entry.StartupWMClass).toBe('orca')
+    expect(electronBuilderConfig.linux.desktop.entry.StartupWMClass).toBe('bbq')
   })
 
   it('uses the release artifact set as local Linux targets without changing existing names', () => {
     expect(electronBuilderConfig.linux.target).toEqual(['AppImage', 'deb', 'rpm'])
     expect(electronBuilderConfig.toolsets).toEqual({ appimage: '1.0.3' })
-    expect(electronBuilderConfig.appImage.artifactName).toBe('orca-linux.${ext}')
-    expect(electronBuilderConfig.deb.artifactName).toBe('orca-ide_${version}_${arch}.${ext}')
+    expect(electronBuilderConfig.appImage.artifactName).toBe('bbq-linux.${ext}')
+    expect(electronBuilderConfig.deb.artifactName).toBe('bbq_${version}_${arch}.${ext}')
     expect(electronBuilderConfig.rpm).toMatchObject({
-      packageName: 'orca-ide',
-      artifactName: 'orca-ide-${version}.${arch}.${ext}'
+      packageName: 'bbq',
+      artifactName: 'bbq-${version}.${arch}.${ext}'
     })
   })
 
@@ -492,7 +492,7 @@ describe('electron-builder config', () => {
       delete require.cache[configPath]
       process.env.ORCA_LINUX_ARM64_RELEASE = '1'
       expect(require('../electron-builder.config.cjs').appImage.artifactName).toBe(
-        'orca-linux-arm64.${ext}'
+        'bbq-linux-arm64.${ext}'
       )
     } finally {
       if (original === undefined) {

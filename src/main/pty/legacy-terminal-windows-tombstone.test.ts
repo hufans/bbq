@@ -44,12 +44,12 @@ describe('legacy terminal Windows tombstone text', () => {
 
     const cmd = readFileSync(join(win32Dir, 'git.cmd'), 'utf8')
     expect(cmd).toContain(
-      'if defined orca_real for %%G in ("%orca_real%") do if /I "%%~dpG"=="%~dp0" set "orca_real="'
+      'if defined bbq_real for %%G in ("%bbq_real%") do if /I "%%~dpG"=="%~dp0" set "bbq_real="'
     )
     // Why: a captured path that no longer exists must be cleared, or the where.exe fallback below
     // is skipped and the wrapper execs a missing binary.
-    expect(cmd).toContain('if defined orca_real if not exist "%orca_real%" set "orca_real="')
-    expectOrdered(cmd, 'if not exist "%orca_real%"', ':orca_try_candidate')
+    expect(cmd).toContain('if defined bbq_real if not exist "%bbq_real%" set "bbq_real="')
+    expectOrdered(cmd, 'if not exist "%bbq_real%"', ':bbq_try_candidate')
     const powershell = readFileSync(join(win32Dir, 'git-wrapper.ps1'), 'utf8')
     expect(powershell).toContain('[StringComparison]::OrdinalIgnoreCase')
     expect(powershell).toContain('$realCommand = $null')
@@ -113,68 +113,68 @@ describe('legacy terminal Windows tombstone text', () => {
       const cmd = readFileSync(join(win32Dir, `${command}.cmd`), 'utf8')
       // No where.exe at all: it searches cwd first, so the wrapper walks the cleaned PATH.
       expect(cmd).not.toContain('where.exe')
-      expect(cmd).toContain('for %%P in ("%orca_clean_path:;=" "%") do (')
-      expect(cmd).toContain(`if exist "%orca_candidate_dir%\\${command}.exe"`)
+      expect(cmd).toContain('for %%P in ("%bbq_clean_path:;=" "%") do (')
+      expect(cmd).toContain(`if exist "%bbq_candidate_dir%\\${command}.exe"`)
       // Why: %~f preserves a trailing separator; without normalizing, a wrapper-dir entry
       // spelled with one escapes self-exclusion and the wrapper tail-loops on itself. The
       // separator lives in a variable because a literal backslash before the closing quote
       // breaks cmd's parser, and a sentinel character would corrupt paths containing it.
-      expect(cmd).toContain('set "orca_sep=\\"')
+      expect(cmd).toContain('set "bbq_sep=\\"')
       // Why: bare setlocal inherits the caller's delayed-expansion state. Under a parent shell
       // with /V:ON, a literal !CD! PATH entry became the cwd and ran a planted git.cmd (exit 66),
       // and a legitimate directory containing ! stopped resolving (exit 127). Both on Windows 11.
       expect(cmd).toContain('setlocal DisableDelayedExpansion')
       expect(cmd).not.toContain('\r\nsetlocal\r\n')
-      // Why: a captured ORCA_REAL_* may be relative, and both the existence test and the
+      // Why: a captured BBQ_REAL_* may be relative, and both the existence test and the
       // invocation resolve it against the cwd.
-      expect(cmd).toContain('if defined orca_real call :orca_check_rooted')
-      expect(cmd).toContain('if defined orca_real if not defined orca_rooted set "orca_real="')
+      expect(cmd).toContain('if defined bbq_real call :bbq_check_rooted')
+      expect(cmd).toContain('if defined bbq_real if not defined bbq_rooted set "bbq_real="')
       // Why: the exported PATH is inherited by the real command; a relative entry left in it lets
       // the cwd select the tools that command spawns.
-      // Why the exact block, not an ordering pin: the first ':orca_append_path' in the file is
-      // the top-level CALL, and the first 'if not defined orca_rooted' belongs to a different
+      // Why the exact block, not an ordering pin: the first ':bbq_append_path' in the file is
+      // the top-level CALL, and the first 'if not defined bbq_rooted' belongs to a different
       // subroutine, so an ordering pin stayed green with this subroutine's guard deleted.
-      expect(cmd).toContain(':orca_append_path\r\nif not defined orca_entry exit /b\r\n')
+      expect(cmd).toContain(':bbq_append_path\r\nif not defined bbq_entry exit /b\r\n')
       expect(cmd).toContain(
-        'set "orca_probe=%orca_entry%"\r\ncall :orca_check_rooted\r\nif not defined orca_rooted exit /b\r\nfor %%G in ("%orca_entry%") do set "orca_path_entry_dir=%%~fG"'
+        'set "bbq_probe=%bbq_entry%"\r\ncall :bbq_check_rooted\r\nif not defined bbq_rooted exit /b\r\nfor %%G in ("%bbq_entry%") do set "bbq_path_entry_dir=%%~fG"'
       )
       // Why: CALL re-expands its own command line, so path data passed as an argument gets a
       // second round of percent expansion. A PATH entry holding a literal %CD% became the
       // current directory before the rooted check saw it and the planted git.cmd ran (rc=66 on
       // Windows 11). Every caller must hand the value over in a variable instead.
-      expect(cmd).not.toContain('call :orca_check_rooted "')
-      expect(cmd).not.toContain('call :orca_try_candidate "')
-      expect(cmd).not.toContain('call :orca_append_path "')
+      expect(cmd).not.toContain('call :bbq_check_rooted "')
+      expect(cmd).not.toContain('call :bbq_try_candidate "')
+      expect(cmd).not.toContain('call :bbq_append_path "')
       expect(cmd).not.toContain('%~1')
-      expect(cmd).toContain('set "orca_probe=%orca_entry%"\r\ncall :orca_check_rooted\r\n')
-      // Why: orca_sep is compared against before the legacy dir is normalized; defining it later
+      expect(cmd).toContain('set "bbq_probe=%bbq_entry%"\r\ncall :bbq_check_rooted\r\n')
+      // Why: bbq_sep is compared against before the legacy dir is normalized; defining it later
       // made that strip silently no-op and left the legacy dir on PATH.
-      expectOrdered(cmd, 'set "orca_sep=', 'if "%orca_legacy_norm:~-1%."')
-      // Why: %orca_sep% expands before the line is parsed, so `=="%orca_sep%"` becomes `=="\"` —
+      expectOrdered(cmd, 'set "bbq_sep=', 'if "%bbq_legacy_norm:~-1%."')
+      // Why: %bbq_sep% expands before the line is parsed, so `=="%bbq_sep%"` becomes `=="\"` —
       // the literal trap the variable exists to avoid. Both sides must carry the trailing dot.
-      expect(cmd).not.toContain('=="%orca_sep%"')
+      expect(cmd).not.toContain('=="%bbq_sep%"')
       // Why: nothing else asserts the *reject* path, so deleting it would reopen the cwd hijack
       // while every accept-path assertion stayed green.
       expectOrdered(
         cmd,
-        'call :orca_check_rooted\r\nif not defined orca_rooted exit /b',
-        'for %%G in ("%orca_entry%") do set "orca_candidate_dir='
+        'call :bbq_check_rooted\r\nif not defined bbq_rooted exit /b',
+        'for %%G in ("%bbq_entry%") do set "bbq_candidate_dir='
       )
-      expect(cmd).toContain('if not defined orca_rooted exit /b')
-      expect(cmd).toContain('if "%orca_candidate_dir:~-1%."=="%orca_sep%."')
+      expect(cmd).toContain('if not defined bbq_rooted exit /b')
+      expect(cmd).toContain('if "%bbq_candidate_dir:~-1%."=="%bbq_sep%."')
       expect(cmd).not.toContain(':\\#=#%')
       // A candidate inside the wrapper directory must still be rejected, compared against the
       // cached wrapper dir because %~dp0 is rebound inside a CALL.
-      expect(cmd).toContain('if /I "%orca_candidate_dir%\\"=="%orca_wrapper_dir%" exit /b')
+      expect(cmd).toContain('if /I "%bbq_candidate_dir%\\"=="%bbq_wrapper_dir%" exit /b')
       // Relative entries resolve against the cwd, so they must be rejected like empty ones.
       // Why: the rooted-path test must not shell out — an external tool would itself be
       // resolved from the cwd, reintroducing the hijack.
       expect(cmd).not.toContain('findstr')
-      expect(cmd).toContain('if "%orca_probe:~1,2%"==":\\" set "orca_rooted=1"')
-      expect(cmd).toContain('if "%orca_probe:~0,2%"=="\\\\" set "orca_rooted=1"')
+      expect(cmd).toContain('if "%bbq_probe:~1,2%"==":\\" set "bbq_rooted=1"')
+      expect(cmd).toContain('if "%bbq_probe:~0,2%"=="\\\\" set "bbq_rooted=1"')
       // Why: these two guards are the only thing stopping an empty element reaching the cwd on
       // Windows; deleting either left every other assertion green.
-      expect(cmd).toContain('if not defined orca_entry exit /b')
+      expect(cmd).toContain('if not defined bbq_entry exit /b')
 
       const powershell = readFileSync(join(win32Dir, `${command}-wrapper.ps1`), 'utf8')
       expect(powershell).not.toContain('Get-Command')
@@ -201,14 +201,14 @@ describe('legacy terminal Windows tombstone text', () => {
       // legacy directory spelled with a trailing / missed the lexical exclusion.
       expect(powershell).not.toContain("TrimEnd('\\')")
       // Why: `C:/Program Files/Git/cmd` style entries are legitimate and must stay accepted.
-      expect(cmd).toContain('if "%orca_probe:~1,2%"==":/" set "orca_rooted=1"')
+      expect(cmd).toContain('if "%bbq_probe:~1,2%"==":/" set "bbq_rooted=1"')
       // Why: the legacy-dir compare needs the same trailing-separator strip as its twins.
-      expect(cmd).toContain('if "%orca_legacy_norm:~-1%."=="%orca_sep%."')
+      expect(cmd).toContain('if "%bbq_legacy_norm:~-1%."=="%bbq_sep%."')
       // Why: cmd expands a whole line before evaluating `if defined`, so this strip must live in
       // a CALL body. Inline, it ran its substring syntax against an unset variable and mangled
       // the line into a syntax error. Proven on Windows 11.
-      expect(cmd).toContain('if defined orca_legacy_wrapper_dir call :orca_normalize_legacy_dir')
-      expect(cmd).not.toContain('if defined orca_legacy_wrapper_dir for ')
+      expect(cmd).toContain('if defined bbq_legacy_wrapper_dir call :bbq_normalize_legacy_dir')
+      expect(cmd).not.toContain('if defined bbq_legacy_wrapper_dir for ')
       expect(powershell).toContain('if (-not $dir) { continue }')
       expect(powershell).toContain('Test-Path -LiteralPath $candidate -PathType Leaf')
     }
@@ -243,13 +243,13 @@ describe('legacy terminal Windows tombstone text', () => {
 
     for (const command of ['git', 'gh'] as const) {
       const cmd = readFileSync(join(win32Dir, `${command}.cmd`), 'utf8')
-      expect(cmd).toContain('if not defined PATH goto :orca_path_walked')
-      expect(cmd).toContain('if not defined orca_clean_path goto :orca_candidates_walked')
+      expect(cmd).toContain('if not defined PATH goto :bbq_path_walked')
+      expect(cmd).toContain('if not defined bbq_clean_path goto :bbq_candidates_walked')
       for (const [guard, loop] of [
-        ['if not defined PATH goto :orca_path_walked', 'for %%P in ("%PATH:;='],
+        ['if not defined PATH goto :bbq_path_walked', 'for %%P in ("%PATH:;='],
         [
-          'if not defined orca_clean_path goto :orca_candidates_walked',
-          'for %%P in ("%orca_clean_path:;='
+          'if not defined bbq_clean_path goto :bbq_candidates_walked',
+          'for %%P in ("%bbq_clean_path:;='
         ]
       ] as const) {
         expectOrdered(cmd, guard, loop)

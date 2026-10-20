@@ -1,4 +1,5 @@
 import { accessSync, constants } from 'node:fs'
+import { PRODUCT_COMMAND } from '../../shared/product-brand'
 import { delimiter, dirname, isAbsolute, join, relative } from 'node:path'
 import { RuntimeClientError } from './types'
 import { resolveLaunchUserDataPath } from './launch-user-data-path'
@@ -9,27 +10,27 @@ import { resolveLaunchUserDataPath } from './launch-user-data-path'
  * profile, and is rewritten with each server version.
  */
 export function canStartOrcaServer(env: NodeJS.ProcessEnv): boolean {
-  const override = env.ORCA_APP_EXECUTABLE
+  const override = env.BBQ_APP_EXECUTABLE
   return (
     (typeof override === 'string' && override.trim().length > 0) || env.ELECTRON_RUN_AS_NODE === '1'
   )
 }
 
-/** Linux installs the app's CLI as `orca-ide`: a bare `orca` there is often the screen reader. */
-export function appCliName(platform: NodeJS.Platform): string {
-  return platform === 'linux' ? 'orca-ide' : 'orca'
+/** Installed CLI command. `bbq` does not collide with GNOME Orca's `/usr/bin/orca`. */
+export function appCliName(_platform: NodeJS.Platform): string {
+  return PRODUCT_COMMAND
 }
 
 const NOT_AN_APP_CLI =
-  "This `orca` command isn't running from an installed Orca app. On a host Orca reaches over SSH, it belongs to that connection's server and can't start one of its own."
+  "This command isn't running from an installed BBQ app. On a host this app reaches over SSH, the bundled command belongs to that connection's server and can't start one of its own."
 
 export function serverOnlyServeMessage(platform: NodeJS.Platform): string {
-  return `${NOT_AN_APP_CLI} Install the Orca app on this machine and run \`${appCliName(platform)} serve\` from a plain login shell, or set ORCA_APP_EXECUTABLE to the Orca app executable.`
+  return `${NOT_AN_APP_CLI} Install the BBQ app on this machine and run \`${appCliName(platform)} serve\` from a plain login shell, or set BBQ_APP_EXECUTABLE to the app executable.`
 }
 
 function serverOnlyServiceInstallMessage(platform: NodeJS.Platform): string {
   const name = appCliName(platform)
-  return `Could not find the installed Orca app's \`${name}\` command on PATH. ${NOT_AN_APP_CLI} Install the Orca app on this machine, then run \`${name} serve service install\` from a plain login shell so the service uses the app's own profile, or pass --command <absolute path to the app's ${name}>.`
+  return `Could not find the installed BBQ app's \`${name}\` command on PATH. ${NOT_AN_APP_CLI} Install the BBQ app on this machine, then run \`${name} serve service install\` from a plain login shell so the service uses the app's own profile, or pass --command <absolute path to the app's ${name}>.`
 }
 
 function isVersionScopedDir(dir: string, userData: string): boolean {

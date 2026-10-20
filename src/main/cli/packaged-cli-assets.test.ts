@@ -6,6 +6,7 @@ import {
   mkdir,
   mkdtemp,
   readFile,
+  realpath,
   rm,
   stat,
   symlink,
@@ -29,23 +30,23 @@ const builderConfig = require('../../../config/electron-builder.config.cjs') as 
   files?: string[]
   asarUnpack?: string[]
 }
-const linuxLauncherAsset = new URL('../../../resources/linux/bin/orca-ide', import.meta.url)
-const darwinLauncherAsset = new URL('../../../resources/darwin/bin/orca', import.meta.url)
+const linuxLauncherAsset = new URL('../../../resources/linux/bin/bbq', import.meta.url)
+const darwinLauncherAsset = new URL('../../../resources/darwin/bin/bbq', import.meta.url)
 const unixLauncherFixtures = [
   {
     name: 'Linux',
     asset: linuxLauncherAsset,
-    appDir: ['Orca'],
-    launcher: ['resources', 'bin', 'orca-ide'],
-    executable: ['orca-ide'],
+    appDir: ['BBQ'],
+    launcher: ['resources', 'bin', 'bbq'],
+    executable: ['bbq'],
     cli: ['resources', 'app.asar.unpacked', 'out', 'cli', 'index.js']
   },
   {
     name: 'macOS',
     asset: darwinLauncherAsset,
-    appDir: ['Orca.app'],
-    launcher: ['Contents', 'Resources', 'bin', 'orca'],
-    executable: ['Contents', 'MacOS', 'Orca'],
+    appDir: ['BBQ.app'],
+    launcher: ['Contents', 'Resources', 'bin', 'bbq'],
+    executable: ['Contents', 'MacOS', 'BBQ'],
     cli: ['Contents', 'Resources', 'app.asar.unpacked', 'out', 'cli', 'index.js']
   }
 ] as const
@@ -124,7 +125,7 @@ describe('packaged CLI assets', () => {
           ORCA_BACKGROUND_LAUNCH: '1',
           NODE_PATH: '',
           NODE_OPTIONS: '',
-          ORCA_USER_DATA_PATH: join(root, 'user-data'),
+          BBQ_USER_DATA_PATH: join(root, 'user-data'),
           HOME: join(root, 'home')
         },
         timeoutMs: 10_000
@@ -254,12 +255,12 @@ server.listen(0, '127.0.0.1', () => {
     async () => {
       const root = await mkdtemp(join(tmpdir(), 'orca-linux-cli-'))
       try {
-        const appDir = join(root, 'Orca')
+        const appDir = join(root, 'BBQ')
         const resourcesDir = join(appDir, 'resources')
         const launcherDir = join(resourcesDir, 'bin')
         const cliDir = join(resourcesDir, 'app.asar.unpacked', 'out', 'cli')
-        const launcherPath = join(launcherDir, 'orca-ide')
-        const electronPath = join(appDir, 'orca-ide')
+        const launcherPath = join(launcherDir, 'bbq')
+        const electronPath = join(appDir, 'bbq')
         const cliPath = join(cliDir, 'index.js')
 
         await mkdir(launcherDir, { recursive: true })
@@ -285,7 +286,7 @@ printf 'arg=%s\\n' "$@"
 
         const homeDir = join(root, 'home')
         const commandDir = join(homeDir, '.local', 'bin')
-        const commandPath = join(commandDir, 'orca-ide')
+        const commandPath = join(commandDir, 'bbq')
         await mkdir(commandDir, { recursive: true })
         await mkdir(join(homeDir, 'orca'), { recursive: true })
         await symlink(launcherPath, commandPath)
@@ -326,9 +327,9 @@ node -e 'console.log(JSON.stringify({
   argv: process.argv.slice(1),
   runAsNode: process.env.ELECTRON_RUN_AS_NODE,
   nodeOptions: process.env.NODE_OPTIONS ?? null,
-  orcaNodeOptions: process.env.ORCA_NODE_OPTIONS ?? null,
+  orcaNodeOptions: process.env.BBQ_NODE_OPTIONS ?? null,
   nodeReplExternalModule: process.env.NODE_REPL_EXTERNAL_MODULE ?? null,
-  orcaNodeReplExternalModule: process.env.ORCA_NODE_REPL_EXTERNAL_MODULE ?? null
+  orcaNodeReplExternalModule: process.env.BBQ_NODE_REPL_EXTERNAL_MODULE ?? null
 }))' -- "$@"
 `,
           { encoding: 'utf8', mode: 0o755 }
@@ -351,7 +352,9 @@ node -e 'console.log(JSON.stringify({
           orcaNodeReplExternalModule: string | null
         }
 
-        expect(payload.argv).toEqual([cliPath, '--help', 'two words'])
+        const [gotCli, ...gotRest] = payload.argv
+        expect(await realpath(gotCli)).toBe(await realpath(cliPath))
+        expect(gotRest).toEqual(['--help', 'two words'])
         expect(payload.runAsNode).toBe('1')
         // Why: Electron's node bootstrap must not inherit these, but the CLI
         // still needs to see what the user set.
@@ -368,13 +371,13 @@ node -e 'console.log(JSON.stringify({
   itRunsUnixShell('keeps Linux serve on the CLI entrypoint in node mode', async () => {
     const root = await mkdtemp(join(tmpdir(), 'orca-linux-cli-serve-'))
     try {
-      const appDir = join(root, 'Orca')
+      const appDir = join(root, 'BBQ')
       const resourcesDir = join(appDir, 'resources')
       const launcherDir = join(resourcesDir, 'bin')
       const cliDir = join(resourcesDir, 'app.asar.unpacked', 'out', 'cli')
-      const launcherPath = join(launcherDir, 'orca-ide')
+      const launcherPath = join(launcherDir, 'bbq')
       const appRunPath = join(appDir, 'AppRun')
-      const electronPath = join(appDir, 'orca-ide')
+      const electronPath = join(appDir, 'bbq')
       const cliPath = join(cliDir, 'index.js')
       const statePath = join(root, 'launch-state.json')
 

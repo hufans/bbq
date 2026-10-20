@@ -353,7 +353,7 @@ describe('registerPtyHandlers', () => {
     const getSettings = vi.fn().mockReturnValue({ activeCodexManagedAccountId: 'account-a' })
     registerPtyHandlers(mainWindow as never, undefined, undefined, getSettings as never)
 
-    const nativeCodexEnv = { CODEX_HOME: '', ORCA_CODEX_HOME: '' }
+    const nativeCodexEnv = { CODEX_HOME: '', BBQ_CODEX_HOME: '' }
     await handlers.get('pty:spawn')!(null, { cols: 80, rows: 24, env: nativeCodexEnv })
     await handlers.get('pty:spawn')!(null, {
       cols: 80,

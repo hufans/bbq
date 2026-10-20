@@ -85,7 +85,7 @@ async function createMacCommandFixture() {
   const commandDirectory = join(root, 'bin')
   const commandPath = join(commandDirectory, 'orca')
   const resourcesPath = join(root, 'Current.app', 'Contents', 'Resources')
-  const launcherPath = join(resourcesPath, 'bin', 'orca')
+  const launcherPath = join(resourcesPath, 'bin', 'bbq')
   const staleLauncherPath = join(root, 'Old.app', 'Contents', 'Resources', 'bin', 'orca')
   await mkdir(commandDirectory, { recursive: true })
   await mkdir(dirname(launcherPath), { recursive: true })
@@ -209,8 +209,8 @@ describe.skipIf(process.platform === 'win32')('CLI command filesystem races', ()
       [
         '#!/usr/bin/env bash',
         `CLI='${oldCliPath}'`,
-        'export ORCA_NODE_OPTIONS="${NODE_OPTIONS-}"',
-        'export ORCA_NODE_REPL_EXTERNAL_MODULE="${NODE_REPL_EXTERNAL_MODULE-}"',
+        'export BBQ_NODE_OPTIONS="${NODE_OPTIONS-}"',
+        'export BBQ_NODE_REPL_EXTERNAL_MODULE="${NODE_REPL_EXTERNAL_MODULE-}"',
         'ELECTRON_RUN_AS_NODE=1 exec electron "$CLI" "$@"'
       ].join('\n')
     )
@@ -306,9 +306,9 @@ describe.skipIf(process.platform === 'win32')('CLI command filesystem races', ()
     const homePath = join(root, 'home')
     const commandDirectory = join(homePath, '.local', 'bin')
     const resourcesPath = join(root, 'resources')
-    const launcherPath = join(resourcesPath, 'bin', 'orca-ide')
+    const launcherPath = join(resourcesPath, 'bin', 'bbq')
     const legacyPath = join(commandDirectory, 'orca')
-    const managedLegacyTarget = join(resourcesPath, 'bin', 'orca')
+    const managedLegacyTarget = join(resourcesPath, 'bin', 'bbq')
     const foreignTarget = join(root, 'foreign-orca')
     await mkdir(commandDirectory, { recursive: true })
     await mkdir(dirname(launcherPath), { recursive: true })
@@ -338,9 +338,9 @@ describe.skipIf(process.platform === 'win32')('CLI command filesystem races', ()
     const homePath = join(root, 'home')
     const commandDirectory = join(homePath, '.local', 'bin')
     const resourcesPath = join(root, 'resources')
-    const launcherPath = join(resourcesPath, 'bin', 'orca-ide')
+    const launcherPath = join(resourcesPath, 'bin', 'bbq')
     const legacyPath = join(commandDirectory, 'orca')
-    const managedTarget = join(resourcesPath, 'bin', 'orca')
+    const managedTarget = join(resourcesPath, 'bin', 'bbq')
     const foreignTarget = join(root, 'foreign-orca')
     await mkdir(commandDirectory, { recursive: true })
     await mkdir(dirname(launcherPath), { recursive: true })

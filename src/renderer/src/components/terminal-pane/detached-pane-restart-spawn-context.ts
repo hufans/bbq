@@ -30,8 +30,8 @@ export function buildPaneIdentityEnv(
           ORCA_WORKSPACE_ROOT: folderWorkspace.folderPath
         }
       : {}),
-    ORCA_PANE_KEY: makePaneKey(tabId, leafId),
-    ORCA_TAB_ID: tabId,
-    ORCA_WORKTREE_ID: worktreeId
+    BBQ_PANE_KEY: makePaneKey(tabId, leafId),
+    BBQ_TAB_ID: tabId,
+    BBQ_WORKTREE_ID: worktreeId
   }
 }

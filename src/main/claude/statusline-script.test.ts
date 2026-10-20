@@ -22,7 +22,7 @@ describe('getManagedStatusLineScript (posix)', () => {
     const script = getManagedStatusLineScript('local')
     expect(script).toBe(getManagedStatusLineScript('posix'))
     const guardIndex = script.indexOf('*\'"rate_limits"\'*')
-    const endpointIndex = script.indexOf('ORCA_AGENT_HOOK_ENDPOINT')
+    const endpointIndex = script.indexOf('BBQ_AGENT_HOOK_ENDPOINT')
     const curlIndex = script.indexOf('curl -sS')
     expect(guardIndex).toBeGreaterThan(-1)
     expect(guardIndex).toBeLessThan(endpointIndex)
@@ -46,7 +46,7 @@ describe('getManagedStatusLineScript (win32 local)', () => {
     const captureIndex = script.indexOf('more.com')
     // Why: the \"-escaped needle makes findstr match the quoted JSON key, not any path containing rate_limits.
     const guardIndex = script.indexOf('findstr.exe" /c:\\"rate_limits\\"')
-    const endpointIndex = script.indexOf('call "%ORCA_AGENT_HOOK_ENDPOINT%"')
+    const endpointIndex = script.indexOf('call "%BBQ_AGENT_HOOK_ENDPOINT%"')
     const curlIndex = script.indexOf('curl.exe')
     expect(captureIndex).toBeGreaterThan(-1)
     expect(guardIndex).toBeGreaterThan(captureIndex)
@@ -60,7 +60,7 @@ describe('getManagedStatusLineScript (win32 local)', () => {
     const script = getManagedStatusLineScript('local')
     // Why: the stable leaf UUID stays filename-safe even when a host-supplied tab id does not,
     // while the delimiter replacement keeps a surviving legacy numeric key valid on Windows.
-    expect(script).toContain('set "ORCA_STATUSLINE_PANE_ID=%ORCA_PANE_KEY:~-36%"')
+    expect(script).toContain('set "ORCA_STATUSLINE_PANE_ID=%BBQ_PANE_KEY:~-36%"')
     expect(script).toContain('set "ORCA_STATUSLINE_PANE_ID=%ORCA_STATUSLINE_PANE_ID::=_%"')
     expect(script).toContain(
       'set "ORCA_STATUSLINE_PAYLOAD_FILE=%TEMP%\\orca-claude-statusline-%ORCA_STATUSLINE_PANE_ID%.tmp"'
@@ -89,12 +89,12 @@ describe('getManagedStatusLineScript (win32 local)', () => {
     stubPlatform('win32')
     const script = getManagedStatusLineScript('local')
     const paneGuardIndex = script.indexOf(
-      'if "%ORCA_PANE_KEY%"=="" goto :orca_agent_hook_drain_stdin'
+      'if "%BBQ_PANE_KEY%"=="" goto :bbq_agent_hook_drain_stdin'
     )
     const captureIndex = script.indexOf('more.com')
     expect(paneGuardIndex).toBeGreaterThan(-1)
     expect(paneGuardIndex).toBeLessThan(captureIndex)
-    expect(script).toContain(':orca_agent_hook_drain_stdin')
+    expect(script).toContain(':bbq_agent_hook_drain_stdin')
   })
 
   it('throttles with an all-builtin seconds-of-day stamp that fails open to posting', () => {
@@ -111,7 +111,7 @@ describe('getManagedStatusLineScript (win32 local)', () => {
     const stampWriteIndex = script.indexOf(
       'if defined ORCA_STATUSLINE_NOW (>"%ORCA_STATUSLINE_STAMP_FILE%" echo %ORCA_STATUSLINE_NOW%)'
     )
-    const tokenGuardIndex = script.indexOf('if "%ORCA_AGENT_HOOK_TOKEN%"=="" goto')
+    const tokenGuardIndex = script.indexOf('if "%BBQ_AGENT_HOOK_TOKEN%"=="" goto')
     const curlIndex = script.indexOf('curl.exe')
     // Why: the check precedes findstr so throttled ticks skip that spawn too, but the stamp
     // only advances after every post guard passes — skipped ticks must not defer the next post.
@@ -197,9 +197,9 @@ describe.skipIf(process.platform === 'win32')('statusline curl throttle (posix b
         env: {
           PATH: `${join(dir, 'stub-bin')}:${process.env.PATH ?? ''}`,
           TMPDIR: dir,
-          ORCA_AGENT_HOOK_PORT: '65535',
-          ORCA_AGENT_HOOK_TOKEN: 'test-token',
-          ORCA_PANE_KEY: paneKey
+          BBQ_AGENT_HOOK_PORT: '65535',
+          BBQ_AGENT_HOOK_TOKEN: 'test-token',
+          BBQ_PANE_KEY: paneKey
         },
         stdio: ['pipe', 'ignore', 'pipe']
       })

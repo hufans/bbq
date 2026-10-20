@@ -62,7 +62,7 @@ export function launchOrcaApp(): void {
 
   // Why: `openOrca` waits on this profile's metadata, so the app must start on it too.
   const userDataPath = resolveLaunchUserDataPath()
-  const overrideExecutable = process.env.ORCA_APP_EXECUTABLE
+  const overrideExecutable = process.env.BBQ_APP_EXECUTABLE
   if (typeof overrideExecutable === 'string' && overrideExecutable.trim().length > 0) {
     const pinned = pinLaunchUserDataPath(
       getExecutableAppArgs(overrideExecutable),
@@ -293,7 +293,7 @@ function spawnElectronServe(
 }
 
 export function getExecutableAppArgs(executable: string): string[] {
-  const args = process.env.ORCA_APP_EXECUTABLE_NEEDS_APP_ROOT === '1' ? [resolveAppRoot()] : []
+  const args = process.env.BBQ_APP_EXECUTABLE_NEEDS_APP_ROOT === '1' ? [resolveAppRoot()] : []
   if (needsElectronNoSandbox(executable)) {
     args.push('--no-sandbox')
   }
@@ -313,7 +313,7 @@ export function resolveAppRoot(): string {
 }
 
 export function resolveForegroundOrcaExecutable(): string {
-  const overrideExecutable = process.env.ORCA_APP_EXECUTABLE
+  const overrideExecutable = process.env.BBQ_APP_EXECUTABLE
   if (typeof overrideExecutable === 'string' && overrideExecutable.trim().length > 0) {
     return overrideExecutable
   }

@@ -13,19 +13,19 @@ const base: ServeServiceInput = {
 describe('renderServeService', () => {
   it('writes a LaunchAgent that supervises, never pairs, and stops after a give-up', () => {
     const spec = renderServeService({ ...base, port: '6768' })
-    expect(spec.name).toBe('com.stablyai.orca.serve')
-    expect(spec.unitPath).toBe('/Users/me/Library/LaunchAgents/com.stablyai.orca.serve.plist')
+    expect(spec.name).toBe('com.hufans.bbq.serve')
+    expect(spec.unitPath).toBe('/Users/me/Library/LaunchAgents/com.hufans.bbq.serve.plist')
     expect(spec.content).toContain('<string>--supervise</string>')
     expect(spec.content).toContain('<string>--no-pairing</string>')
     expect(spec.content).toContain('<string>6768</string>')
     expect(spec.content).toMatch(/<key>ExitTimeOut<\/key>\s*<integer>90<\/integer>/)
     expect(spec.content).toMatch(/<key>SuccessfulExit<\/key>\s*<false\/>/)
-    expect(spec.content).toContain('<key>ORCA_USER_DATA_PATH</key>')
+    expect(spec.content).toContain('<key>BBQ_USER_DATA_PATH</key>')
   })
 
   it('gives another profile its own label and pins its userData', () => {
     const spec = renderServeService({ ...base, userDataPath: '/tmp/profile & co' })
-    expect(spec.name).toMatch(/^com\.stablyai\.orca\.serve\.[0-9a-f]{8}$/)
+    expect(spec.name).toMatch(/^com\.hufans\.bbq\.serve\.[0-9a-f]{8}$/)
     expect(spec.content).toContain('<string>/tmp/profile &amp; co</string>')
   })
 
@@ -39,7 +39,7 @@ describe('renderServeService', () => {
       defaultUserDataPath: '/home/me/.config/orca',
       pairingAddress: '100.64.0.1'
     })
-    expect(spec.unitPath).toBe('/home/me/.config/systemd/user/orca-serve.service')
+    expect(spec.unitPath).toBe('/home/me/.config/systemd/user/bbq-serve.service')
     expect(spec.content).toContain('StartLimitBurst=5')
     expect(spec.content).toContain('TimeoutStopSec=90')
     expect(spec.content).toContain(

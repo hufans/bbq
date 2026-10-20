@@ -20,7 +20,7 @@ export function recordFailedStartDispatchIdentity(
   db.db
     .prepare(
       `UPDATE dispatch_contexts
-         SET assignee_handle = ?, assignee_pane_key = ?, assignee_orca_session_id = ?,
+         SET assignee_handle = ?, assignee_pane_key = ?, assignee_bbq_session_id = ?,
              process_incarnation = ?, host_scope = ?
        WHERE id = ? AND status IN ('failed', 'circuit_broken') AND process_incarnation IS NULL`
     )

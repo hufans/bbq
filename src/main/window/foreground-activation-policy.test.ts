@@ -38,10 +38,10 @@ describe('isBackgroundLaunch', () => {
   })
 
   it('treats the orcad browser sidecar as an explicit background launch', () => {
-    expect(isOrcadSidecarLaunch({ ORCA_ORCAD_SIDECAR: '1' })).toBe(true)
+    expect(isOrcadSidecarLaunch({ BBQ_ORCAD_SIDECAR: '1' })).toBe(true)
     expect(isOrcadSidecarLaunch({})).toBe(false)
-    expect(isBackgroundLaunch({ ORCA_ORCAD_SIDECAR: '1', ORCA_E2E_FOREGROUND: '1' })).toBe(true)
-    expect(isWindowlessLaunch({ ORCA_ORCAD_SIDECAR: '1', ORCA_E2E_HEADFUL: '1' })).toBe(true)
+    expect(isBackgroundLaunch({ BBQ_ORCAD_SIDECAR: '1', ORCA_E2E_FOREGROUND: '1' })).toBe(true)
+    expect(isWindowlessLaunch({ BBQ_ORCAD_SIDECAR: '1', ORCA_E2E_HEADFUL: '1' })).toBe(true)
   })
 
   it('lets native-focus specs opt back into the foreground', () => {
@@ -109,7 +109,7 @@ describe('applyBackgroundActivationPolicy', () => {
     }
   }
 
-  it.each(['ORCA_E2E_HEADLESS', 'ORCA_BACKGROUND_LAUNCH', 'ORCA_ORCAD_SIDECAR'])(
+  it.each(['ORCA_E2E_HEADLESS', 'ORCA_BACKGROUND_LAUNCH', 'BBQ_ORCAD_SIDECAR'])(
     'drops the macOS Dock tile and menu bar for %s',
     (flag) => {
       const app = makeApp()

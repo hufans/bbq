@@ -65,9 +65,9 @@ async function makeFixture(): Promise<{ homePath: string; resourcesPath: string 
   const root = await mkdtemp(join(tmpdir(), 'orca-bare-dispatcher-'))
   created.push(root)
   const resourcesPath = join(root, 'resources')
-  // The bundled orca-ide launcher must exist for the dispatcher to be written.
+  // The bundled bbq launcher must exist for the dispatcher to be written.
   await mkdir(join(resourcesPath, 'bin'), { recursive: true })
-  await writeFile(join(resourcesPath, 'bin', 'orca-ide'), '#!/usr/bin/env bash\n', 'utf8')
+  await writeFile(join(resourcesPath, 'bin', 'bbq'), '#!/usr/bin/env bash\n', 'utf8')
   return { homePath: join(root, 'home'), resourcesPath }
 }
 
@@ -90,10 +90,10 @@ describe('installLinuxBareOrcaDispatcher', () => {
     const result = await installLinuxBareOrcaDispatcher({ resourcesPath, homePath })
 
     expect(result.state).toBe('installed')
-    expect(result.target).toBe(join(resourcesPath, 'bin', 'orca-ide'))
+    expect(result.target).toBe(join(resourcesPath, 'bin', 'bbq'))
   })
 
-  it('writes an executable bare-orca dispatcher that execs the bundled orca-ide launcher', async () => {
+  it('writes an executable bare-orca dispatcher that execs the bundled bbq launcher', async () => {
     const { homePath, resourcesPath } = await makeFixture()
 
     const result = await installLinuxBareOrcaDispatcher({
@@ -102,10 +102,10 @@ describe('installLinuxBareOrcaDispatcher', () => {
       appImagePath: null
     })
 
-    const expectedTarget = join(resourcesPath, 'bin', 'orca-ide')
+    const expectedTarget = join(resourcesPath, 'bin', 'bbq')
     expect(result.state).toBe('installed')
     expect(result.target).toBe(expectedTarget)
-    expect(result.dispatcherPath).toBe(join(homePath, '.local', 'bin', 'orca'))
+    expect(result.dispatcherPath).toBe(join(homePath, '.local', 'bin', 'bbq'))
 
     const content = await readFile(result.dispatcherPath, 'utf8')
     expect(content).toContain('#!/usr/bin/env bash')
@@ -146,7 +146,7 @@ describe('installLinuxBareOrcaDispatcher', () => {
 
     expect(result.state).toBe('installed')
     await expect(readFile(result.dispatcherPath, 'utf8')).resolves.toContain(
-      '# orca-serve-bare-orca-dispatcher'
+      '# bbq-serve-command-dispatcher'
     )
   })
 
@@ -172,7 +172,7 @@ describe('installLinuxBareOrcaDispatcher', () => {
     created.push(root)
     const resourcesPath = join(root, 'App Support', 'resources')
     await mkdir(join(resourcesPath, 'bin'), { recursive: true })
-    await writeFile(join(resourcesPath, 'bin', 'orca-ide'), '#!/usr/bin/env bash\n', 'utf8')
+    await writeFile(join(resourcesPath, 'bin', 'bbq'), '#!/usr/bin/env bash\n', 'utf8')
 
     const result = await installLinuxBareOrcaDispatcher({
       resourcesPath,
@@ -181,7 +181,7 @@ describe('installLinuxBareOrcaDispatcher', () => {
     })
 
     const content = await readFile(result.dispatcherPath, 'utf8')
-    expect(content).toContain(`exec '${join(resourcesPath, 'bin', 'orca-ide')}' "$@"`)
+    expect(content).toContain(`exec '${join(resourcesPath, 'bin', 'bbq')}' "$@"`)
   })
 
   // Why: this dispatcher must survive a restart, and an AppImage's resourcesPath
@@ -204,14 +204,14 @@ describe('installLinuxBareOrcaDispatcher', () => {
         appImageExtractRunner: async (_appImagePath, cwd) => {
           const launcherDir = join(cwd, 'squashfs-root', 'resources', 'bin')
           await mkdir(launcherDir, { recursive: true })
-          await writeFile(join(launcherDir, 'orca-ide'), '', { encoding: 'utf8', mode: 0o755 })
+          await writeFile(join(launcherDir, 'bbq'), '', { encoding: 'utf8', mode: 0o755 })
         }
       })
 
       expect(result.state).toBe('installed')
       expect(relative(cacheRootPath, result.target as string).split(sep)).toEqual([
         'launcher',
-        'orca-ide'
+        'bbq'
       ])
       const content = await readFile(result.dispatcherPath, 'utf8')
       expect(content).toContain(result.target as string)
@@ -220,9 +220,9 @@ describe('installLinuxBareOrcaDispatcher', () => {
     }
   )
 
-  it('skips (does not clobber) a user-owned orca already at ~/.local/bin', async () => {
+  it('skips (does not clobber) a user-owned bbq already at ~/.local/bin', async () => {
     const { homePath, resourcesPath } = await makeFixture()
-    const dispatcherPath = join(homePath, '.local', 'bin', 'orca')
+    const dispatcherPath = join(homePath, '.local', 'bin', 'bbq')
     const appImagePath = join(homePath, 'Orca.AppImage')
     await mkdir(join(homePath, '.local', 'bin'), { recursive: true })
     await writeFile(dispatcherPath, '#!/bin/sh\necho my own orca\n', 'utf8')
@@ -246,7 +246,7 @@ describe('installLinuxBareOrcaDispatcher', () => {
     const { homePath, resourcesPath } = await makeFixture()
     const appImagePath = join(homePath, 'Orca.AppImage')
     const cacheRootPath = join(homePath, 'cache')
-    const dispatcherPath = join(homePath, '.local', 'bin', 'orca')
+    const dispatcherPath = join(homePath, '.local', 'bin', 'bbq')
     await mkdir(homePath, { recursive: true })
     await writeFile(appImagePath, '#!/usr/bin/env bash\n', { mode: 0o755 })
     let reportStarted!: () => void
@@ -332,7 +332,7 @@ describe('installLinuxBareOrcaDispatcher', () => {
     expect(existsSync(sibling)).toBe(true)
   })
 
-  it('skips when the bundled orca-ide launcher is missing from the build', async () => {
+  it('skips when the bundled bbq launcher is missing from the build', async () => {
     const root = await mkdtemp(join(tmpdir(), 'orca-bare-dispatcher-nolauncher-'))
     created.push(root)
 
@@ -350,5 +350,5 @@ describe('installLinuxBareOrcaDispatcher', () => {
 async function writePayload(cwd: string): Promise<void> {
   const launcherDirectory = join(cwd, 'squashfs-root', 'resources', 'bin')
   await mkdir(launcherDirectory, { recursive: true })
-  await writeFile(join(launcherDirectory, 'orca-ide'), '#!/usr/bin/env bash\n', { mode: 0o755 })
+  await writeFile(join(launcherDirectory, 'bbq'), '#!/usr/bin/env bash\n', { mode: 0o755 })
 }

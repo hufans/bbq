@@ -46,7 +46,7 @@ describe('runInternalDevSetup', () => {
       runInternalDevSetup({
         env: {
           ORCA_INTERNAL_DEV_SETUP: '/tmp/setup',
-          ORCA_WORKTREE_PATH: '/tmp/worktree'
+          BBQ_WORKTREE_PATH: '/tmp/worktree'
         },
         platform: 'linux',
         exists: () => true,
@@ -66,7 +66,7 @@ describe('runInternalDevSetup', () => {
       runInternalDevSetup({
         env: {
           ORCA_INTERNAL_DEV_SETUP: 'C:\\tools\\setup.cmd',
-          ORCA_WORKTREE_PATH: 'C:\\repo\\worktree'
+          BBQ_WORKTREE_PATH: 'C:\\repo\\worktree'
         },
         platform: 'win32',
         exists: () => true,

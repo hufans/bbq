@@ -48,7 +48,7 @@ it.skipIf(skip)(
       CLAUDE_CONFIG_DIR: join(home, 'claude'),
       ORCA_USER_DATA: userData,
       ORCA_BACKGROUND_LAUNCH: '1',
-      ORCA_DISABLE_MACOS_LOGIN_SHELL: '1'
+      BBQ_DISABLE_MACOS_LOGIN_SHELL: '1'
     }
     const child = spawnProcess({
       program: runtime!,
@@ -101,12 +101,12 @@ it.skipIf(skip)(
       })
       const childEnv = sealedChildEnv('claude_test-session', {
         PATH: env.PATH ?? '',
-        ORCA_ENVIRONMENT: 'stale-shell-selection',
-        ORCA_PAIRING_CODE: 'stale-pairing',
-        ORCA_REMOTE_PAIRING: 'stale-remote-pairing'
+        BBQ_ENVIRONMENT: 'stale-shell-selection',
+        BBQ_PAIRING_CODE: 'stale-pairing',
+        BBQ_REMOTE_PAIRING: 'stale-remote-pairing'
       })
       const result = await runProcess({
-        program: childEnv.ORCA_CLI_COMMAND!,
+        program: childEnv.BBQ_CLI_COMMAND!,
         args: ['status', '--json'],
         env: { ...env, ...childEnv },
         cwd: home,
@@ -121,7 +121,7 @@ it.skipIf(skip)(
         }
       })
       const skill = await runProcess({
-        program: childEnv.ORCA_CLI_COMMAND!,
+        program: childEnv.BBQ_CLI_COMMAND!,
         args: ['skills', 'get', 'orchestration'],
         env: { ...env, ...childEnv },
         timeoutMs: 15_000
@@ -129,7 +129,7 @@ it.skipIf(skip)(
       expect(skill.code, skill.stderr).toBe(0)
       expect(skill.stdout).toContain('Worker obligations')
       const version = await runProcess({
-        program: childEnv.ORCA_CLI_COMMAND!,
+        program: childEnv.BBQ_CLI_COMMAND!,
         args: ['--version'],
         env: { ...env, ...childEnv },
         timeoutMs: 15_000
@@ -140,7 +140,7 @@ it.skipIf(skip)(
       const person = await runProcess({
         program: launcher,
         args: ['status', '--json'],
-        env: { ...env, ORCA_ENVIRONMENT: 'stale-shell-selection' },
+        env: { ...env, BBQ_ENVIRONMENT: 'stale-shell-selection' },
         cwd: home,
         timeoutMs: 15_000
       })

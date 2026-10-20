@@ -311,7 +311,7 @@ async function main() {
   const {
     ELECTRON_RUN_AS_NODE,
     CODEX_HOME: _codexHome,
-    ORCA_CODEX_HOME: _orcaCodexHome,
+    BBQ_CODEX_HOME: _orcaCodexHome,
     ...cleanEnv
   } = process.env
   void ELECTRON_RUN_AS_NODE

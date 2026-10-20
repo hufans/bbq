@@ -318,12 +318,12 @@ describe('nested worker depth', () => {
     backfillStructuredWorkerOrcaSessionIds(db.db)
 
     const ownRow = db.getDispatchContextById(own.id)
-    expect(ownRow?.creator_orca_session_id).toBe(sessionId)
-    expect(ownRow?.assignee_orca_session_id).toBe(ownRow?.creator_orca_session_id)
+    expect(ownRow?.creator_bbq_session_id).toBe(sessionId)
+    expect(ownRow?.assignee_bbq_session_id).toBe(ownRow?.creator_bbq_session_id)
     expect(db.resolveCreatorDepth(self)).toBe(0)
     const delegatedRow = db.getDispatchContextById(delegated.id)
-    expect(delegatedRow?.creator_orca_session_id).toBe(sessionId)
-    expect(delegatedRow?.assignee_orca_session_id).toBeNull()
+    expect(delegatedRow?.creator_bbq_session_id).toBe(sessionId)
+    expect(delegatedRow?.assignee_bbq_session_id).toBeNull()
     expect(
       db.resolveCreatorDepth({
         kind: 'terminal',

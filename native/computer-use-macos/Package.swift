@@ -13,7 +13,7 @@ let package = Package(
             targets: ["OrcaComputerUseMacOSCore"]
         ),
         .executable(
-            name: "orca-computer-use-macos",
+            name: "bbq-computer-use-macos",
             targets: ["OrcaComputerUseMacOS"]
         )
     ],

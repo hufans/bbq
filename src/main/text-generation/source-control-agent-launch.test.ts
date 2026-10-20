@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type * as RunProcess from '@orca/process-host'
 import type { ProcessSpec } from '@orca/process-host/process-spec'
-import { POSIX_PROVIDER_SUPERVISOR_SCRIPT } from '../provider-process/provider-process-supervisor'
+import { readProviderSupervisorSpec } from '../provider-process/provider-process-supervisor'
 import { generateCommitMessageFromContext } from './commit-message-text-generation'
 import { withPlatform } from './commit-message-text-generation-test-harness'
 import { spawnSourceControlAgent } from './source-control-agent-launch'
@@ -26,8 +26,8 @@ function lastSpawnSpec(): ProcessSpec {
   return spawnProcessMock.mock.calls.at(-1)![0]
 }
 
-function decodedSupervisorSpec(spec: ProcessSpec): Record<string, unknown> {
-  return JSON.parse(Buffer.from(spec.env!.ORCA_PROVIDER_SUPERVISOR_SPEC!, 'base64').toString())
+function decodedSupervisorSpec(spec: ProcessSpec): Record<string, unknown> | null {
+  return readProviderSupervisorSpec(spec.args)
 }
 
 const folder = mkdtempSync(join(tmpdir(), 'orca-agent-launch-'))
@@ -58,11 +58,11 @@ describe('spawnSourceControlAgent', () => {
     expect(child.supervised).toBe(true)
     expect(spec).toMatchObject({
       program: process.execPath,
-      args: ['-e', POSIX_PROVIDER_SUPERVISOR_SCRIPT, '--', '/opt/agent/claude', '-p', '--verbose'],
       cwd,
       detached: true,
       stdio: ['pipe', 'pipe', 'pipe']
     })
+    expect(spec.args?.slice(2)).toEqual(['--', '/opt/agent/claude', '-p', '--verbose'])
     expect(spec.env).toMatchObject({ PATH: '/usr/bin', AGENT_TOKEN: 'kept' })
     expect(decodedSupervisorSpec(spec)).toMatchObject({ cwd, lifetime: 'one-shot' })
   })
@@ -81,7 +81,7 @@ describe('spawnSourceControlAgent', () => {
 
     expect(child.supervised).toBeUndefined()
     expect(lastSpawnSpec()).toMatchObject({ program: 'C:/tools/agent.exe', args: ['--print'] })
-    expect(lastSpawnSpec().env).not.toHaveProperty('ORCA_PROVIDER_SUPERVISOR_SPEC')
+    expect(readProviderSupervisorSpec(lastSpawnSpec().args)).toBeNull()
   })
 
   it('hands an npm .cmd shim to process-host unwrapped, multi-line prompt included', () => {
@@ -192,6 +192,14 @@ process.stdin.on('end', () => setTimeout(() => console.log(prompt.includes('READ
 `
     )
 
+    const spawn = spawnProcessMock.getMockImplementation()
+    let savedSpec: Record<string, unknown> | null = null
+    spawnProcessMock.mockImplementation((spec: ProcessSpec) => {
+      // The supervisor deletes the spec file as soon as it starts.
+      savedSpec = readProviderSupervisorSpec(spec.args)
+      return spawn?.(spec)
+    })
+
     await expect(
       generateCommitMessageFromContext(
         { branch: 'main', stagedSummary: 'M README.md', stagedPatch: '+test' },
@@ -200,6 +208,6 @@ process.stdin.on('end', () => setTimeout(() => console.log(prompt.includes('READ
       )
     ).resolves.toMatchObject({ success: true, message: 'Update README' })
     expect(lastSpawnSpec().program).toBe(process.execPath)
-    expect(decodedSupervisorSpec(lastSpawnSpec())).toMatchObject({ lifetime: 'one-shot' })
+    expect(savedSpec).toMatchObject({ lifetime: 'one-shot' })
   })
 })

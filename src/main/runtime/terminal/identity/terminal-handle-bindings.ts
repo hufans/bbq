@@ -187,7 +187,7 @@ export abstract class OrcaRuntimeWithBindPtyIncarnationHandle extends OrcaRuntim
   protected rememberDetachedPreAllocatedLeaves(): void {
     for (const leaf of this.leaves.values()) {
       if (leaf.ptyId && this.handleByPtyId.has(leaf.ptyId)) {
-        // Why: ORCA_TERMINAL_HANDLE is an agent identity, so CLI control survives renderer graph loss while the PTY is alive.
+        // Why: BBQ_TERMINAL_HANDLE is an agent identity, so CLI control survives renderer graph loss while the PTY is alive.
         this.detachedPreAllocatedLeaves.set(leaf.ptyId, leaf)
       }
     }

@@ -248,9 +248,9 @@ export function setupWorktreeHandlers(): WorktreeRuntimeStub {
   resolveSetupRunnerShellMock.mockReturnValue(undefined)
   getSetupRunnerEnvVarsMock.mockImplementation(
     (repoArg: { path: string }, worktreePath: string) => ({
-      ORCA_ROOT_PATH: repoArg.path,
-      ORCA_WORKTREE_PATH: worktreePath,
-      ORCA_WORKSPACE_NAME: worktreePath.split('/').at(-1) ?? '',
+      BBQ_ROOT_PATH: repoArg.path,
+      BBQ_WORKTREE_PATH: worktreePath,
+      BBQ_WORKSPACE_NAME: worktreePath.split('/').at(-1) ?? '',
       CONDUCTOR_ROOT_PATH: repoArg.path,
       GHOSTX_ROOT_PATH: repoArg.path
     })
@@ -258,15 +258,15 @@ export function setupWorktreeHandlers(): WorktreeRuntimeStub {
   createSetupRunnerScriptMock.mockReturnValue({
     runnerScriptPath: '/workspace/repo/.git/orca/setup-runner.sh',
     envVars: {
-      ORCA_ROOT_PATH: '/workspace/repo',
-      ORCA_WORKTREE_PATH: '/workspace/improve-dashboard'
+      BBQ_ROOT_PATH: '/workspace/repo',
+      BBQ_WORKTREE_PATH: '/workspace/improve-dashboard'
     }
   })
   createIssueCommandRunnerScriptMock.mockReturnValue({
     runnerScriptPath: '/workspace/repo/.git/orca/issue-command-runner.sh',
     envVars: {
-      ORCA_ROOT_PATH: '/workspace/repo',
-      ORCA_WORKTREE_PATH: '/workspace/improve-dashboard'
+      BBQ_ROOT_PATH: '/workspace/repo',
+      BBQ_WORKTREE_PATH: '/workspace/improve-dashboard'
     }
   })
   computeWorktreePathMock.mockImplementation(

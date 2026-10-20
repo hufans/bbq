@@ -78,13 +78,13 @@ it('shares probes across pane identities while preserving launch-affecting envir
     env: {
       PATH: '/runtime',
       OPENCODE_CONFIG_DIR: '/config',
-      ORCA_PANE_KEY: 'pane-1',
-      ORCA_TAB_ID: 'tab-1',
-      ORCA_TERMINAL_HANDLE: 'term-1',
-      ORCA_WORKTREE_ID: 'workspace-1',
-      ORCA_AGENT_LAUNCH_TOKEN: 'launch-1',
-      ORCA_AGENT_PANE: 'pane-1',
-      ORCA_AGENT_LAUNCH: 'launch-1'
+      BBQ_PANE_KEY: 'pane-1',
+      BBQ_TAB_ID: 'tab-1',
+      BBQ_TERMINAL_HANDLE: 'term-1',
+      BBQ_WORKTREE_ID: 'workspace-1',
+      BBQ_AGENT_LAUNCH_TOKEN: 'launch-1',
+      BBQ_AGENT_PANE: 'pane-1',
+      BBQ_AGENT_LAUNCH: 'launch-1'
     },
     hostIdentity: 'pane-cache-host'
   }
@@ -94,13 +94,13 @@ it('shares probes across pane identities while preserving launch-affecting envir
       ...options,
       env: {
         ...options.env,
-        ORCA_PANE_KEY: 'pane-2',
-        ORCA_TAB_ID: 'tab-2',
-        ORCA_TERMINAL_HANDLE: 'term-2',
-        ORCA_WORKTREE_ID: 'workspace-2',
-        ORCA_AGENT_LAUNCH_TOKEN: 'launch-2',
-        ORCA_AGENT_PANE: 'pane-2',
-        ORCA_AGENT_LAUNCH: 'launch-2'
+        BBQ_PANE_KEY: 'pane-2',
+        BBQ_TAB_ID: 'tab-2',
+        BBQ_TERMINAL_HANDLE: 'term-2',
+        BBQ_WORKTREE_ID: 'workspace-2',
+        BBQ_AGENT_LAUNCH_TOKEN: 'launch-2',
+        BBQ_AGENT_PANE: 'pane-2',
+        BBQ_AGENT_LAUNCH: 'launch-2'
       }
     })
   ])

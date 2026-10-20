@@ -67,7 +67,7 @@ export function getEnvParentWorkspace(): string | undefined {
   if (typeof workspaceId === 'string' && isWorkspaceKey(workspaceId)) {
     return workspaceId
   }
-  const worktreeId = process.env.ORCA_WORKTREE_ID
+  const worktreeId = process.env.BBQ_WORKTREE_ID
   if (typeof worktreeId === 'string' && worktreeId.length > 0) {
     return isWorkspaceKey(worktreeId) ? worktreeId : worktreeWorkspaceKey(worktreeId)
   }

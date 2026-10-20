@@ -156,7 +156,7 @@ describe('OrcaRuntimeService', () => {
       | { command?: string; env?: Record<string, string> }
       | undefined
     expect(spawnCall?.command).toBe('codex exec summarize')
-    expect(spawnCall?.env?.ORCA_AGENT_LAUNCH_TOKEN).toBeUndefined()
+    expect(spawnCall?.env?.BBQ_AGENT_LAUNCH_TOKEN).toBeUndefined()
   })
 
   it('keeps disabled bare agent command terminal creates unchanged', async () => {
@@ -187,17 +187,17 @@ describe('OrcaRuntimeService', () => {
       | { command?: string; env?: Record<string, string> }
       | undefined
     expect(spawnCall?.command).toBe('codex')
-    expect(spawnCall?.env?.ORCA_AGENT_LAUNCH_TOKEN).toBeUndefined()
+    expect(spawnCall?.env?.BBQ_AGENT_LAUNCH_TOKEN).toBeUndefined()
   })
 
   it('injects runtime hook receiver env into terminal sessions', async () => {
     const spawn = vi.fn().mockResolvedValue({ id: 'pty-hooked' })
     const runtime = new OrcaRuntimeService(store, undefined, {
       buildAgentHookPtyEnv: () => ({
-        ORCA_AGENT_HOOK_PORT: '5678',
-        ORCA_AGENT_HOOK_TOKEN: 'agent-token',
-        ORCA_AGENT_HOOK_ENV: 'remote',
-        ORCA_AGENT_HOOK_VERSION: '1'
+        BBQ_AGENT_HOOK_PORT: '5678',
+        BBQ_AGENT_HOOK_TOKEN: 'agent-token',
+        BBQ_AGENT_HOOK_ENV: 'remote',
+        BBQ_AGENT_HOOK_VERSION: '1'
       })
     })
     runtime.setPtyController({
@@ -210,12 +210,12 @@ describe('OrcaRuntimeService', () => {
     await runtime.createTerminal(`path:${TEST_WORKTREE_PATH}`, {
       command: 'codex',
       env: {
-        ORCA_AGENT_HOOK_PORT: '1111',
-        ORCA_AGENT_HOOK_TOKEN: 'stale-token',
-        ORCA_AGENT_HOOK_TRANSPORT: 'stale-transport',
-        ORCA_AGENT_HOOK_ENDPOINT: '/tmp/stale-endpoint.env'
+        BBQ_AGENT_HOOK_PORT: '1111',
+        BBQ_AGENT_HOOK_TOKEN: 'stale-token',
+        BBQ_AGENT_HOOK_TRANSPORT: 'stale-transport',
+        BBQ_AGENT_HOOK_ENDPOINT: '/tmp/stale-endpoint.env'
       },
-      envToDelete: ['CODEX_HOME', 'ORCA_CODEX_HOME']
+      envToDelete: ['CODEX_HOME', 'BBQ_CODEX_HOME']
     })
 
     const spawnCall = spawn.mock.calls[0]?.[0] as
@@ -223,18 +223,18 @@ describe('OrcaRuntimeService', () => {
       | undefined
     expect(spawnedPtyEnv(spawnCall)).toEqual(
       expect.objectContaining({
-        ORCA_AGENT_HOOK_PORT: '5678',
-        ORCA_AGENT_HOOK_TOKEN: 'agent-token',
-        ORCA_AGENT_HOOK_ENV: 'remote',
-        ORCA_AGENT_HOOK_VERSION: '1',
-        ORCA_PANE_KEY: expect.any(String),
-        ORCA_TAB_ID: expect.any(String),
-        ORCA_WORKTREE_ID: TEST_WORKTREE_ID
+        BBQ_AGENT_HOOK_PORT: '5678',
+        BBQ_AGENT_HOOK_TOKEN: 'agent-token',
+        BBQ_AGENT_HOOK_ENV: 'remote',
+        BBQ_AGENT_HOOK_VERSION: '1',
+        BBQ_PANE_KEY: expect.any(String),
+        BBQ_TAB_ID: expect.any(String),
+        BBQ_WORKTREE_ID: TEST_WORKTREE_ID
       })
     )
-    expect(spawnCall?.env?.ORCA_AGENT_HOOK_ENDPOINT).toBeUndefined()
-    expect(spawnCall?.env?.ORCA_AGENT_HOOK_TRANSPORT).toBeUndefined()
-    expect(spawnCall?.envToDelete).toEqual(['CODEX_HOME', 'ORCA_CODEX_HOME'])
+    expect(spawnCall?.env?.BBQ_AGENT_HOOK_ENDPOINT).toBeUndefined()
+    expect(spawnCall?.env?.BBQ_AGENT_HOOK_TRANSPORT).toBeUndefined()
+    expect(spawnCall?.envToDelete).toEqual(['CODEX_HOME', 'BBQ_CODEX_HOME'])
   })
 
   it.each([
@@ -278,7 +278,7 @@ describe('OrcaRuntimeService', () => {
     expect(spawnedEnv.ORCA_WORKSPACE_ID).toBe(TEST_FOLDER_WORKSPACE_KEY)
     expect(spawnedEnv.ORCA_PROJECT_GROUP_ID).toBe(TEST_FOLDER_PROJECT_GROUP_ID)
     expect(spawnedEnv.ORCA_WORKSPACE_ROOT).toBe(folderPath)
-    expect(spawnedEnv.ORCA_WORKTREE_ID).toBe(TEST_FOLDER_WORKSPACE_KEY)
+    expect(spawnedEnv.BBQ_WORKTREE_ID).toBe(TEST_FOLDER_WORKSPACE_KEY)
   })
 
   it.each([
@@ -327,7 +327,7 @@ describe('OrcaRuntimeService', () => {
       connectionId: null,
       worktreeId: FLOATING_TERMINAL_WORKTREE_ID
     })
-    expect(spawnedPtyEnv(spawnCall).ORCA_WORKTREE_ID).toBe(FLOATING_TERMINAL_WORKTREE_ID)
+    expect(spawnedPtyEnv(spawnCall).BBQ_WORKTREE_ID).toBe(FLOATING_TERMINAL_WORKTREE_ID)
     expect(spawnCall?.env?.ORCA_WORKSPACE_ID).toBeUndefined()
     expect(spawnCall?.env?.ORCA_PROJECT_GROUP_ID).toBeUndefined()
     expect(spawnCall?.env?.ORCA_WORKSPACE_ROOT).toBeUndefined()
@@ -470,7 +470,7 @@ describe('OrcaRuntimeService', () => {
 
     const spawnCall = spawn.mock.calls[0]?.[0] as { env?: Record<string, string> } | undefined
     const spawnedEnv = spawnedPtyEnv(spawnCall)
-    const spawnedLeafId = spawnedEnv.ORCA_PANE_KEY.slice(`${spawnedEnv.ORCA_TAB_ID}:`.length)
+    const spawnedLeafId = spawnedEnv.BBQ_PANE_KEY.slice(`${spawnedEnv.BBQ_TAB_ID}:`.length)
     expect(revealTerminalSession).toHaveBeenCalledWith(TEST_WORKTREE_ID, {
       ptyId: 'pty-bg',
       title: null,
@@ -482,10 +482,10 @@ describe('OrcaRuntimeService', () => {
           CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS: '1'
         }
       },
-      launchToken: spawnedEnv.ORCA_AGENT_LAUNCH_TOKEN,
+      launchToken: spawnedEnv.BBQ_AGENT_LAUNCH_TOKEN,
       launchAgent: 'claude',
       activate: false,
-      tabId: spawnedEnv.ORCA_TAB_ID,
+      tabId: spawnedEnv.BBQ_TAB_ID,
       leafId: spawnedLeafId
     })
   })

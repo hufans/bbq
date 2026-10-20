@@ -14,7 +14,7 @@ import { codexStructuredPermissionPolicy } from './codex-structured-permission-p
 // The probe is a POSIX shell command.
 const enabled = process.env.ORCA_REAL_CODEX_CLI_TEST === '1' && process.platform !== 'win32'
 const SESSION_ID = 'codex_real_command_env'
-const PROBE = 'printf "probe[%s]" "$ORCA_AGENT_SESSION_ID"'
+const PROBE = 'printf "probe[%s]" "$BBQ_AGENT_SESSION_ID"'
 
 async function probeIdentity(
   base: string,
@@ -28,7 +28,7 @@ async function probeIdentity(
       command: resolveCodexCommand(),
       args: ['app-server'],
       cwd,
-      env: { HOME: base, CODEX_HOME: join(base, 'codex-home'), ORCA_AGENT_SESSION_ID: SESSION_ID }
+      env: { HOME: base, CODEX_HOME: join(base, 'codex-home'), BBQ_AGENT_SESSION_ID: SESSION_ID }
     },
     {
       onNotification: (method, params) => {
@@ -70,7 +70,7 @@ describe.skipIf(!enabled)('Codex real app-server command env', () => {
         join(base, 'codex-home', 'config.toml'),
         '[shell_environment_policy]\ninherit = "core"\n'
       )
-      const commandEnv = { ORCA_AGENT_SESSION_ID: SESSION_ID }
+      const commandEnv = { BBQ_AGENT_SESSION_ID: SESSION_ID }
       // The policy really strips it: the app-server holds the id, its command does not.
       expect((await probeIdentity(base, { resumeThreadId: null })).seen).toBe('')
       const started = await probeIdentity(base, { resumeThreadId: null, commandEnv })

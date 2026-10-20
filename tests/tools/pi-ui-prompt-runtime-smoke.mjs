@@ -57,10 +57,10 @@ try {
       title: 'pi',
       argv: ['node', 'pi'],
       env: {
-        ORCA_PANE_KEY: 'tab-1:11111111-1111-4111-8111-111111111111',
-        ORCA_AGENT_HOOK_PORT: '4321',
-        ORCA_AGENT_HOOK_TOKEN: 'test',
-        ORCA_AGENT_HOOK_ENV: 'production'
+        BBQ_PANE_KEY: 'tab-1:11111111-1111-4111-8111-111111111111',
+        BBQ_AGENT_HOOK_PORT: '4321',
+        BBQ_AGENT_HOOK_TOKEN: 'test',
+        BBQ_AGENT_HOOK_ENV: 'production'
       }
     },
     fetch: async (_url, init) => {

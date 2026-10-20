@@ -300,14 +300,14 @@ describe('Windows CLI launcher', () => {
       const cliPath = join(resourcesPath, 'app.asar.unpacked', 'out', 'cli', 'index.js')
       mkdirSync(join(resourcesPath, 'bin'), { recursive: true })
       mkdirSync(dirname(cliPath), { recursive: true })
-      copyFileSync(process.execPath, join(appRoot, 'Orca.exe'))
+      copyFileSync(process.execPath, join(appRoot, 'bbq.exe'))
       writeFileSync(
         cliPath,
         `process.stdout.write(JSON.stringify({
   argv: process.argv.slice(2),
   electronRunAsNode: process.env.ELECTRON_RUN_AS_NODE,
   nodeOptions: process.env.NODE_OPTIONS ?? null,
-  orcaNodeOptions: process.env.ORCA_NODE_OPTIONS ?? null
+  orcaNodeOptions: process.env.BBQ_NODE_OPTIONS ?? null
 }))\n`,
         'utf8'
       )
@@ -364,10 +364,10 @@ describe('Windows CLI launcher', () => {
         cliPath,
         `process.stdout.write(JSON.stringify({
   argv: process.argv.slice(2),
-  profile: process.env.ORCA_USER_DATA_PATH,
+  profile: process.env.BBQ_USER_DATA_PATH,
   electronRunAsNode: process.env.ELECTRON_RUN_AS_NODE ?? null,
   nodeOptions: process.env.NODE_OPTIONS ?? null,
-  desktopMarker: process.env.ORCA_WINDOWS_PACKAGED_CLI_LAUNCHER ?? null
+  desktopMarker: process.env.BBQ_WINDOWS_PACKAGED_CLI_LAUNCHER ?? null
 }))\n`,
         'utf8'
       )
@@ -381,8 +381,8 @@ describe('Windows CLI launcher', () => {
         ...process.env,
         ELECTRON_RUN_AS_NODE: '1',
         NODE_OPTIONS: '--require C:\\missing\\preload.js',
-        ORCA_USER_DATA_PATH: 'C:\\another\\owner',
-        ORCA_WINDOWS_PACKAGED_CLI_LAUNCHER: '1',
+        BBQ_USER_DATA_PATH: 'C:\\another\\owner',
+        BBQ_WINDOWS_PACKAGED_CLI_LAUNCHER: '1',
         ORCA_TEST_LAUNCHER: launcherPath
       }
       const expected = (body) => ({
@@ -436,7 +436,7 @@ describe('Windows CLI launcher', () => {
       const harnessPath = join(appRoot, 'DuplicatePathLauncher.exe')
       mkdirSync(dirname(launcherPath), { recursive: true })
       mkdirSync(dirname(cliPath), { recursive: true })
-      copyFileSync(process.execPath, join(appRoot, 'Orca.exe'))
+      copyFileSync(process.execPath, join(appRoot, 'bbq.exe'))
       writeFileSync(
         cliPath,
         `require('node:fs').writeFileSync(process.env.ORCA_TEST_OUTPUT, JSON.stringify({

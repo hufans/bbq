@@ -30,6 +30,7 @@ assert webbrowser._tryorder == allowed, webbrowser._tryorder
 assert webbrowser.open(sys.argv[1])
 `
       expect(helper.ANTIGRAVITY_BROWSER_COMMAND).not.toContain(':')
+      expect(helper.ANTIGRAVITY_BROWSER_COMMAND).not.toContain(' -e ')
       const result = await runProcess({
         program: 'python3',
         args: ['-c', script, link],

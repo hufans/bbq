@@ -9,8 +9,8 @@ import {
 
 const resolveHelperAppPathMock = vi.hoisted(() => vi.fn())
 const resolveHelperExecutablePathMock = vi.hoisted(() => vi.fn())
-const permissionStatusTempDir = '/tmp/orca-computer-use-permissions-test'
-const helperAppPath = '/Applications/Orca Computer Use.app'
+const permissionStatusTempDir = '/tmp/bbq-computer-use-permissions-test'
+const helperAppPath = '/Applications/BBQ Computer Use.app'
 const helperInfoPlistPath = join(helperAppPath, 'Contents', 'Info.plist')
 
 // The tccutil reset and the bundle-id read now run through `runProcess`, so the fake child has to
@@ -93,7 +93,7 @@ describe('openComputerUsePermissions', () => {
     resolveHelperAppPathMock.mockReset()
     resolveHelperExecutablePathMock.mockReset()
     resolveHelperExecutablePathMock.mockReturnValue(
-      '/Applications/Orca Computer Use.app/Contents/MacOS/orca-computer-use-macos'
+      '/Applications/BBQ Computer Use.app/Contents/MacOS/bbq-computer-use-macos'
     )
     vi.mocked(mkdtemp).mockResolvedValue(permissionStatusTempDir)
     vi.mocked(stat).mockResolvedValue({} as Awaited<ReturnType<typeof stat>>)
@@ -107,11 +107,11 @@ describe('openComputerUsePermissions', () => {
   })
 
   it('does not launch the setup helper when all permissions are granted', async () => {
-    resolveHelperAppPathMock.mockReturnValue('/Applications/Orca Computer Use.app')
+    resolveHelperAppPathMock.mockReturnValue('/Applications/BBQ Computer Use.app')
 
     await expect(openComputerUsePermissions()).resolves.toEqual({
       platform: 'darwin',
-      helperAppPath: '/Applications/Orca Computer Use.app',
+      helperAppPath: '/Applications/BBQ Computer Use.app',
       permissionId: undefined,
       openedSettings: false,
       launchedHelper: false,
@@ -123,18 +123,18 @@ describe('openComputerUsePermissions', () => {
     })
     expect(spawn).not.toHaveBeenCalledWith(
       '/usr/bin/open',
-      ['-n', '/Applications/Orca Computer Use.app', '--args', '--permissions'],
+      ['-n', '/Applications/BBQ Computer Use.app', '--args', '--permissions'],
       { detached: true, stdio: 'ignore' }
     )
   })
 
   it('launches the helper app in permissions mode', async () => {
-    resolveHelperAppPathMock.mockReturnValue('/Applications/Orca Computer Use.app')
+    resolveHelperAppPathMock.mockReturnValue('/Applications/BBQ Computer Use.app')
     mockPermissionStatus('{"accessibility":"granted","screenshots":"not-granted"}')
 
     await expect(openComputerUsePermissions()).resolves.toEqual({
       platform: 'darwin',
-      helperAppPath: '/Applications/Orca Computer Use.app',
+      helperAppPath: '/Applications/BBQ Computer Use.app',
       permissionId: undefined,
       openedSettings: false,
       launchedHelper: true,
@@ -142,32 +142,32 @@ describe('openComputerUsePermissions', () => {
         { id: 'accessibility', status: 'granted' },
         { id: 'screenshots', status: 'not-granted' }
       ],
-      nextStep: 'Grant Screen Recording to Orca Computer Use, then retry get-app-state.'
+      nextStep: 'Grant Screen Recording to BBQ Computer Use, then retry get-app-state.'
     })
     expect(spawnSync).toHaveBeenCalledWith(
       '/usr/bin/pkill',
-      ['-f', 'orca-computer-use-macos[[:space:]]+--permission([[:space:]]|$)'],
+      ['-f', 'bbq-computer-use-macos[[:space:]]+--permission([[:space:]]|$)'],
       { stdio: 'ignore' }
     )
     expect(spawnSync).toHaveBeenCalledWith(
       '/usr/bin/pkill',
-      ['-f', 'orca-computer-use-macos[[:space:]]+--permissions([[:space:]]|$)'],
+      ['-f', 'bbq-computer-use-macos[[:space:]]+--permissions([[:space:]]|$)'],
       { stdio: 'ignore' }
     )
     expect(spawn).toHaveBeenCalledWith(
       '/usr/bin/open',
-      ['-n', '/Applications/Orca Computer Use.app', '--args', '--permissions'],
+      ['-n', '/Applications/BBQ Computer Use.app', '--args', '--permissions'],
       { detached: true, stdio: 'ignore' }
     )
   })
 
   it('launches a targeted permission helper flow', async () => {
-    resolveHelperAppPathMock.mockReturnValue('/Applications/Orca Computer Use.app')
+    resolveHelperAppPathMock.mockReturnValue('/Applications/BBQ Computer Use.app')
     mockPermissionStatus('{"accessibility":"not-granted","screenshots":"not-granted"}')
 
     await expect(openComputerUsePermissions('accessibility')).resolves.toEqual({
       platform: 'darwin',
-      helperAppPath: '/Applications/Orca Computer Use.app',
+      helperAppPath: '/Applications/BBQ Computer Use.app',
       permissionId: 'accessibility',
       openedSettings: true,
       launchedHelper: true,
@@ -175,22 +175,22 @@ describe('openComputerUsePermissions', () => {
         { id: 'accessibility', status: 'not-granted' },
         { id: 'screenshots', status: 'not-granted' }
       ],
-      nextStep: 'Grant Accessibility to Orca Computer Use, then retry get-app-state.'
+      nextStep: 'Grant Accessibility to BBQ Computer Use, then retry get-app-state.'
     })
     expect(spawn).toHaveBeenCalledWith(
       '/usr/bin/open',
-      ['-n', '/Applications/Orca Computer Use.app', '--args', '--permission', 'accessibility'],
+      ['-n', '/Applications/BBQ Computer Use.app', '--args', '--permission', 'accessibility'],
       { detached: true, stdio: 'ignore' }
     )
   })
 
   it('launches a targeted permission helper even when that permission is already granted', async () => {
-    resolveHelperAppPathMock.mockReturnValue('/Applications/Orca Computer Use.app')
+    resolveHelperAppPathMock.mockReturnValue('/Applications/BBQ Computer Use.app')
     mockPermissionStatus('{"accessibility":"granted","screenshots":"not-granted"}')
 
     await expect(openComputerUsePermissions('accessibility')).resolves.toEqual({
       platform: 'darwin',
-      helperAppPath: '/Applications/Orca Computer Use.app',
+      helperAppPath: '/Applications/BBQ Computer Use.app',
       permissionId: 'accessibility',
       openedSettings: true,
       launchedHelper: true,
@@ -198,11 +198,11 @@ describe('openComputerUsePermissions', () => {
         { id: 'accessibility', status: 'granted' },
         { id: 'screenshots', status: 'not-granted' }
       ],
-      nextStep: 'Grant Screen Recording to Orca Computer Use, then retry get-app-state.'
+      nextStep: 'Grant Screen Recording to BBQ Computer Use, then retry get-app-state.'
     })
     expect(spawn).toHaveBeenCalledWith(
       '/usr/bin/open',
-      ['-n', '/Applications/Orca Computer Use.app', '--args', '--permission', 'accessibility'],
+      ['-n', '/Applications/BBQ Computer Use.app', '--args', '--permission', 'accessibility'],
       { detached: true, stdio: 'ignore' }
     )
   })
@@ -228,22 +228,20 @@ describe('openComputerUsePermissions', () => {
   it('throws when the helper app is missing on macOS', async () => {
     resolveHelperAppPathMock.mockReturnValue(null)
 
-    await expect(openComputerUsePermissions()).rejects.toThrow(
-      'Orca Computer Use.app was not found'
-    )
+    await expect(openComputerUsePermissions()).rejects.toThrow('BBQ Computer Use.app was not found')
   })
 
   it('throws when the helper executable is missing during setup', async () => {
-    resolveHelperAppPathMock.mockReturnValue('/Applications/Orca Computer Use.app')
+    resolveHelperAppPathMock.mockReturnValue('/Applications/BBQ Computer Use.app')
     resolveHelperExecutablePathMock.mockReturnValue(null)
 
     await expect(openComputerUsePermissions('accessibility')).rejects.toThrow(
-      '/Applications/Orca Computer Use.app/Contents/MacOS/orca-computer-use-macos was not found'
+      '/Applications/BBQ Computer Use.app/Contents/MacOS/bbq-computer-use-macos was not found'
     )
   })
 
   it('resets stale macOS TCC grants for the helper bundle id', async () => {
-    resolveHelperAppPathMock.mockReturnValue('/Applications/Orca Computer Use.app')
+    resolveHelperAppPathMock.mockReturnValue('/Applications/BBQ Computer Use.app')
     vi.mocked(readFile)
       .mockResolvedValueOnce('{"accessibility":"granted","screenshots":"granted"}')
       .mockResolvedValueOnce('{"accessibility":"not-granted","screenshots":"not-granted"}')
@@ -251,7 +249,7 @@ describe('openComputerUsePermissions', () => {
 
     await expect(resetComputerUsePermissions()).resolves.toEqual({
       platform: 'darwin',
-      helperAppPath: '/Applications/Orca Computer Use.app',
+      helperAppPath: '/Applications/BBQ Computer Use.app',
       helperUnavailableReason: null,
       bundleId: 'com.example.orca.computer-use',
       permissions: [

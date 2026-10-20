@@ -27,16 +27,19 @@ afterEach(() => {
 })
 
 describe('resolveUserDataPath', () => {
-  it('prefers ORCA_USER_DATA, then XDG_DATA_HOME, then ~/.orca', () => {
+  it('prefers BBQ_HOME, then ORCA_USER_DATA, then XDG, then ~/.bbq', () => {
+    vi.stubEnv('BBQ_HOME', '')
+    vi.stubEnv('BBQ_USER_DATA', '')
+    vi.stubEnv('ORCA_HOME', '')
     vi.stubEnv('ORCA_USER_DATA', join(sep, 'srv', 'orca-state'))
     vi.stubEnv('XDG_DATA_HOME', join(sep, 'xdg'))
     expect(resolveUserDataPath()).toBe(join(sep, 'srv', 'orca-state'))
 
     vi.stubEnv('ORCA_USER_DATA', '')
-    expect(resolveUserDataPath()).toBe(join(sep, 'xdg', 'Orca'))
+    expect(resolveUserDataPath()).toBe(join(sep, 'xdg', 'BBQ'))
 
     vi.stubEnv('XDG_DATA_HOME', '')
-    expect(resolveUserDataPath()).toBe(join(homedir(), '.orca'))
+    expect(resolveUserDataPath()).toBe(join(homedir(), '.bbq'))
   })
 })
 

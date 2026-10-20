@@ -48,7 +48,7 @@ function insertSessionCoordinatedRun(db: OrchestrationDb, runId: string): void {
   db.db
     .prepare(
       `INSERT INTO runs (
-         id, objective, coordinator_orca_session_id, coordinator_orca_session_id_generation,
+         id, objective, coordinator_bbq_session_id, coordinator_bbq_session_id_generation,
          consumer_generation, legacy
        ) VALUES (?, 'coordinated by a structured session', ?, 1, 1, 0)`
     )
@@ -72,7 +72,7 @@ describe('Run coordinator Orca session address', () => {
     insertSessionCoordinatedRun(db, 'run_session')
 
     // The column holds the bare id; only the remembered address carries the orca_session_id: prefix.
-    expect(db.getRunRaw('run_session')?.coordinator_orca_session_id).toBe(CHAT_SESSION_ID)
+    expect(db.getRunRaw('run_session')?.coordinator_bbq_session_id).toBe(CHAT_SESSION_ID)
     expect(addressesFor(db, 'run_session')).toEqual([CHAT_ADDRESS])
     expect(parseOrcaSessionAddress(addressesFor(db, 'run_session')[0])).toBe(CHAT_SESSION_ID)
     expect(db.getRunMailboxOwnerIdsForHandle(CHAT_ADDRESS)).toEqual(['run_session'])
@@ -99,8 +99,8 @@ describe('Run coordinator Orca session address', () => {
       .run()
     db.db
       .prepare(
-        `UPDATE runs SET coordinator_orca_session_id = ?,
-           coordinator_orca_session_id_generation = consumer_generation
+        `UPDATE runs SET coordinator_bbq_session_id = ?,
+           coordinator_bbq_session_id_generation = consumer_generation
          WHERE id = ?`
       )
       .run(CHAT_SESSION_ID, 'run_unbound')
@@ -164,8 +164,8 @@ describe('Run coordinator Orca session address', () => {
     db.db
       .prepare(
         `INSERT INTO runs (
-           id, objective, coordinator_handle, coordinator_orca_session_id,
-           coordinator_orca_session_id_generation, consumer_generation, legacy
+           id, objective, coordinator_handle, coordinator_bbq_session_id,
+           coordinator_bbq_session_id_generation, consumer_generation, legacy
          ) VALUES ('run_inserted', 'structured worker', ?, ?, 1, 1, 0)`
       )
       .run(handle, WORKER_SESSION_ID)
@@ -179,8 +179,8 @@ describe('Run coordinator Orca session address', () => {
       .run(handle)
     db.db
       .prepare(
-        `UPDATE runs SET coordinator_orca_session_id = ?,
-           coordinator_orca_session_id_generation = consumer_generation
+        `UPDATE runs SET coordinator_bbq_session_id = ?,
+           coordinator_bbq_session_id_generation = consumer_generation
          WHERE id = 'run_updated'`
       )
       .run(WORKER_SESSION_ID)
@@ -199,8 +199,8 @@ describe('Run coordinator Orca session address', () => {
     db.db
       .prepare(
         `INSERT INTO runs (
-           id, objective, coordinator_handle, coordinator_orca_session_id,
-           coordinator_orca_session_id_generation, consumer_generation, legacy
+           id, objective, coordinator_handle, coordinator_bbq_session_id,
+           coordinator_bbq_session_id_generation, consumer_generation, legacy
          ) VALUES ('run_stale_insert', 'stale id', 'term_stale', ?, 1, 2, 0)`
       )
       .run(WORKER_SESSION_ID)
@@ -214,7 +214,7 @@ describe('Run coordinator Orca session address', () => {
       .run()
     db.db
       .prepare(
-        `UPDATE runs SET coordinator_orca_session_id = ?, coordinator_orca_session_id_generation = 1
+        `UPDATE runs SET coordinator_bbq_session_id = ?, coordinator_bbq_session_id_generation = 1
          WHERE id = 'run_stale_update'`
       )
       .run(WORKER_SESSION_ID)
@@ -238,7 +238,7 @@ describe('Run coordinator Orca session address', () => {
       coordinatorPaneKey: 'tab_second:77777777-7777-4777-8777-777777777777'
     })
 
-    expect(db.getRunRaw(run.id)?.coordinator_orca_session_id).toBeNull()
+    expect(db.getRunRaw(run.id)?.coordinator_bbq_session_id).toBeNull()
     expect(addressesFor(db, run.id)).toEqual(['term_first', 'term_second'])
   })
 
@@ -261,7 +261,7 @@ describe('Run coordinator Orca session address', () => {
       coordinatorPaneKey: pane
     })
     backfillStructuredWorkerOrcaSessionIds(db.db)
-    expect(db.getRunRaw(first.id)?.coordinator_orca_session_id).toBe(WORKER_SESSION_ID)
+    expect(db.getRunRaw(first.id)?.coordinator_bbq_session_id).toBe(WORKER_SESSION_ID)
 
     // A second Run from the same pane unbinds the first.
     const second = db.createRun({
@@ -271,15 +271,15 @@ describe('Run coordinator Orca session address', () => {
     })
     expect(db.getRunRaw(first.id)).toMatchObject({
       coordinator_handle: null,
-      coordinator_orca_session_id: null
+      coordinator_bbq_session_id: null
     })
 
     backfillStructuredWorkerOrcaSessionIds(db.db)
-    expect(db.getRunRaw(second.id)?.coordinator_orca_session_id).toBe(WORKER_SESSION_ID)
+    expect(db.getRunRaw(second.id)?.coordinator_bbq_session_id).toBe(WORKER_SESSION_ID)
     db.bindRun({ runId: second.id, coordinatorHandle: 'term_taker', coordinatorPaneKey: PTY_PANE })
     expect(db.getRunRaw(second.id)).toMatchObject({
       coordinator_handle: 'term_taker',
-      coordinator_orca_session_id: null
+      coordinator_bbq_session_id: null
     })
     // A remembered address is never forgotten, so the worker's session address reaches exactly the
     // Runs its handle does.

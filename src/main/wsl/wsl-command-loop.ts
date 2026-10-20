@@ -14,7 +14,7 @@ import type { RemoteCommandChannel } from '../managed-server/install/remote-inst
 // keeps the unlinked one, never the next command's output.
 export const WSL_COMMAND_LOOP_SCRIPT = [
   'm="$1"',
-  'd=$(mktemp -d "${TMPDIR:-/tmp}/orca-wsl-exec.XXXXXX") || exit 97',
+  'd=$(mktemp -d "${TMPDIR:-/tmp}/bbq-wsl-exec.XXXXXX") || exit 97',
   'trap \'rm -rf "$d"\' EXIT',
   "trap 'exit 129' HUP INT TERM",
   '[ "$(printf eA== | base64 -d 2>/dev/null)" = x ] || exit 98',
@@ -31,7 +31,7 @@ export const WSL_COMMAND_LOOP_SCRIPT = [
   'done'
 ].join('\n')
 
-export const WSL_COMMAND_LOOP_ARGV0 = 'orca-wsl-exec-loop'
+export const WSL_COMMAND_LOOP_ARGV0 = 'bbq-wsl-exec-loop'
 
 const BASE64_LINE = /^[A-Za-z0-9+/=]*$/u
 
@@ -57,7 +57,7 @@ export type WslCommandLoop = {
 }
 
 export function wslCommandLoopMarker(): string {
-  return `__ORCA_WSL_EXEC_${randomUUID().replaceAll('-', '')}__`
+  return `__BBQ_WSL_EXEC_${randomUUID().replaceAll('-', '')}__`
 }
 
 export function startWslCommandLoop(child: PipedChildProcess, marker: string): WslCommandLoop {

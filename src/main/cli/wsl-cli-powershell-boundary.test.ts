@@ -111,7 +111,7 @@ describe('WSL CLI PowerShell boundary', () => {
         await writeFile(bridgePath, buildWslBridgeScript(), 'utf8')
         await writeFile(
           targetPath,
-          'process.stdout.write(JSON.stringify({ argv: process.argv.slice(2), cwd: process.env.ORCA_CLI_CWD ?? null, distro: process.env.ORCA_CLI_WSL_DISTRO ?? null }))\n',
+          'process.stdout.write(JSON.stringify({ argv: process.argv.slice(2), cwd: process.env.BBQ_CLI_CWD ?? null, distro: process.env.ORCA_CLI_WSL_DISTRO ?? null }))\n',
           'utf8'
         )
         const invocations = [
@@ -157,7 +157,7 @@ describe('WSL CLI PowerShell boundary', () => {
               windowsHide: true,
               env: {
                 ...process.env,
-                ORCA_CLI_CWD: 'stale',
+                BBQ_CLI_CWD: 'stale',
                 ORCA_CLI_WSL_DISTRO: 'stale-distro',
                 WSL_DISTRO_NAME: 'wrong-distro'
               }
@@ -204,7 +204,7 @@ describe('WSL CLI PowerShell boundary', () => {
         await writeFile(bridgePath, buildWslBridgeScript({ userDataPath, cliEntryPath }), 'utf8')
         await writeFile(
           cliEntryPath,
-          'console.error("to stderr"); const e = process.env; console.log(JSON.stringify({ argv: process.argv.slice(2), owner: e.ORCA_USER_DATA_PATH, app: e.ORCA_APP_EXECUTABLE, nodeOptions: e.NODE_OPTIONS ?? null, stashed: e.ORCA_NODE_OPTIONS, cliDir: e.ORCA_WSL_CLI_DIR ?? null }))\n',
+          'console.error("to stderr"); const e = process.env; console.log(JSON.stringify({ argv: process.argv.slice(2), owner: e.BBQ_USER_DATA_PATH, app: e.BBQ_APP_EXECUTABLE, nodeOptions: e.NODE_OPTIONS ?? null, stashed: e.BBQ_NODE_OPTIONS, cliDir: e.BBQ_WSL_CLI_DIR ?? null }))\n',
           'utf8'
         )
         const result = spawnSync(
@@ -226,9 +226,9 @@ describe('WSL CLI PowerShell boundary', () => {
             windowsHide: true,
             env: {
               ...process.env,
-              ORCA_APP_EXECUTABLE: '',
+              BBQ_APP_EXECUTABLE: '',
               NODE_OPTIONS: '--max-old-space-size=4096',
-              ORCA_WSL_CLI_DIR: 'C:\\guest-only'
+              BBQ_WSL_CLI_DIR: 'C:\\guest-only'
             }
           }
         )

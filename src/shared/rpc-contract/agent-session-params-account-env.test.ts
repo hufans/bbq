@@ -5,8 +5,8 @@ import { AGENT_SESSION_ACCOUNT_ENV_RUNTIME_CAPABILITY } from '../agent-session-c
 
 const ACCOUNT_ENV = {
   CLAUDE_CONFIG_DIR: '/home/u/.orca-claude/a/config',
-  ORCA_CLAUDE_INJECTED_CONFIG_DIR: '/home/u/.orca-claude/a/config',
-  ORCA_CLAUDE_PROFILE_POINTER: '~/.orca-claude/pointer',
+  BBQ_CLAUDE_INJECTED_CONFIG_DIR: '/home/u/.orca-claude/a/config',
+  BBQ_CLAUDE_PROFILE_POINTER: '~/.orca-claude/pointer',
   CODEX_HOME: '/home/u/.orca-codex/b'
 }
 const CREATE = {

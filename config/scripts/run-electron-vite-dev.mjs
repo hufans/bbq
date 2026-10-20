@@ -240,7 +240,7 @@ function prepareMacDevElectronApp() {
   )
   const requiredResourcePaths = [
     chromiumResourcePath,
-    path.join(appPath, 'Contents', 'MacOS', 'orca-keyboard-layout')
+    path.join(appPath, 'Contents', 'MacOS', 'bbq-keyboard-layout')
   ]
 
   function copiedAppIsUsable() {
@@ -334,7 +334,7 @@ function prepareMacDevElectronApp() {
         bundleId,
         '--single-arch',
         '--output',
-        path.join(appPath, 'Contents', 'MacOS', 'orca-notification-status')
+        path.join(appPath, 'Contents', 'MacOS', 'bbq-notification-status')
       ],
       { stdio: 'inherit' }
     )
@@ -351,7 +351,7 @@ function prepareMacDevElectronApp() {
         path.join(repoRoot, 'config', 'scripts', 'build-keyboard-layout-macos.mjs'),
         '--single-arch',
         '--output',
-        path.join(appPath, 'Contents', 'MacOS', 'orca-keyboard-layout')
+        path.join(appPath, 'Contents', 'MacOS', 'bbq-keyboard-layout')
       ],
       { stdio: 'inherit' }
     )

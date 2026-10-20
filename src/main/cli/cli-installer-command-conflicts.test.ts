@@ -67,7 +67,7 @@ describe('CliInstaller', () => {
       const commandDir = join(fixture.root, 'bin')
       const installPath = join(commandDir, 'orca')
       const resourcesPath = join(fixture.root, 'Current.app', 'Contents', 'Resources')
-      const launcherPath = join(resourcesPath, 'bin', 'orca')
+      const launcherPath = join(resourcesPath, 'bin', 'bbq')
       const oldLauncherPath = join(fixture.root, 'Old.app', 'Contents', 'Resources', 'bin', 'orca')
       await mkdir(commandDir, { recursive: true })
       await mkdir(join(resourcesPath, 'bin'), { recursive: true })
@@ -101,7 +101,7 @@ describe('CliInstaller', () => {
       const commandDir = join(fixture.root, 'bin')
       const installPath = join(commandDir, 'orca')
       const resourcesPath = join(fixture.root, 'Current.app', 'Contents', 'Resources')
-      const launcherPath = join(resourcesPath, 'bin', 'orca')
+      const launcherPath = join(resourcesPath, 'bin', 'bbq')
       const oldCliPath = join(fixture.root, 'OldWorktree', 'out', 'cli', 'index.js')
       await mkdir(commandDir, { recursive: true })
       await mkdir(join(resourcesPath, 'bin'), { recursive: true })
@@ -113,8 +113,8 @@ describe('CliInstaller', () => {
           'set -euo pipefail',
           "ELECTRON='/tmp/Old.app/Contents/MacOS/Electron'",
           `CLI='${oldCliPath}'`,
-          'export ORCA_NODE_OPTIONS="${NODE_OPTIONS-}"',
-          'export ORCA_NODE_REPL_EXTERNAL_MODULE="${NODE_REPL_EXTERNAL_MODULE-}"',
+          'export BBQ_NODE_OPTIONS="${NODE_OPTIONS-}"',
+          'export BBQ_NODE_REPL_EXTERNAL_MODULE="${NODE_REPL_EXTERNAL_MODULE-}"',
           'unset NODE_OPTIONS',
           'unset NODE_REPL_EXTERNAL_MODULE',
           'ELECTRON_RUN_AS_NODE=1 "$ELECTRON" "$CLI" "$@"',
@@ -183,7 +183,7 @@ describe('CliInstaller', () => {
         const installPath = join(commandDir, 'orca')
         const userDataPath = join(caseRoot, 'orca')
         const resourcesPath = join(caseRoot, 'Current.app', 'Contents', 'Resources')
-        const launcherPath = join(resourcesPath, 'bin', 'orca')
+        const launcherPath = join(resourcesPath, 'bin', 'bbq')
         const devLauncherPath = join(`${userDataPath}-dev`, 'cli', 'bin', devLauncherName)
         await mkdir(commandDir, { recursive: true })
         await mkdir(join(resourcesPath, 'bin'), { recursive: true })

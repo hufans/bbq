@@ -15,12 +15,14 @@ import {
 import { pruneAppImageExtractedRoots } from './appimage-extraction-pruning'
 import { resolveGenerationStableLauncherPath } from './appimage-generation-stable-launcher'
 import { withAppImageRegistrationLock } from './appimage-registration-lock'
+import { PRODUCT_COMMAND } from '../../shared/product-brand'
 import { getBundledLauncherPath } from './bundled-cli-launcher-path'
 import { quotePosixShellDoubleQuotedApostrophe } from '../../shared/shell-argument-quoting'
 
 // Why: marks a dispatcher this function wrote so repeat serve starts overwrite
-// our own file idempotently but never clobber a user's own ~/.local/bin/orca.
-const DISPATCHER_MARKER = '# orca-serve-bare-orca-dispatcher'
+// our own file idempotently but never clobber a user's own ~/.local/bin/bbq.
+const DISPATCHER_MARKER = '# bbq-serve-command-dispatcher'
+const LEGACY_DISPATCHER_MARKER = '# orca-serve-bare-orca-dispatcher'
 
 export type LinuxBareOrcaDispatcherOptions = {
   /** Packaged app resources root; the bundled `orca-ide` launcher lives under it. */
@@ -49,17 +51,14 @@ export type LinuxBareOrcaDispatcherResult = {
   target: string | null
 }
 
-// Why: on Linux the CLI installs as `orca-ide`, not bare `orca`, to avoid
-// shadowing GNOME Orca's /usr/bin/orca. But the Claude Team launcher typed into
-// the initial managed terminal invokes the literal `orca claude-teams`, so a
-// headless serve box needs a bare-`orca` dispatcher on the managed-terminal PATH
-// (~/.local/bin, which patchPackagedProcessPath puts ahead of /usr/bin). It is a
-// plain file, not a managed symlink, so CliInstaller.removeLegacyLinuxCommandIfManaged
-// never reclaims it.
+// Writes ~/.local/bin/bbq for headless serve. patchPackagedProcessPath puts that
+// directory ahead of /usr/bin. The file is not a managed symlink, so
+// CliInstaller.removeLegacyLinuxCommandIfManaged never reclaims it. An owned
+// legacy ~/.local/bin/orca is removed after install; a user's own file there stays.
 export async function installLinuxBareOrcaDispatcher(
   options: LinuxBareOrcaDispatcherOptions
 ): Promise<LinuxBareOrcaDispatcherResult> {
-  const dispatcherPath = join(options.homePath ?? homedir(), '.local', 'bin', 'orca')
+  const dispatcherPath = join(options.homePath ?? homedir(), '.local', 'bin', PRODUCT_COMMAND)
   if (existsSync(dispatcherPath) && !(await isOwnedDispatcher(dispatcherPath))) {
     return { state: 'skipped-foreign', dispatcherPath, target: null }
   }
@@ -73,6 +72,12 @@ export async function installLinuxBareOrcaDispatcher(
     dispatcherPath,
     insertDispatcherMarker(buildBareOrcaCliScript(launcher))
   )
+  if (installed) {
+    const legacyPath = join(dirname(dispatcherPath), 'orca')
+    if (await isOwnedDispatcher(legacyPath)) {
+      await unlink(legacyPath).catch(() => undefined)
+    }
+  }
   return installed
     ? { state: 'installed', dispatcherPath, target: launcher }
     : { state: 'skipped-foreign', dispatcherPath, target: null }
@@ -140,7 +145,9 @@ async function isOwnedDispatcher(dispatcherPath: string): Promise<boolean> {
   try {
     return (
       (await lstat(dispatcherPath)).isFile() &&
-      (await readFile(dispatcherPath, 'utf8')).split('\n')[1] === DISPATCHER_MARKER
+      [DISPATCHER_MARKER, LEGACY_DISPATCHER_MARKER].includes(
+        (await readFile(dispatcherPath, 'utf8')).split('\n')[1] ?? ''
+      )
     )
   } catch {
     return false
@@ -149,7 +156,7 @@ async function isOwnedDispatcher(dispatcherPath: string): Promise<boolean> {
 
 async function publishDispatcher(dispatcherPath: string, content: string): Promise<boolean> {
   const directoryPath = dirname(dispatcherPath)
-  const temporaryPath = join(directoryPath, `.orca-dispatcher-${process.pid}-${randomUUID()}`)
+  const temporaryPath = join(directoryPath, `.bbq-dispatcher-${process.pid}-${randomUUID()}`)
   await mkdir(directoryPath, { recursive: true })
   await writeFile(temporaryPath, content, { encoding: 'utf8', flag: 'wx', mode: 0o755 })
   try {

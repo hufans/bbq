@@ -618,7 +618,7 @@ describe('orca skills CLI', () => {
   })
 
   it('refuses a real run when the shell forwards orca to the Orca host', async () => {
-    vi.stubEnv('ORCA_CLI_CWD', '/home/alice/wt')
+    vi.stubEnv('BBQ_CLI_CWD', '/home/alice/wt')
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     await main(['skills', 'install', '--skill', 'alpha'], '/tmp/repo')
@@ -631,7 +631,7 @@ describe('orca skills CLI', () => {
   })
 
   it('refuses --dry-run through the host-forwarding shim too', async () => {
-    vi.stubEnv('ORCA_CLI_CWD', '/home/alice/wt')
+    vi.stubEnv('BBQ_CLI_CWD', '/home/alice/wt')
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     await main(['skills', 'install', '--skill', 'alpha', '--dry-run'], '/tmp/repo')
@@ -871,7 +871,7 @@ describe('orca skills CLI', () => {
   })
 
   it('reports forwarding, not missing agents, when a forwarded host detects none', async () => {
-    vi.stubEnv('ORCA_CLI_CWD', '/home/alice/wt')
+    vi.stubEnv('BBQ_CLI_CWD', '/home/alice/wt')
     detectCommandsMock.mockReturnValue(new Set<string>())
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 

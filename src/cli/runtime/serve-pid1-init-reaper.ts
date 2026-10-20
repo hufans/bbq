@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs'
 import { isAbsolute, relative, resolve } from 'node:path'
+import { stripLegacyExportedProductEnv } from '../../shared/product-brand'
 
 const BASH_CANDIDATES = ['/bin/bash', '/usr/bin/bash']
 
@@ -57,10 +58,11 @@ function servedCommand(deps: ServeInitReaperDeps): ServedCommand | null {
     }
     const env = { ...deps.env }
     delete env.ELECTRON_RUN_AS_NODE
+    stripLegacyExportedProductEnv(env)
     // Why: the image's own CLI redirect moves these aside again; restore what the user set.
     for (const name of ['NODE_OPTIONS', 'NODE_REPL_EXTERNAL_MODULE']) {
-      const saved = env[`ORCA_${name}`]
-      delete env[`ORCA_${name}`]
+      const saved = env[`BBQ_${name}`]
+      delete env[`BBQ_${name}`]
       if (saved) {
         env[name] = saved
       }
@@ -85,7 +87,7 @@ export function reexecServeUnderInitReaper(deps: ServeInitReaperDeps): ServeInit
   try {
     deps.execve(
       bash,
-      ['bash', '-c', SERVE_INIT_REAPER_SCRIPT, 'orca-serve-init', ...command.args],
+      ['bash', '-c', SERVE_INIT_REAPER_SCRIPT, 'bbq-serve-init', ...command.args],
       command.env
     )
   } catch (error) {

@@ -15,7 +15,7 @@ const clearCache = vi.fn()
 function writer(wayland = true, validate = assertClipboardTextWriteWithinLimitWithYield) {
   return createClipboardTextPublisher({
     isWayland: () => wayland,
-    helperPath: () => '/bundle/bin/orca-wayland-clipboard',
+    helperPath: () => '/bundle/bin/bbq-wayland-clipboard',
     run,
     write,
     clearCache,
@@ -36,7 +36,7 @@ describe('terminal clipboard writes', () => {
     await copy(text)
     expect(run).toHaveBeenCalledTimes(2)
     expect(run).toHaveBeenCalledWith({
-      program: '/bundle/bin/orca-wayland-clipboard',
+      program: '/bundle/bin/bbq-wayland-clipboard',
       input: text,
       timeoutMs: 2000,
       stdio: ['pipe', 'ignore', 'ignore']

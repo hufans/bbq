@@ -29,7 +29,7 @@ beforeEach(() => {
   vi.stubEnv('HOME', home)
   vi.stubEnv('USERPROFILE', home)
   // Why: the Codex runtime home reads this (as the host seeds it); otherwise XDG_CONFIG_HOME wins on CI.
-  vi.stubEnv('ORCA_USER_DATA_PATH', userData)
+  vi.stubEnv('BBQ_USER_DATA_PATH', userData)
   installFakeAppEnvironment({
     getPath: (name) => (name === 'home' ? home : name === 'temp' ? tmpdir() : userData)
   })

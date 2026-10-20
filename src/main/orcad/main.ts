@@ -1,6 +1,9 @@
 /** Executable entry for `orcad`. See `./orcad-entry.ts`. */
 import process from 'node:process'
+import { stripLegacyExportedProductEnv } from '../../shared/product-brand'
 import { main } from './orcad-entry'
+
+stripLegacyExportedProductEnv(process.env)
 import { resolveOrcadExitCode } from './orcad-exit-code'
 import { reserveServeStdoutForReadiness } from '../server/serve-stdout-boundary'
 import { runOrcadNativePreflight } from './orcad-native-preflight'

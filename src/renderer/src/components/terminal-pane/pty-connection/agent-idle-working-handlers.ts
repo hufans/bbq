@@ -43,7 +43,7 @@ export function installAgentIdleWorkingHandlers(session: ConnectPanePtySession):
     // Why: title reversion alone is not process death. The process/PTY tracker
     // owns removing agent rows when the TUI actually exits.
   }
-  // Why: inject ORCA_PANE_KEY so global Claude/Codex hooks can attribute their
+  // Why: inject BBQ_PANE_KEY so global Claude/Codex hooks can attribute their
   // callbacks to the correct Orca pane without resolving worktrees from cwd.
   // The key matches the `${tabId}:${leafId}` composite used for cacheTimerByKey
   // and agentStatusByPaneKey. Treat it as opaque outside Orca.
@@ -62,10 +62,10 @@ export function installAgentIdleWorkingHandlers(session: ConnectPanePtySession):
   }
   session.paneIdentityEnv = {
     ...session.workspaceEnv,
-    ORCA_PANE_KEY: session.cacheKey,
-    ORCA_TAB_ID: session.deps.tabId,
-    ORCA_WORKTREE_ID: session.deps.worktreeId,
-    ...(session.launchToken ? { ORCA_AGENT_LAUNCH_TOKEN: session.launchToken } : {})
+    BBQ_PANE_KEY: session.cacheKey,
+    BBQ_TAB_ID: session.deps.tabId,
+    BBQ_WORKTREE_ID: session.deps.worktreeId,
+    ...(session.launchToken ? { BBQ_AGENT_LAUNCH_TOKEN: session.launchToken } : {})
   }
   session.paneEnv = {
     ...session.paneStartup?.env,

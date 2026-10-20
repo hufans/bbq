@@ -144,10 +144,10 @@ export function windowSpawnRequest(c: WindowLaunchCase): Record<string, unknown>
       ...(workspace.kind === 'folder'
         ? { ORCA_PROJECT_GROUP_ID: 'pg-1', ORCA_WORKSPACE_ROOT: workspace.path }
         : {}),
-      ORCA_PANE_KEY: `${LAUNCH_TAB_ID}:${LAUNCH_LEAF_ID}`,
-      ORCA_TAB_ID: LAUNCH_TAB_ID,
-      ORCA_WORKTREE_ID: worktreeId,
-      ORCA_AGENT_LAUNCH_TOKEN: LAUNCH_TOKEN
+      BBQ_PANE_KEY: `${LAUNCH_TAB_ID}:${LAUNCH_LEAF_ID}`,
+      BBQ_TAB_ID: LAUNCH_TAB_ID,
+      BBQ_WORKTREE_ID: worktreeId,
+      BBQ_AGENT_LAUNCH_TOKEN: LAUNCH_TOKEN
     },
     command: request.command,
     launchConfig: {
@@ -183,11 +183,11 @@ export const IDENTITY_ENV_KEYS = [
   'ORCA_WORKSPACE_ID',
   'ORCA_PROJECT_GROUP_ID',
   'ORCA_WORKSPACE_ROOT',
-  'ORCA_PANE_KEY',
-  'ORCA_TAB_ID',
-  'ORCA_WORKTREE_ID',
-  'ORCA_AGENT_LAUNCH_TOKEN',
-  'ORCA_TERMINAL_HANDLE'
+  'BBQ_PANE_KEY',
+  'BBQ_TAB_ID',
+  'BBQ_WORKTREE_ID',
+  'BBQ_AGENT_LAUNCH_TOKEN',
+  'BBQ_TERMINAL_HANDLE'
 ] as const
 
 /** What main hands the provider for a window-lane pty:spawn request (rows 2, 5 and 6). */
@@ -197,7 +197,7 @@ export function expectedWindowProvider(
   agentEnv: Record<string, string>
 ): Record<string, unknown> {
   // main adds the terminal handle to the pane's env.
-  const env = { ...(typeof request.env === 'object' ? request.env : {}), ORCA_TERMINAL_HANDLE: '' }
+  const env = { ...(typeof request.env === 'object' ? request.env : {}), BBQ_TERMINAL_HANDLE: '' }
   return {
     command: provider.command ?? request.command,
     // main normalizes the cwd to forward slashes (resolveRuntimePath).

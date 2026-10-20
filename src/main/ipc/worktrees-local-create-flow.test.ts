@@ -701,8 +701,8 @@ describe('registerWorktreeHandlers', () => {
         title: 'Setup',
         command: expect.stringContaining('bash /workspace/repo/.git/orca/setup-runner.sh'),
         env: {
-          ORCA_ROOT_PATH: '/workspace/repo',
-          ORCA_WORKTREE_PATH: '/workspace/improve-dashboard'
+          BBQ_ROOT_PATH: '/workspace/repo',
+          BBQ_WORKTREE_PATH: '/workspace/improve-dashboard'
         },
         activate: false,
         surfaceOwner: false
@@ -759,8 +759,8 @@ describe('registerWorktreeHandlers', () => {
       runnerScriptPath: 'C:\\workspace\\repo\\.git\\orca\\setup-runner.sh',
       shell: { family: 'posix', executable: 'wsl.exe' },
       envVars: {
-        ORCA_ROOT_PATH: 'C:\\workspace\\repo',
-        ORCA_WORKTREE_PATH: 'C:\\workspace\\improve-dashboard'
+        BBQ_ROOT_PATH: 'C:\\workspace\\repo',
+        BBQ_WORKTREE_PATH: 'C:\\workspace\\improve-dashboard'
       },
       waitForAgentStartup: true
     })

@@ -57,11 +57,11 @@ fn run(agent: &Agent) {
     // Why: refresh the listener coordinates for terminals that survived an Orca restart.
     let endpoint = read_endpoint_file();
     let coordinate = |key: &str| endpoint_value(&endpoint, key).unwrap_or_else(|| var(key));
-    let port = coordinate("ORCA_AGENT_HOOK_PORT");
-    let token = coordinate("ORCA_AGENT_HOOK_TOKEN");
+    let port = coordinate("BBQ_AGENT_HOOK_PORT");
+    let token = coordinate("BBQ_AGENT_HOOK_TOKEN");
     // Why (#11549): without Orca's env the hook ran outside an Orca pane, where the caller
     // may abandon stdin; exit before reading it.
-    if port.is_empty() || token.is_empty() || var("ORCA_PANE_KEY").is_empty() {
+    if port.is_empty() || token.is_empty() || var("BBQ_PANE_KEY").is_empty() {
         return;
     }
     let is_set = |name: &&str| !var(name).is_empty();
@@ -76,12 +76,12 @@ fn run(agent: &Agent) {
     let mut payload = Vec::new();
     let _ = stdin.read_to_end(&mut payload);
     let form = [
-        ("paneKey", var("ORCA_PANE_KEY")),
-        ("tabId", var("ORCA_TAB_ID")),
-        ("launchToken", var("ORCA_AGENT_LAUNCH_TOKEN")),
-        ("worktreeId", var("ORCA_WORKTREE_ID")),
-        ("env", coordinate("ORCA_AGENT_HOOK_ENV")),
-        ("version", coordinate("ORCA_AGENT_HOOK_VERSION")),
+        ("paneKey", var("BBQ_PANE_KEY")),
+        ("tabId", var("BBQ_TAB_ID")),
+        ("launchToken", var("BBQ_AGENT_LAUNCH_TOKEN")),
+        ("worktreeId", var("BBQ_WORKTREE_ID")),
+        ("env", coordinate("BBQ_AGENT_HOOK_ENV")),
+        ("version", coordinate("BBQ_AGENT_HOOK_VERSION")),
     ];
     post(agent.source, &port, &token, &form, &payload);
 }
@@ -95,7 +95,7 @@ fn var(name: &str) -> String {
 /// The file src/shared/agent-hook-listener/endpoint-publication.ts writes, or "" if unreadable.
 fn read_endpoint_file() -> String {
     let mut text = String::new();
-    let read = File::open(var("ORCA_AGENT_HOOK_ENDPOINT")).and_then(|file| {
+    let read = File::open(var("BBQ_AGENT_HOOK_ENDPOINT")).and_then(|file| {
         file.take(ENDPOINT_FILE_BYTE_LIMIT)
             .read_to_string(&mut text)
     });
@@ -134,7 +134,7 @@ fn post(source: &str, port: &str, token: &str, form: &[(&str, String)], payload:
     let mut request = format!(
         "POST /hook/{source} HTTP/1.1\r\nHost: 127.0.0.1:{port}\r\n\
          Content-Type: application/x-www-form-urlencoded\r\n\
-         X-Orca-Agent-Hook-Token: {token}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+         X-Bbq-Agent-Hook-Token: {token}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
         body.len()
     )
     .into_bytes();

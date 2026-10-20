@@ -40,21 +40,21 @@ fn main() {
 
     let Some(resources_directory) = launcher.parent().and_then(Path::parent) else {
         fail(&format!(
-            "Unable to locate Orca.exe next to \"{}\"",
+            "Unable to locate bbq.exe next to \"{}\"",
             launcher.display()
         ))
     };
     let Some(app_directory) = resources_directory.parent() else {
         fail(&format!(
-            "Unable to locate Orca.exe next to \"{}\"",
+            "Unable to locate bbq.exe next to \"{}\"",
             resources_directory.display()
         ))
     };
 
-    let electron_path = app_directory.join("Orca.exe");
+    let electron_path = app_directory.join("bbq.exe");
     if !electron_path.is_file() {
         fail(&format!(
-            "Unable to locate Orca.exe next to \"{}\"",
+            "Unable to locate bbq.exe next to \"{}\"",
             resources_directory.display()
         ));
     }
@@ -75,22 +75,16 @@ fn main() {
     // an explicit map collapses a block carrying both PATH and Path into one
     // entry, which is what killed the CLI in #12046. Leaving the map untouched
     // makes the child inherit our block verbatim.
-    move_environment_variable("NODE_OPTIONS", "ORCA_NODE_OPTIONS");
+    move_environment_variable("NODE_OPTIONS", "BBQ_NODE_OPTIONS");
     move_environment_variable(
         "NODE_REPL_EXTERNAL_MODULE",
-        "ORCA_NODE_REPL_EXTERNAL_MODULE",
+        "BBQ_NODE_REPL_EXTERNAL_MODULE",
     );
     env::set_var("ELECTRON_RUN_AS_NODE", "1");
-    env::set_var("ORCA_WINDOWS_PACKAGED_CLI_LAUNCHER", "1");
-    let requested_command = env::var("ORCA_CLI_COMMAND").unwrap_or_default();
-    env::set_var(
-        "ORCA_CLI_COMMAND",
-        if requested_command == "orca-ide" {
-            "orca-ide"
-        } else {
-            "orca"
-        },
-    );
+    env::set_var("BBQ_WINDOWS_PACKAGED_CLI_LAUNCHER", "1");
+    env::remove_var("ORCA_WINDOWS_PACKAGED_CLI_LAUNCHER");
+    env::remove_var("ORCA_CLI_COMMAND");
+    env::set_var("BBQ_CLI_COMMAND", "bbq");
 
     run_cli(&electron_path, &cli_path)
 }
@@ -115,14 +109,16 @@ fn run_server_cli(config_path: &Path) -> ! {
             ));
         }
     }
-    env::set_var("ORCA_USER_DATA_PATH", user_data_path);
+    env::set_var("BBQ_USER_DATA_PATH", user_data_path);
     for name in [
         "NODE_OPTIONS",
         "NODE_REPL_EXTERNAL_MODULE",
         "ELECTRON_RUN_AS_NODE",
-        // A server started by the desktop's `orca serve` inherits this marker, which would make
-        // orchestration demand a bare `orca` resume command.
+        // A server started by the desktop app inherits this marker, which would make
+        // orchestration demand the desktop launcher's resume command.
+        "BBQ_WINDOWS_PACKAGED_CLI_LAUNCHER",
         "ORCA_WINDOWS_PACKAGED_CLI_LAUNCHER",
+        "ORCA_CLI_COMMAND",
     ] {
         env::remove_var(name);
     }

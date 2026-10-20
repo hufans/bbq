@@ -47,7 +47,7 @@ describe.runIf(posix)('WSL transport command loops', () => {
     }
     expect(specs).toHaveLength(1)
     expect(specs[0]?.args?.slice(0, 5)).toEqual(['-d', 'Ubuntu-24.04', '--exec', 'sh', '-c'])
-    expect(specs[0]?.args?.[6]).toBe('orca-wsl-exec-loop')
+    expect(specs[0]?.args?.[6]).toBe('bbq-wsl-exec-loop')
   })
 
   it('still gives a command that takes stdin its own wsl.exe', async () => {
@@ -79,7 +79,7 @@ describe.runIf(posix)('WSL transport command loops', () => {
         // A guest without base64: the loop's self-test fails and it exits.
         const child = spawnProcess({
           program: 'sh',
-          args: shellArgs[2] === 'orca-wsl-exec-loop' ? ['-c', 'exit 98'] : shellArgs
+          args: shellArgs[2] === 'bbq-wsl-exec-loop' ? ['-c', 'exit 98'] : shellArgs
         })
         children.push(child)
         return child

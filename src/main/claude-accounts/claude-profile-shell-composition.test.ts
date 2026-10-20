@@ -46,7 +46,7 @@ async function composed() {
 it('gives every composed shell startup and the plain fish vendor snippet the claude function', async () => {
   const on = await composed()
   for (const text of [...on.bash, ...on.zsh]) {
-    expect(text).toContain('ORCA_CLAUDE_INJECTED_CONFIG_DIR')
+    expect(text).toContain('BBQ_CLAUDE_INJECTED_CONFIG_DIR')
   }
   const { getFishVendorConfSnippet } = await import('../fish-xdg-data-dirs-handoff')
   const { getFishClaudeShellFunction } = await import('../../shared/claude-shell-function')
@@ -77,11 +77,11 @@ it.skipIf(!existsSync(FISH))(
           '-i',
           `HOME=${root}`,
           `PATH=${join(root, 'bin')}:/usr/bin:/bin`,
-          `ORCA_CLAUDE_PROFILE_POINTER=${join(root, 'selected')}`,
+          `BBQ_CLAUDE_PROFILE_POINTER=${join(root, 'selected')}`,
           FISH,
           '--no-config',
           '-c',
-          `test (command -s claude) = '${join(root, 'bin', 'claude')}'; or exit 97\n${init}\nfunctions -q claude; and echo CLAUDE-FN\nfunctions -q __orca_shell_ready_marker; and echo READY-HOOK`
+          `test (command -s claude) = '${join(root, 'bin', 'claude')}'; or exit 97\n${init}\nfunctions -q claude; and echo CLAUDE-FN\nfunctions -q __bbq_shell_ready_marker; and echo READY-HOOK`
         ],
         { encoding: 'utf8' }
       )

@@ -512,7 +512,7 @@ describe.each([false, true])('Dispatch recipient identity (settled=%s)', (settle
   }
   function sessionRun() {
     state.db.db
-      .prepare('UPDATE dispatch_contexts SET assignee_orca_session_id = ? WHERE id = ?')
+      .prepare('UPDATE dispatch_contexts SET assignee_bbq_session_id = ? WHERE id = ?')
       .run(SESSION, dispatch.id)
     return state.db.createRun({
       objective: 'session lead',

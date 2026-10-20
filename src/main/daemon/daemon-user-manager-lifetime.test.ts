@@ -22,7 +22,7 @@ function cgroupFile(contents: string): string {
   return path
 }
 
-const SYSTEM_SERVICE = '0::/system.slice/orca-serve.service\n'
+const SYSTEM_SERVICE = '0::/system.slice/bbq-serve.service\n'
 const SSH_SESSION = '0::/user.slice/user-1000.slice/session-4.scope\n'
 const DESKTOP_APP = '0::/user.slice/user-1000.slice/user@1000.service/app.slice/app-orca-12.scope\n'
 

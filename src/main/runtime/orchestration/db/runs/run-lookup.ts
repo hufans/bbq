@@ -32,7 +32,7 @@ const RUNS_BOUND_TO_PANE_SQL = `SELECT ${RUN_COLUMN_LIST} FROM runs
 const RUNS_BOUND_TO_COORDINATOR_SQL = `SELECT ${RUN_COLUMN_LIST} FROM runs
          WHERE legacy = 0 AND (
            (coordinator_pane_key IS NOT NULL AND ${RUN_PANE_KEY_MATCH_SUFFIX_SQL} = ?)
-           OR coordinator_orca_session_id = ?
+           OR coordinator_bbq_session_id = ?
          )
          ORDER BY rowid`
 
@@ -171,8 +171,8 @@ export function unbindOtherRunsForCoordinator(
       this.db
         .prepare(
           `UPDATE runs
-           SET coordinator_handle = NULL, coordinator_pane_key = NULL, coordinator_orca_session_id = NULL,
-               coordinator_orca_session_id_generation = NULL,
+           SET coordinator_handle = NULL, coordinator_pane_key = NULL, coordinator_bbq_session_id = NULL,
+               coordinator_bbq_session_id_generation = NULL,
                consumer_generation = consumer_generation + 1,
                updated_at = datetime('now')
            WHERE id = ?`

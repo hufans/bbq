@@ -32,6 +32,18 @@ describe('tui agent detection commands', () => {
     expect(commands).toEqual([
       {
         id: 'claude-agent-teams',
+        cmd: 'bbq',
+        requiredCommands: ['claude'],
+        unsupportedRuntimes: ['win32', 'wsl']
+      },
+      {
+        id: 'claude-agent-teams',
+        cmd: 'bbq-dev',
+        requiredCommands: ['claude'],
+        unsupportedRuntimes: ['win32', 'wsl']
+      },
+      {
+        id: 'claude-agent-teams',
         cmd: 'orca',
         requiredCommands: ['claude'],
         unsupportedRuntimes: ['win32', 'wsl']
@@ -50,8 +62,10 @@ describe('tui agent detection commands', () => {
       }
     ])
     expect(getTuiAgentDetectionProbeCommands(commands, 'linux')).toEqual([
-      'orca',
+      'bbq',
       'claude',
+      'bbq-dev',
+      'orca',
       'orca-dev',
       'orca-ide'
     ])

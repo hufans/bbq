@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs'
-import { homedir } from 'node:os'
+import { resolveProductHomeDir } from '../../shared/product-brand'
 import { join } from 'node:path'
 import { writeEncryptedCredential } from '../integration-credential-file'
 import { readCredentialFileProtection } from '../credential-file-protection'
@@ -27,7 +27,7 @@ export function getCredentialError(siteId: string): string | undefined {
 }
 
 function getOrcaDir(): string {
-  return join(homedir(), '.orca')
+  return resolveProductHomeDir()
 }
 
 function getSiteFilePath(): string {

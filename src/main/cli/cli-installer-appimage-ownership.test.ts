@@ -73,7 +73,7 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
   it('uses the mounted bundled launcher when only APPDIR is inherited', async () => {
     const fixture = await makeFixture()
     const resourcesPath = join(fixture.root, 'mounted', 'resources')
-    const launcherPath = join(resourcesPath, 'bin', 'orca-ide')
+    const launcherPath = join(resourcesPath, 'bin', 'bbq')
     await mkdir(dirname(launcherPath), { recursive: true })
     await writeFile(launcherPath, '#!/usr/bin/env bash\n', { mode: 0o755 })
     vi.stubEnv('APPIMAGE', '')
@@ -105,7 +105,7 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
   it('ignores inherited APPIMAGE without the matching runtime identity', async () => {
     const fixture = await makeFixture()
     const resourcesPath = join(fixture.root, 'installed', 'resources')
-    const launcherPath = join(resourcesPath, 'bin', 'orca-ide')
+    const launcherPath = join(resourcesPath, 'bin', 'bbq')
     await mkdir(dirname(launcherPath), { recursive: true })
     await writeFile(launcherPath, '#!/usr/bin/env bash\n', { mode: 0o755 })
     vi.stubEnv('APPIMAGE', fixture.appImagePath)
@@ -134,9 +134,9 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
     expect(extract).not.toHaveBeenCalled()
   })
 
-  it('refuses an arbitrary resources/bin/orca-ide symlink', async () => {
+  it('refuses an arbitrary resources/bin/bbq symlink', async () => {
     const fixture = await makeFixture()
-    const foreignTarget = join(fixture.root, 'foreign', 'resources', 'bin', 'orca-ide')
+    const foreignTarget = join(fixture.root, 'foreign', 'resources', 'bin', 'bbq')
     await symlink(foreignTarget, fixture.commandPath)
     const extract = vi.fn(extractPayload)
     const installer = new CliInstaller({
@@ -264,7 +264,7 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
   it('reclaims a symlink left by a packaged deb/rpm install', async () => {
     for (const directory of ['/opt/Orca', '/opt/orca-ide', '/opt/orca']) {
       const fixture = await makeFixture()
-      await symlink(`${directory}/resources/bin/orca-ide`, fixture.commandPath)
+      await symlink(`${directory}/resources/bin/bbq`, fixture.commandPath)
 
       await expect(new CliInstaller(installerOptions(fixture)).getStatus()).resolves.toMatchObject({
         state: 'stale'
@@ -274,7 +274,7 @@ describe.skipIf(process.platform === 'win32')('AppImage CLI ownership', () => {
 
   it('still refuses a launcher-named symlink outside the packaged install tree', async () => {
     const fixture = await makeFixture()
-    await symlink('/opt/not-orca/resources/bin/orca-ide', fixture.commandPath)
+    await symlink('/opt/not-orca/resources/bin/bbq', fixture.commandPath)
 
     await expect(new CliInstaller(installerOptions(fixture)).getStatus()).resolves.toMatchObject({
       state: 'conflict'

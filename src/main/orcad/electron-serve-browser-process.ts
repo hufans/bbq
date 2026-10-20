@@ -58,9 +58,8 @@ async function reserveLoopbackPort(): Promise<number> {
 function electronServeEnvironment(userDataPath: string): NodeJS.ProcessEnv {
   const environment = { ...process.env }
   for (const key of [
-    'ORCA_E2E_USER_DATA_DIR',
-    'ORCA_USER_DATA',
-    'ORCA_USER_DATA_PATH',
+    ...'ORCA_E2E_USER_DATA_DIR ORCA_HOME ORCA_USER_DATA'.split(' '),
+    ...'BBQ_HOME BBQ_USER_DATA BBQ_USER_DATA_PATH'.split(' '),
     'AGENT_BROWSER_ARGS',
     'AGENT_BROWSER_AUTO_CONNECT',
     'AGENT_BROWSER_CDP',
@@ -80,7 +79,7 @@ function electronServeEnvironment(userDataPath: string): NodeJS.ProcessEnv {
     environment.ORCA_E2E_USER_DATA_DIR = userDataPath
   }
   // Why not ORCA_BACKGROUND_LAUNCH: an older installed app would hide without handing opens to the desktop app.
-  environment.ORCA_ORCAD_SIDECAR = '1'
+  environment.BBQ_ORCAD_SIDECAR = '1'
   return environment
 }
 

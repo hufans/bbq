@@ -73,9 +73,9 @@ export function registerPtyConnectionAgentSessionResumeTests(): void {
         agentArgs: '--model gpt-5 --reasoning-effort high',
         agentEnv: {
           CODEX_PROFILE: 'captured',
-          ORCA_PANE_KEY: 'wrong-pane',
-          ORCA_TAB_ID: 'wrong-tab',
-          ORCA_WORKTREE_ID: 'wrong-worktree',
+          BBQ_PANE_KEY: 'wrong-pane',
+          BBQ_TAB_ID: 'wrong-tab',
+          BBQ_WORKTREE_ID: 'wrong-worktree',
           ORCA_WORKSPACE_ID: 'wrong-workspace'
         }
       }
@@ -122,7 +122,7 @@ export function registerPtyConnectionAgentSessionResumeTests(): void {
         ([args]) => args.sessionId === 'lost-pty'
       )?.[0]
       const launchToken = (reattachArgs?.env as Record<string, string> | undefined)
-        ?.ORCA_AGENT_LAUNCH_TOKEN
+        ?.BBQ_AGENT_LAUNCH_TOKEN
 
       expect(transport.sendInput).not.toHaveBeenCalled()
       expect(launchToken).toMatch(new RegExp(`^${UUID_RE}$`))
@@ -132,11 +132,11 @@ export function registerPtyConnectionAgentSessionResumeTests(): void {
           command: "codex '--model' 'gpt-5' '--reasoning-effort' 'high' 'resume' 'codex-session-1'",
           env: expect.objectContaining({
             CODEX_PROFILE: 'captured',
-            ORCA_PANE_KEY: paneKey,
-            ORCA_TAB_ID: 'tab-1',
-            ORCA_WORKTREE_ID: 'wt-1',
+            BBQ_PANE_KEY: paneKey,
+            BBQ_TAB_ID: 'tab-1',
+            BBQ_WORKTREE_ID: 'wt-1',
             ORCA_WORKSPACE_ID: 'wt-1',
-            ORCA_AGENT_LAUNCH_TOKEN: launchToken
+            BBQ_AGENT_LAUNCH_TOKEN: launchToken
           })
         })
       )
@@ -309,7 +309,7 @@ export function registerPtyConnectionAgentSessionResumeTests(): void {
           sessionId: 'lost-pty',
           command: "codex '--model' 'gpt-5-mini' 'resume' 'codex-session-1'",
           env: expect.objectContaining({
-            ORCA_AGENT_LAUNCH_TOKEN: expect.stringMatching(new RegExp(`^${UUID_RE}$`))
+            BBQ_AGENT_LAUNCH_TOKEN: expect.stringMatching(new RegExp(`^${UUID_RE}$`))
           })
         })
       )

@@ -143,7 +143,7 @@ describe('runtime pty spawn preflight: OpenSSH login shell on a managed SSH host
     writeFileSync(loginShell, '')
     regQueryStdout.value = `HKEY_LOCAL_MACHINE\\SOFTWARE\\OpenSSH\r\n    DefaultShell    REG_SZ    ${loginShell}\r\n`
     if (managed) {
-      vi.stubEnv('ORCA_ORCAD_MANAGED_ACTIVATION_ROOT', loginShellDir)
+      vi.stubEnv('BBQ_ORCAD_MANAGED_ACTIVATION_ROOT', loginShellDir)
     }
     Object.defineProperty(process, 'platform', { configurable: true, value: 'win32' })
     const { prepareRuntimePtySpawn: prepare } = await import('./spawn-preflight')
@@ -204,7 +204,7 @@ describe('runtime pty spawn preflight: Claude account routing in a WSL pane', ()
     expect(ctx.codexSelectionTarget).toEqual({ runtime: 'wsl', wslDistro: 'Ubuntu' })
     expect(args.env).toEqual({
       KEEP: '1',
-      ORCA_CLAUDE_PROFILE_POINTER: '~/.local/share/orca/claude-profiles/selected-wsl-orca'
+      BBQ_CLAUDE_PROFILE_POINTER: '~/.local/share/orca/claude-profiles/selected-wsl-orca'
     })
     expect(runSetup).not.toHaveBeenCalled()
   })

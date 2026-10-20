@@ -197,7 +197,7 @@ export abstract class OrcaRuntimeWithResolveBrowserNetworkExecutionHostForWorktr
     for (const key of AGENT_HOOK_RUNTIME_ENV_KEYS) {
       delete cleanBaseEnv[key]
     }
-    // Pane identity (ORCA_PANE_KEY/TAB_ID/WORKTREE_ID, jcode dir) is stamped by the spawn step from the spawn's ids.
+    // Pane identity (BBQ_PANE_KEY/TAB_ID/WORKTREE_ID, jcode dir) is stamped by the spawn step from the spawn's ids.
     const env = {
       ...cleanBaseEnv,
       ...agentTeamsEnv,

@@ -23,7 +23,7 @@ import {
 
 const WORKTREE_PATH = '/tmp/workspaces/native-chat-setup'
 const RUNNER = '/tmp/repo/.git/orca/setup-runner.sh'
-const SETUP_ENV = { ORCA_WORKTREE_PATH: WORKTREE_PATH, SETUP_INPUT: 'preserved' }
+const SETUP_ENV = { BBQ_WORKTREE_PATH: WORKTREE_PATH, SETUP_INPUT: 'preserved' }
 
 async function createFromRendererPayload(options: {
   agent?: WorktreeCreateRequest['createdWithAgent']
@@ -138,10 +138,10 @@ describe('native-chat setup through renderer payload, RPC and execution host', (
     async (mode) => {
       const { spawn } = await createFromRendererPayload({ agent: 'codex', mode, startup: true })
       expect(spawn.mock.calls.map(([args]) => args.command)).toEqual(['codex', `bash ${RUNNER}`])
-      const startupTabId = spawnedPtyEnv(spawn.mock.calls[0][0]).ORCA_TAB_ID
+      const startupTabId = spawnedPtyEnv(spawn.mock.calls[0][0]).BBQ_TAB_ID
       expect(startupTabId).toEqual(expect.any(String))
       expect(startupTabId).not.toBe('')
-      expect(startupTabId).not.toBe(spawnedPtyEnv(spawn.mock.calls[1][0]).ORCA_TAB_ID)
+      expect(startupTabId).not.toBe(spawnedPtyEnv(spawn.mock.calls[1][0]).BBQ_TAB_ID)
     }
   )
 

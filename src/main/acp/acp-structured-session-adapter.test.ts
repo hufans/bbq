@@ -76,8 +76,8 @@ describe('ACP structured session adapter: acquire', () => {
           resolveWorkspacePath: async () => '/workspace/project',
           resolveEnvironment: async () => ({
             PATH: '/usr/bin',
-            ORCA_PANE_KEY: 'tab-1:pane-1',
-            ORCA_AGENT_HOOK_PORT: '1234'
+            BBQ_PANE_KEY: 'tab-1:pane-1',
+            BBQ_AGENT_HOOK_PORT: '1234'
           }),
           resolveCommand: () => '/opt/bin/grok',
           readJournal: () => null
@@ -88,11 +88,11 @@ describe('ACP structured session adapter: acquire', () => {
     const launch = rig.child().launch
     expect(launch.envToDelete).toEqual(expect.arrayContaining([...STRUCTURED_CHILD_ENV_TO_DELETE]))
     expect(launch.envToDelete).toEqual(
-      expect.arrayContaining(['ORCA_PANE_KEY', 'ORCA_AGENT_PANE', ...AGENT_HOOK_RUNTIME_ENV_KEYS])
+      expect.arrayContaining(['BBQ_PANE_KEY', 'BBQ_AGENT_PANE', ...AGENT_HOOK_RUNTIME_ENV_KEYS])
     )
     expect(launch.env).toMatchObject({
-      ORCA_AGENT_SESSION_ID: SESSION,
-      ORCA_AGENT_SESSION_SPAWN_TOKEN: 'spawn-1'
+      BBQ_AGENT_SESSION_ID: SESSION,
+      BBQ_AGENT_SESSION_SPAWN_TOKEN: 'spawn-1'
     })
   })
 

@@ -122,19 +122,19 @@ async function sendProviderHook() {
   hookSent = true
   const config = JSON.parse(readFileSync(configPath, 'utf8'))
   const payload = ${providerHookPayload(agent)}
-  await fetch('http://127.0.0.1:' + process.env.ORCA_AGENT_HOOK_PORT + '${hookPath}', {
+  await fetch('http://127.0.0.1:' + process.env.BBQ_AGENT_HOOK_PORT + '${hookPath}', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Orca-Agent-Hook-Token': process.env.ORCA_AGENT_HOOK_TOKEN
+      'X-Bbq-Agent-Hook-Token': process.env.BBQ_AGENT_HOOK_TOKEN
     },
     body: JSON.stringify({
-      paneKey: process.env.ORCA_PANE_KEY,
-      tabId: process.env.ORCA_TAB_ID,
-      worktreeId: process.env.ORCA_WORKTREE_ID,
-      launchToken: process.env.ORCA_AGENT_LAUNCH_TOKEN,
-      env: process.env.ORCA_AGENT_HOOK_ENV,
-      version: process.env.ORCA_AGENT_HOOK_VERSION,
+      paneKey: process.env.BBQ_PANE_KEY,
+      tabId: process.env.BBQ_TAB_ID,
+      worktreeId: process.env.BBQ_WORKTREE_ID,
+      launchToken: process.env.BBQ_AGENT_LAUNCH_TOKEN,
+      env: process.env.BBQ_AGENT_HOOK_ENV,
+      version: process.env.BBQ_AGENT_HOOK_VERSION,
       payload
     })
   })

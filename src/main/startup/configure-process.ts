@@ -8,6 +8,7 @@ import { getMainE2EConfig } from '../e2e-config'
 import { DISABLED_CHROMIUM_FEATURES } from './disabled-chromium-features'
 import { readHttp1CompatibilityMarker } from './http1-compatibility-marker'
 import { checkServeUserDataPath } from './serve-user-data-path-guard'
+import { migrateProductHome, stripLegacyExportedProductEnv } from '../../shared/product-brand'
 import { stampRuntimeSourceEnv } from '../../shared/runtime-source-env'
 import { isLinuxWaylandSession } from '../../shared/linux-wayland-session'
 import {
@@ -17,7 +18,7 @@ import {
 } from './http1-compatibility-profile-state'
 
 const DEV_PARENT_SHUTDOWN_GRACE_MS = 3000
-const HTTP1_COMPATIBILITY_ENV_VAR = 'ORCA_DISABLE_HTTP2'
+const HTTP1_COMPATIBILITY_ENV_VAR = 'BBQ_DISABLE_HTTP2'
 const TRUE_ENV_VALUES = new Set(['1', 'true', 'yes', 'on'])
 const FALSE_ENV_VALUES = new Set(['0', 'false', 'no', 'off'])
 let devParentShutdownRequested = false
@@ -215,14 +216,15 @@ export function configureDevUserDataPath(isDev: boolean): void {
   if (!isDev) {
     return
   }
-  const overrideUserDataPath = process.env.ORCA_DEV_USER_DATA_PATH
+  const overrideUserDataPath =
+    process.env.BBQ_DEV_USER_DATA_PATH || process.env.ORCA_DEV_USER_DATA_PATH
   if (overrideUserDataPath) {
     // Why: automated repros need an isolated profile so the dev's persisted tabs/worktrees don't skew startup and hide window bugs.
     app.setPath('userData', overrideUserDataPath)
     return
   }
-  // Why: without a dev-only path, pnpm dev overwrites the packaged app's runtime pointer under userData and breaks the orca CLI.
-  app.setPath('userData', join(app.getPath('appData'), 'orca-dev'))
+  // Why: without a dev-only path, pnpm dev overwrites the packaged app's runtime pointer under userData and breaks the CLI.
+  app.setPath('userData', join(app.getPath('appData'), 'bbq-dev'))
 }
 
 function areSameE2EHomePath(left: string, right: string): boolean {
@@ -243,10 +245,15 @@ export function configureOrcaUserDataPathEnv(): void {
   if (serveProfileRefusal) {
     throw new Error(serveProfileRefusal)
   }
-  // Why: relaunches can inherit a stale ORCA_USER_DATA_PATH; canonicalize before CLI-shared modules build runtime-home paths.
-  process.env.ORCA_USER_DATA_PATH = userDataPath
+  // Why: relaunches can inherit a stale BBQ_USER_DATA_PATH; canonicalize before CLI-shared modules build runtime-home paths.
+  process.env.BBQ_USER_DATA_PATH = userDataPath
+  stripLegacyExportedProductEnv(process.env)
   // Why: an Orca started from another Orca's terminal must not fence its own CLI children to the parent.
   stampRuntimeSourceEnv(process.env, null)
+  // Unit tests call this function. A real launch copies ~/.orca into ~/.bbq once.
+  if (!process.env.VITEST) {
+    migrateProductHome()
+  }
 }
 
 export function shouldInstallManagedHooks(isDev: boolean): boolean {

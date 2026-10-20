@@ -24,7 +24,7 @@ describe('assignee identity writers', () => {
       startOptions: {}
     })
     target.db
-      .prepare('UPDATE dispatch_contexts SET assignee_orca_session_id = ? WHERE id = ?')
+      .prepare('UPDATE dispatch_contexts SET assignee_bbq_session_id = ? WHERE id = ?')
       .run(EARLIER_ORCA_SESSION_ID, started.dispatch.id)
     return started.dispatch.id
   }
@@ -45,7 +45,7 @@ describe('assignee identity writers', () => {
 
     expect(db.getDispatchContextById(dispatchId)).toMatchObject({
       assignee_handle: 'term_worker',
-      assignee_orca_session_id: null
+      assignee_bbq_session_id: null
     })
   })
 
@@ -65,7 +65,7 @@ describe('assignee identity writers', () => {
 
     expect(db.getDispatchContextById(dispatchId)).toMatchObject({
       assignee_handle: 'term_worker',
-      assignee_orca_session_id: null
+      assignee_bbq_session_id: null
     })
   })
 

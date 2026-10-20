@@ -255,7 +255,7 @@ function profileLockRole(userDataDir: string): unknown {
 }
 
 // Needs out/orcad-template for this runner's target, as a packaged install carries.
-test('`orca serve` runs on orcad by default and on Electron with ORCA_SERVE_RUNTIME=electron', async () => {
+test('`orca serve` runs on orcad by default and on Electron with BBQ_SERVE_RUNTIME=electron', async () => {
   const profile = cliServeProfile(scratch)
   try {
     const byDefault = await startCliServe(profile)
@@ -268,7 +268,7 @@ test('`orca serve` runs on orcad by default and on Electron with ORCA_SERVE_RUNT
     }
 
     // Electron serve publishes no build-health block yet, which is what tells the two apart.
-    const electron = await startCliServe(profile, { ORCA_SERVE_RUNTIME: 'electron' })
+    const electron = await startCliServe(profile, { BBQ_SERVE_RUNTIME: 'electron' })
     try {
       expect(electron.stderr()).not.toContain('[serve] running on orcad')
       expect(electron.readiness.health).toBeUndefined()

@@ -207,7 +207,7 @@ async function verifyNoOpWrites(scripts, home, payload) {
         withoutOrcaEnvironment({
           HOME: home,
           PATH: path,
-          ORCA_AGENT_HOOK_ENDPOINT: ''
+          BBQ_AGENT_HOOK_ENDPOINT: ''
         })
       )
       assertSuccessfulWrite(result, [script.fileName, ' no-op'].join(''))
@@ -241,10 +241,10 @@ async function verifyClaudeDevinSkip(scripts, home, payload) {
       withoutOrcaEnvironment({
         DEVIN_PROJECT_DIR: join(home, 'devin-project'),
         HOME: home,
-        ORCA_AGENT_HOOK_ENDPOINT: '',
-        ORCA_AGENT_HOOK_PORT: String(address.port),
-        ORCA_AGENT_HOOK_TOKEN: 'electron-verification-token',
-        ORCA_PANE_KEY: 'electron-verification-pane'
+        BBQ_AGENT_HOOK_ENDPOINT: '',
+        BBQ_AGENT_HOOK_PORT: String(address.port),
+        BBQ_AGENT_HOOK_TOKEN: 'electron-verification-token',
+        BBQ_PANE_KEY: 'electron-verification-pane'
       })
     )
     assertSuccessfulWrite(result, 'Claude Devin-import skip')
@@ -274,16 +274,16 @@ async function verifyForwarding(scripts, home, payload) {
         payload,
         withoutOrcaEnvironment({
           HOME: home,
-          ORCA_AGENT_HOOK_ENDPOINT: '',
-          ORCA_AGENT_HOOK_PORT: String(address.port),
-          ORCA_AGENT_HOOK_TOKEN: 'electron-verification-token',
-          ORCA_PANE_KEY: 'electron-verification-pane',
-          ORCA_TAB_ID: 'electron-verification-tab',
-          ORCA_WORKTREE_ID: 'electron-verification-worktree',
-          ORCA_AGENT_HOOK_ENV: 'test',
-          ORCA_AGENT_HOOK_VERSION: '1',
-          ORCA_ANTIGRAVITY_EVENT: 'PostInvocation',
-          ORCA_COPILOT_HOOK_EVENT: 'PostToolUse'
+          BBQ_AGENT_HOOK_ENDPOINT: '',
+          BBQ_AGENT_HOOK_PORT: String(address.port),
+          BBQ_AGENT_HOOK_TOKEN: 'electron-verification-token',
+          BBQ_PANE_KEY: 'electron-verification-pane',
+          BBQ_TAB_ID: 'electron-verification-tab',
+          BBQ_WORKTREE_ID: 'electron-verification-worktree',
+          BBQ_AGENT_HOOK_ENV: 'test',
+          BBQ_AGENT_HOOK_VERSION: '1',
+          BBQ_ANTIGRAVITY_EVENT: 'PostInvocation',
+          BBQ_COPILOT_HOOK_EVENT: 'PostToolUse'
         })
       )
       assertSuccessfulWrite(result, [script.fileName, ' forwarding'].join(''))
@@ -297,7 +297,7 @@ async function verifyForwarding(scripts, home, payload) {
           )
         )
       }
-      if (request.headers['x-orca-agent-hook-token'] !== 'electron-verification-token') {
+      if (request.headers['x-bbq-agent-hook-token'] !== 'electron-verification-token') {
         throw new Error([script.fileName, ' lost the hook token header'].join(''))
       }
       if (form.get('payload') !== payload) {

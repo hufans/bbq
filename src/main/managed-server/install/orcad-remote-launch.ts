@@ -135,7 +135,7 @@ export function orcadLaunchCommand(
     `rm -f ${quotePosixShell(joinRemotePath(host, spec.remoteInstallDir, ORCAD_STOP_REQUEST_FILENAME))} &&`,
     ...(detach === 'setsid' ? [`rm -f ${pidFile} &&`] : []),
     `ORCA_VERSION=${quotePosixShell(spec.fullVersion)}`,
-    `ORCA_USER_DATA=${quotePosixShell(spec.userDataDir)}`,
+    `BBQ_USER_DATA=${quotePosixShell(spec.userDataDir)}`,
     ...orcadManagedLaunchEnv(spec).map(([name, value]) => `${name}=${quotePosixShell(value)}`),
     ...(detach === 'setsid'
       ? setsidLaunchTail(entry, spec, readiness, log, pidFile, hostEnv)

@@ -27,7 +27,7 @@ export type BrowserAnnotationViewportBridgeOptions = {
 }
 
 export const BROWSER_ANNOTATION_VIEWPORT_BRIDGE_WORLD_ID = 1207
-export const BROWSER_ANNOTATION_VIEWPORT_MESSAGE_PREFIX = '__orca_annotation_viewport__:'
+export const BROWSER_ANNOTATION_VIEWPORT_MESSAGE_PREFIX = '__bbq_annotation_viewport__:'
 // Set by the grab overlay on the element it froze on, so the isolated bridge can measure it.
 export const BROWSER_GRAB_SELECTED_ATTRIBUTE = 'data-orca-grab-selected'
 

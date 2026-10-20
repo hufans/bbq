@@ -45,10 +45,10 @@ import { buildWorktree, okFixture, queueFixtures, worktreeListFixture } from './
 import { useWorktreeAwarenessEnvironment } from './index-test-harness'
 
 const SSH_CALLER = {
-  ORCA_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'ssh',
-  ORCA_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'box-b',
-  ORCA_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'inc-1',
-  ORCA_ORCHESTRATION_COMPATIBILITY_ATTACHMENT: 'att-1'
+  BBQ_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'ssh',
+  BBQ_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'box-b',
+  BBQ_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'inc-1',
+  BBQ_ORCHESTRATION_COMPATIBILITY_ATTACHMENT: 'att-1'
 }
 
 describe('worktree create from a worktree another host shares an id with', () => {

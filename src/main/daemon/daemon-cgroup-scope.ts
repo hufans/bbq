@@ -2,7 +2,7 @@
  * Escaping the service cgroup for the detached PTY daemon.
  *
  * `detached: true` buys the daemon its own POSIX process group, not its own cgroup: under a
- * combined unit (`orca-serve.service` / `orca-serve@<slot>`) it and its PTYs stay in the unit's
+ * combined unit (`bbq-serve.service` / `orca-serve@<slot>`) it and its PTYs stay in the unit's
  * cgroup, and `systemctl stop`/`restart` SIGKILLs whatever is left there — immediately under
  * `KillMode=control-group`, and the instant the main process exits under `KillMode=mixed`
  * (`TimeoutStopSec` only applies while that main process is still alive). Either way every

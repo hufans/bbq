@@ -9,7 +9,7 @@ const BOOT_ID = '6a0c4b1e-2f3d-4e5f-8a9b-0c1d2e3f4a5b'
 // Fields 3..22 after the name; field 22 (start ticks) is the last one here.
 const statTail = (ticks: number): string =>
   `S 0 1 1 0 -1 4194560 100 0 0 0 1 2 0 0 20 0 1 0 ${ticks} 2000000 300`
-const SEP = '--orca-identity--'
+const SEP = '--bbq-identity--'
 
 describe('procStatStartTicks', () => {
   it('reads field 22 even when the process name holds spaces and parentheses', () => {

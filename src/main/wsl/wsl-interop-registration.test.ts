@@ -9,8 +9,8 @@ import {
 
 describe('parseWslInteropProbeOutput', () => {
   it('reads present, unmounted and garbage', () => {
-    expect(parseWslInteropProbeOutput('orca-wsl-interop:present\n')).toEqual({ state: 'present' })
-    expect(parseWslInteropProbeOutput('motd\r\norca-wsl-interop:unmounted\r\n')).toEqual({
+    expect(parseWslInteropProbeOutput('bbq-wsl-interop:present\n')).toEqual({ state: 'present' })
+    expect(parseWslInteropProbeOutput('motd\r\nbbq-wsl-interop:unmounted\r\n')).toEqual({
       state: 'unmounted'
     })
     expect(parseWslInteropProbeOutput('')).toEqual({ state: 'unknown' })
@@ -20,12 +20,12 @@ describe('parseWslInteropProbeOutput', () => {
   it('carries the wsl.conf interop setting when the entry is missing', () => {
     expect(
       parseWslInteropProbeOutput(
-        'orca-wsl-interop:missing\norca-wsl-interop:conf\n[boot]\nsystemd=true\n'
+        'bbq-wsl-interop:missing\nbbq-wsl-interop:conf\n[boot]\nsystemd=true\n'
       )
     ).toEqual({ state: 'missing', interopDisabled: false })
     expect(
       parseWslInteropProbeOutput(
-        'orca-wsl-interop:missing\norca-wsl-interop:conf\n[interop]\nenabled=false\n'
+        'bbq-wsl-interop:missing\nbbq-wsl-interop:conf\n[interop]\nenabled=false\n'
       )
     ).toEqual({ state: 'missing', interopDisabled: true })
   })
@@ -64,8 +64,8 @@ describe('scripts', () => {
   })
 
   it('parses repair results', () => {
-    expect(parseWslInteropRepairOutput('orca-wsl-interop:repaired\n')).toBe('repaired')
-    expect(parseWslInteropRepairOutput('orca-wsl-interop:present\n')).toBe('present')
+    expect(parseWslInteropRepairOutput('bbq-wsl-interop:repaired\n')).toBe('repaired')
+    expect(parseWslInteropRepairOutput('bbq-wsl-interop:present\n')).toBe('present')
     expect(parseWslInteropRepairOutput('sh: permission denied')).toBe('unknown')
   })
 })

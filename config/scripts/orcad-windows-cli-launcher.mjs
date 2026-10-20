@@ -9,7 +9,7 @@ const { PE_MACHINE, describePeMachine, readPeMachine } = createRequire(import.me
 )
 
 export function orcadWindowsCliLauncherSource(root, arch) {
-  return join(root, '.build', 'windows-cli-launcher', arch, 'orca.exe')
+  return join(root, '.build', 'windows-cli-launcher', arch, 'bbq.exe')
 }
 
 /** A Windows slot's `orca` command; a Windows build host compiles a missing one. */

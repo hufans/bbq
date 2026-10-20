@@ -112,7 +112,7 @@ describe('RelayAgentHookServer host-given coordinates (WSL relay)', () => {
 
     const rejected = await fetch(`http://127.0.0.1:${port}/hook/claude`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Orca-Agent-Hook-Token': 'wrong-token' },
+      headers: { 'Content-Type': 'application/json', 'X-Bbq-Agent-Hook-Token': 'wrong-token' },
       body: '{}'
     })
     expect(rejected.status).toBe(403)
@@ -122,7 +122,7 @@ describe('RelayAgentHookServer host-given coordinates (WSL relay)', () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Orca-Agent-Hook-Token': 'host-issued-token'
+        'X-Bbq-Agent-Hook-Token': 'host-issued-token'
       },
       body: JSON.stringify({
         paneKey: PANE_KEY,
@@ -159,10 +159,10 @@ describe('RelayAgentHookServer host-given coordinates (WSL relay)', () => {
       // agents re-source it and MUST see the actual fallback port, not the
       // occupied preferred port.
       const published = parseEndpointFile(readFileSync(endpointFilePath, 'utf8'))
-      expect(published.ORCA_AGENT_HOOK_PORT).toBe(String(port))
-      expect(published.ORCA_AGENT_HOOK_PORT).not.toBe(String(occupiedPort))
-      expect(published.ORCA_AGENT_HOOK_TOKEN).toBe(token)
-      expect(published.ORCA_AGENT_HOOK_TOKEN).toBe('host-issued-token')
+      expect(published.BBQ_AGENT_HOOK_PORT).toBe(String(port))
+      expect(published.BBQ_AGENT_HOOK_PORT).not.toBe(String(occupiedPort))
+      expect(published.BBQ_AGENT_HOOK_TOKEN).toBe(token)
+      expect(published.BBQ_AGENT_HOOK_TOKEN).toBe('host-issued-token')
     } finally {
       await new Promise<void>((resolve) => occupant.close(() => resolve()))
     }

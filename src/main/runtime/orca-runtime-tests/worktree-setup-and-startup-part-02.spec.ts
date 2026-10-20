@@ -74,8 +74,8 @@ describe('OrcaRuntimeService', () => {
       runnerScriptPath: 'C:\\tmp\\repo\\.git\\orca\\setup-runner.sh',
       shell: { family: 'posix', executable: 'wsl.exe' },
       envVars: {
-        ORCA_ROOT_PATH: '/tmp/repo',
-        ORCA_WORKTREE_PATH: '/tmp/workspaces/runtime-headless-startup-setup'
+        BBQ_ROOT_PATH: '/tmp/repo',
+        BBQ_WORKTREE_PATH: '/tmp/workspaces/runtime-headless-startup-setup'
       },
       waitForAgentStartup: true
     })
@@ -167,8 +167,8 @@ describe('OrcaRuntimeService', () => {
     vi.mocked(createSetupRunnerScript).mockReturnValue({
       runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
       envVars: {
-        ORCA_ROOT_PATH: '/tmp/repo',
-        ORCA_WORKTREE_PATH: '/tmp/workspaces/runtime-headless-parallel'
+        BBQ_ROOT_PATH: '/tmp/repo',
+        BBQ_WORKTREE_PATH: '/tmp/workspaces/runtime-headless-parallel'
       }
     })
     vi.mocked(listWorktrees).mockResolvedValue([
@@ -196,7 +196,7 @@ describe('OrcaRuntimeService', () => {
     expect(spawn).toHaveBeenNthCalledWith(
       2,
       expect.objectContaining({
-        command: expect.stringContaining('__ORCA_SETUP_COMPLETE__:')
+        command: expect.stringContaining('__BBQ_SETUP_COMPLETE__:')
       })
     )
     expect(result.setupReceipt).toMatchObject({
@@ -245,8 +245,8 @@ describe('OrcaRuntimeService', () => {
       runnerScriptPath: 'C:\\tmp\\repo\\.git\\orca\\setup-runner.sh',
       shell: { family: 'posix', executable: 'wsl.exe' },
       envVars: {
-        ORCA_ROOT_PATH: '/tmp/repo',
-        ORCA_WORKTREE_PATH: '/tmp/workspaces/runtime-observed-wsl-shell'
+        BBQ_ROOT_PATH: '/tmp/repo',
+        BBQ_WORKTREE_PATH: '/tmp/workspaces/runtime-observed-wsl-shell'
       }
     })
     vi.mocked(listWorktrees).mockResolvedValue([
@@ -271,7 +271,7 @@ describe('OrcaRuntimeService', () => {
     await vi.waitFor(() => expect(spawn).toHaveBeenCalledTimes(2))
     const setupCommand = (spawn.mock.calls[1]![0] as { command: string }).command
     expect(setupCommand).toContain('bash /mnt/c/tmp/repo/.git/orca/setup-runner.sh')
-    expect(setupCommand).toContain('__ORCA_SETUP_COMPLETE__:')
+    expect(setupCommand).toContain('__BBQ_SETUP_COMPLETE__:')
   })
 
   it('creates the first terminal for CLI-created worktrees without activating them', async () => {
@@ -329,8 +329,8 @@ describe('OrcaRuntimeService', () => {
     )
     const initialSpawnEnv = spawnedPtyEnv(spawn.mock.calls[0]?.[0])
     expectStablePaneKeyEnv(initialSpawnEnv)
-    const initialLeafId = initialSpawnEnv.ORCA_PANE_KEY.slice(
-      `${initialSpawnEnv.ORCA_TAB_ID}:`.length
+    const initialLeafId = initialSpawnEnv.BBQ_PANE_KEY.slice(
+      `${initialSpawnEnv.BBQ_TAB_ID}:`.length
     )
     // Why: the renderer treats a missing surfaceOwner as "reveal the owner", which
     // scrolled the sidebar to background CLI creates.
@@ -339,7 +339,7 @@ describe('OrcaRuntimeService', () => {
       title: null,
       activate: false,
       surfaceOwner: false,
-      tabId: initialSpawnEnv.ORCA_TAB_ID,
+      tabId: initialSpawnEnv.BBQ_TAB_ID,
       leafId: initialLeafId
     })
   })
@@ -568,8 +568,8 @@ describe('OrcaRuntimeService', () => {
     vi.mocked(createSetupRunnerScript).mockReturnValue({
       runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
       envVars: {
-        ORCA_ROOT_PATH: '/tmp/repo',
-        ORCA_WORKTREE_PATH: '/tmp/workspaces/runtime-cli-setup-split'
+        BBQ_ROOT_PATH: '/tmp/repo',
+        BBQ_WORKTREE_PATH: '/tmp/workspaces/runtime-cli-setup-split'
       }
     })
     vi.mocked(listWorktrees).mockResolvedValue([
@@ -594,12 +594,12 @@ describe('OrcaRuntimeService', () => {
     const setupEnv = spawnedPtyEnv(spawn.mock.calls[1]![0])
     expectStablePaneKeyEnv(mainEnv)
     expectStablePaneKeyEnv(setupEnv)
-    expect(setupEnv.ORCA_TAB_ID).not.toBe(mainEnv.ORCA_TAB_ID)
+    expect(setupEnv.BBQ_TAB_ID).not.toBe(mainEnv.BBQ_TAB_ID)
     expect(revealTerminalSession).toHaveBeenLastCalledWith(
       result.worktree.id,
       expect.objectContaining({
         ptyId: 'pty-cli-setup-setup',
-        tabId: setupEnv.ORCA_TAB_ID,
+        tabId: setupEnv.BBQ_TAB_ID,
         activate: false,
         title: 'Setup'
       })

@@ -137,7 +137,7 @@ describe('HermesHookService', () => {
         req.on('end', () => {
           try {
             expect(req.url).toBe('/hook/hermes')
-            expect(req.headers['x-orca-agent-hook-token']).toBe('token-1')
+            expect(req.headers['x-bbq-agent-hook-token']).toBe('token-1')
             res.writeHead(204)
             res.end()
             clearTimeout(timeout)
@@ -188,14 +188,14 @@ describe('HermesHookService', () => {
           {
             env: {
               ...process.env,
-              ORCA_AGENT_HOOK_PORT: String(address.port),
-              ORCA_AGENT_HOOK_TOKEN: 'token-1',
-              ORCA_AGENT_HOOK_ENDPOINT: '',
-              ORCA_PANE_KEY: PANE_KEY,
-              ORCA_TAB_ID: 'tab-1',
-              ORCA_WORKTREE_ID: 'wt-1',
-              ORCA_AGENT_HOOK_ENV: 'production',
-              ORCA_AGENT_HOOK_VERSION: '1'
+              BBQ_AGENT_HOOK_PORT: String(address.port),
+              BBQ_AGENT_HOOK_TOKEN: 'token-1',
+              BBQ_AGENT_HOOK_ENDPOINT: '',
+              BBQ_PANE_KEY: PANE_KEY,
+              BBQ_TAB_ID: 'tab-1',
+              BBQ_WORKTREE_ID: 'wt-1',
+              BBQ_AGENT_HOOK_ENV: 'production',
+              BBQ_AGENT_HOOK_VERSION: '1'
             },
             encoding: 'utf-8'
           },

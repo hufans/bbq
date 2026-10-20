@@ -146,15 +146,15 @@ describe('CodexStructuredSessionAdapter.acquire', () => {
         approvalsReviewer: 'user',
         // A user's `inherit = "core"` policy would strip these from every command the chat runs.
         config: {
-          'shell_environment_policy.set.ORCA_AGENT_SESSION_ID': 'session-1',
-          'shell_environment_policy.set.ORCA_STRUCTURED_SESSION': '1',
-          'shell_environment_policy.set.ORCA_CLI_COMMAND': expect.stringMatching(
+          'shell_environment_policy.set.BBQ_AGENT_SESSION_ID': 'session-1',
+          'shell_environment_policy.set.BBQ_STRUCTURED_SESSION': '1',
+          'shell_environment_policy.set.BBQ_CLI_COMMAND': expect.stringMatching(
             /^[^:;]*[\\/]cli[\\/]bin[\\/]orca-dev$/
           ),
-          'shell_environment_policy.set.ORCA_USER_DATA_PATH': expect.any(String),
-          'shell_environment_policy.set.ORCA_ENVIRONMENT': '',
-          'shell_environment_policy.set.ORCA_PAIRING_CODE': '',
-          'shell_environment_policy.set.ORCA_REMOTE_PAIRING': ''
+          'shell_environment_policy.set.BBQ_USER_DATA_PATH': expect.any(String),
+          'shell_environment_policy.set.BBQ_ENVIRONMENT': '',
+          'shell_environment_policy.set.BBQ_PAIRING_CODE': '',
+          'shell_environment_policy.set.BBQ_REMOTE_PAIRING': ''
         }
       }
     })

@@ -35,8 +35,8 @@ export function handleLessCoordinatorSessionId(
   run: Pick<
     RunRow,
     | 'coordinator_handle'
-    | 'coordinator_orca_session_id'
-    | 'coordinator_orca_session_id_generation'
+    | 'coordinator_bbq_session_id'
+    | 'coordinator_bbq_session_id_generation'
     | 'consumer_generation'
   >
 ): OrcaSessionId | null {

@@ -397,7 +397,7 @@ describe('adopting a Pi CLI conversation', () => {
 })
 
 describe('adopting an OpenCode CLI conversation', () => {
-  const OPENCODE_SESSION = 'ses_orca_adopt'
+  const OPENCODE_SESSION = 'ses_bbq_adopt'
   const unmanaged: AgentSessionAccountHome = { kind: 'opencode', locator: { kind: 'unmanaged' } }
 
   function openCodeData(home: string): string {

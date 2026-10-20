@@ -7,7 +7,7 @@ export async function stopMacOSPermissionStatusHelper(statusPath: string): Promi
     program: '/usr/bin/pkill',
     args: [
       '-f',
-      `(^|[[:space:]/])orca-computer-use-macos[[:space:]]+--permission-status-file[[:space:]]+${escapeRegex(statusPath)}$`
+      `(^|[[:space:]/])bbq-computer-use-macos[[:space:]]+--permission-status-file[[:space:]]+${escapeRegex(statusPath)}$`
     ],
     timeoutMs: 2_000,
     stdio: 'ignore'

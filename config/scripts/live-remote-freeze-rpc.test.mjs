@@ -7,17 +7,17 @@ import {
 
 describe('live remote freeze RPC', () => {
   it('resolves the Orca CLI for managed, dev, Linux, and default runtimes', () => {
-    expect(resolveOrcaCliCommand({ env: { ORCA_CLI_COMMAND: 'custom-orca' } })).toBe('custom-orca')
-    expect(resolveOrcaCliCommand({ env: { ORCA_DEV_REPO_ROOT: '/repo' } })).toBe('orca-dev')
-    expect(resolveOrcaCliCommand({ env: {}, platform: 'linux' })).toBe('orca-ide')
-    expect(resolveOrcaCliCommand({ env: {}, platform: 'win32' })).toBe('orca')
+    expect(resolveOrcaCliCommand({ env: { BBQ_CLI_COMMAND: 'custom-orca' } })).toBe('custom-orca')
+    expect(resolveOrcaCliCommand({ env: { ORCA_DEV_REPO_ROOT: '/repo' } })).toBe('bbq-dev')
+    expect(resolveOrcaCliCommand({ env: {}, platform: 'linux' })).toBe('bbq')
+    expect(resolveOrcaCliCommand({ env: {}, platform: 'win32' })).toBe('bbq')
   })
 
   it('bypasses the Windows dev cmd shim with the built Node CLI', () => {
     const invocation = resolveOrcaCliInvocation({
       env: {
         APPDATA: 'C:\\Users\\dev\\AppData\\Roaming',
-        ORCA_CLI_COMMAND: 'C:\\repo\\out\\bin\\orca-dev.cmd',
+        BBQ_CLI_COMMAND: 'C:\\repo\\out\\bin\\orca-dev.cmd',
         ORCA_DEV_REPO_ROOT: 'C:\\repo'
       },
       platform: 'win32',
@@ -28,10 +28,10 @@ describe('live remote freeze RPC', () => {
       command: 'C:\\Program Files\\nodejs\\node.exe',
       prefixArgs: ['C:\\repo\\out\\cli\\index.js'],
       env: {
-        ORCA_USER_DATA_PATH: 'C:\\Users\\dev\\AppData\\Roaming\\orca-dev',
+        BBQ_USER_DATA_PATH: 'C:\\Users\\dev\\AppData\\Roaming\\bbq-dev',
         ORCA_DEV_CLI_INVOCATION: '1',
-        ORCA_APP_EXECUTABLE: 'C:\\repo\\node_modules\\electron\\dist\\electron.exe',
-        ORCA_APP_EXECUTABLE_NEEDS_APP_ROOT: '1'
+        BBQ_APP_EXECUTABLE: 'C:\\repo\\node_modules\\electron\\dist\\electron.exe',
+        BBQ_APP_EXECUTABLE_NEEDS_APP_ROOT: '1'
       }
     })
   })

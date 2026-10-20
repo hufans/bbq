@@ -21,10 +21,10 @@ function row(hostId: 'local' | `ssh:${string}` | undefined, id: string, identity
 }
 
 const SSH_CALLER_D = {
-  ORCA_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'ssh',
-  ORCA_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'host d',
-  ORCA_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'inc-1',
-  ORCA_ORCHESTRATION_COMPATIBILITY_ATTACHMENT: 'att-1'
+  BBQ_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'ssh',
+  BBQ_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'host d',
+  BBQ_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'inc-1',
+  BBQ_ORCHESTRATION_COMPATIBILITY_ATTACHMENT: 'att-1'
 }
 
 const TWINS = [
@@ -40,9 +40,9 @@ describe('implicit worktree selection is scoped to the caller host (#21210)', ()
     // A WSL stamp is still this machine.
     expect(
       getCallerExecutionHostId({
-        ORCA_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'wsl',
-        ORCA_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'local',
-        ORCA_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'Ubuntu'
+        BBQ_ORCHESTRATION_COMPATIBILITY_HOST_KIND: 'wsl',
+        BBQ_ORCHESTRATION_COMPATIBILITY_HOST_ID: 'local',
+        BBQ_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION: 'Ubuntu'
       })
     ).toBe('local')
   })

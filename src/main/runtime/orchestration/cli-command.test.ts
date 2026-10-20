@@ -2,14 +2,14 @@ import { describe, expect, it } from 'vitest'
 import { resolveTerminalOrchestrationCliCommand } from './cli-command'
 
 describe('resolveTerminalOrchestrationCliCommand', () => {
-  it('uses orca-ide for a pane recorded as WSL', () => {
+  it('uses bbq for a pane recorded as WSL', () => {
     expect(
       resolveTerminalOrchestrationCliCommand({
         connectionId: null,
         isWsl: true,
         worktreeId: 'repo::C:\\repo'
       })
-    ).toBe('orca-ide')
+    ).toBe('bbq')
   })
 
   it('uses project runtime and WSL paths when restored pane metadata is unavailable', () => {
@@ -30,31 +30,31 @@ describe('resolveTerminalOrchestrationCliCommand', () => {
           }
         }
       })
-    ).toBe('orca-ide')
+    ).toBe('bbq')
     expect(
       resolveTerminalOrchestrationCliCommand({
         connectionId: null,
         isWsl: null,
         worktreeId: 'repo::\\\\wsl.localhost\\Ubuntu\\home\\alice\\repo'
       })
-    ).toBe('orca-ide')
+    ).toBe('bbq')
   })
 
-  it('preserves native and SSH bare-orca commands', () => {
+  it('uses bbq locally and on SSH', () => {
     expect(
       resolveTerminalOrchestrationCliCommand({
         connectionId: null,
         isWsl: false,
         worktreeId: 'repo::/home/alice/repo'
       })
-    ).toBe('orca')
+    ).toBe('bbq')
     expect(
       resolveTerminalOrchestrationCliCommand({
         connectionId: 'ssh-1',
         isWsl: null,
         worktreeId: 'repo::\\\\wsl.localhost\\Ubuntu\\home\\alice\\repo'
       })
-    ).toBe('orca')
+    ).toBe('bbq')
   })
 
   it('uses the runtime-provided command locally but never leaks it to SSH', () => {
@@ -73,6 +73,6 @@ describe('resolveTerminalOrchestrationCliCommand', () => {
         worktreeId: 'repo::C:\\repo',
         runtimeCliCommand: 'orca-dev'
       })
-    ).toBe('orca')
+    ).toBe('bbq')
   })
 })

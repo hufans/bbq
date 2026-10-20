@@ -138,8 +138,8 @@ describe.each(POWERSHELLS.slice(0, 2))(
             env: {
               ...process.env,
               PATH: `${root};${process.env.PATH ?? ''}`,
-              ORCA_CODEX_ISOLATE: '0',
-              ORCA_CLAUDE_PROFILE_POINTER: join(root, 'no-pointer')
+              BBQ_CODEX_ISOLATE: '0',
+              BBQ_CLAUDE_PROFILE_POINTER: join(root, 'no-pointer')
             }
           })
 

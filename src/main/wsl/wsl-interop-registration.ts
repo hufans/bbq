@@ -16,7 +16,7 @@ export type WslInteropProbeResult =
   | { state: 'missing'; interopDisabled: boolean }
   | { state: 'unknown' }
 
-const MARKER = 'orca-wsl-interop:'
+const MARKER = 'bbq-wsl-interop:'
 const BINFMT_DIR = '/proc/sys/fs/binfmt_misc'
 
 // Why both names: some WSL builds register `WSLInterop-late` after systemd starts.

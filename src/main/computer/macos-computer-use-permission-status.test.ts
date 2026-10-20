@@ -16,7 +16,7 @@ const permissionStatusDelayMock = vi.hoisted(() =>
       })
   )
 )
-const permissionStatusTempDir = '/tmp/orca-computer-use-permissions-test'
+const permissionStatusTempDir = '/tmp/bbq-computer-use-permissions-test'
 const permissionStatusPath = join(permissionStatusTempDir, 'status.json')
 
 vi.mock('@orca/process-host', () => ({ runProcess: runProcessMock }))
@@ -81,9 +81,9 @@ describe('getComputerUsePermissionStatus', () => {
     })
     resolveHelperAppPathMock.mockReset()
     resolveHelperExecutablePathMock.mockReset()
-    resolveHelperAppPathMock.mockReturnValue('/Applications/Orca Computer Use.app')
+    resolveHelperAppPathMock.mockReturnValue('/Applications/BBQ Computer Use.app')
     resolveHelperExecutablePathMock.mockReturnValue(
-      '/Applications/Orca Computer Use.app/Contents/MacOS/orca-computer-use-macos'
+      '/Applications/BBQ Computer Use.app/Contents/MacOS/bbq-computer-use-macos'
     )
     vi.mocked(mkdtemp).mockResolvedValue(permissionStatusTempDir)
     vi.mocked(stat).mockResolvedValue({} as Awaited<ReturnType<typeof stat>>)
@@ -198,7 +198,7 @@ describe('getComputerUsePermissionStatus', () => {
 
     await expect(getComputerUsePermissionStatus()).resolves.toEqual({
       platform: 'darwin',
-      helperAppPath: '/Applications/Orca Computer Use.app',
+      helperAppPath: '/Applications/BBQ Computer Use.app',
       helperUnavailableReason: null,
       permissions: [
         { id: 'accessibility', status: 'granted' },
@@ -209,7 +209,7 @@ describe('getComputerUsePermissionStatus', () => {
       '/usr/bin/open',
       [
         '-n',
-        '/Applications/Orca Computer Use.app',
+        '/Applications/BBQ Computer Use.app',
         '--args',
         '--permission-status-file',
         permissionStatusPath
@@ -232,7 +232,7 @@ describe('getComputerUsePermissionStatus', () => {
     await expect(getComputerUsePermissionStatus()).resolves.toEqual({
       platform: 'darwin',
       helperAppPath: null,
-      helperUnavailableReason: 'Orca Computer Use.app was not found',
+      helperUnavailableReason: 'BBQ Computer Use.app was not found',
       permissions: [
         { id: 'accessibility', status: 'not-granted' },
         { id: 'screenshots', status: 'not-granted' }
@@ -338,7 +338,7 @@ describe('getComputerUsePermissionStatus', () => {
         program: '/usr/bin/pkill',
         args: [
           '-f',
-          `(^|[[:space:]/])orca-computer-use-macos[[:space:]]+--permission-status-file[[:space:]]+${escapeRegex(join(directory, 'status.json'))}$`
+          `(^|[[:space:]/])bbq-computer-use-macos[[:space:]]+--permission-status-file[[:space:]]+${escapeRegex(join(directory, 'status.json'))}$`
         ],
         timeoutMs: 2000,
         stdio: 'ignore'
@@ -353,7 +353,7 @@ function expectOnlyOwnStatusHelperStopped(): void {
     program: '/usr/bin/pkill',
     args: [
       '-f',
-      `(^|[[:space:]/])orca-computer-use-macos[[:space:]]+--permission-status-file[[:space:]]+${escapeRegex(permissionStatusPath)}$`
+      `(^|[[:space:]/])bbq-computer-use-macos[[:space:]]+--permission-status-file[[:space:]]+${escapeRegex(permissionStatusPath)}$`
     ],
     timeoutMs: 2000,
     stdio: 'ignore'

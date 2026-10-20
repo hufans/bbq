@@ -64,15 +64,15 @@ describe.skipIf(hostPlatform === 'win32')('planCodexNoDaemonLaunch', () => {
   })
 
   it('ignores an inherited opt-out the pane deletes', async () => {
-    vi.stubEnv('ORCA_CODEX_ISOLATE', '0')
+    vi.stubEnv('BBQ_CODEX_ISOLATE', '0')
 
-    await expect(plan(`${codex} --yolo`, { envToDelete: ['ORCA_CODEX_ISOLATE'] })).resolves.toBe(
+    await expect(plan(`${codex} --yolo`, { envToDelete: ['BBQ_CODEX_ISOLATE'] })).resolves.toBe(
       `${codex} --no-daemon --yolo`
     )
   })
 
-  it('honours ORCA_CODEX_ISOLATE=0 from the pane env', () => {
-    expect(plan(`${codex} --yolo`, { env: { ORCA_CODEX_ISOLATE: '0' } })).toBeNull()
+  it('honours BBQ_CODEX_ISOLATE=0 from the pane env', () => {
+    expect(plan(`${codex} --yolo`, { env: { BBQ_CODEX_ISOLATE: '0' } })).toBeNull()
   })
 
   it('keeps the command when the binary predates --no-daemon', async () => {

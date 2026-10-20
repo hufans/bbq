@@ -102,7 +102,7 @@ describe('a chat as the assignee of orchestration dispatch', () => {
     expect(db.getDispatchContextById(dispatchId)).toMatchObject({
       run_id: runId,
       assignee_handle: WORKER,
-      assignee_orca_session_id: PEER_CHAT,
+      assignee_bbq_session_id: PEER_CHAT,
       assignee_pane_key: null,
       process_incarnation: null,
       status: 'dispatched'

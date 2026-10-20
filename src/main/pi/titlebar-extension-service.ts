@@ -177,7 +177,7 @@ export class PiTitlebarExtensionService {
 
   buildFreshOmpEnv(): Record<string, string> {
     return {
-      ORCA_OMP_FRESH_CONFIG: materializeOmpFreshConfig(
+      BBQ_OMP_FRESH_CONFIG: materializeOmpFreshConfig(
         join(getAppEnvironment().getPath('userData'), OMP_MANAGED_STATUS_EXTENSION_DIR)
       )
     }
@@ -212,7 +212,7 @@ export class PiTitlebarExtensionService {
         const statusSource = withOrcaManagedExtensionMarker(getPiAgentStatusExtensionSource(kind))
         const statusExtensionPath = this.writeOmpFallbackStatusExtension(statusSource)
         return statusExtensionPath
-          ? { ...freshConfigEnv, ORCA_OMP_STATUS_EXTENSION: statusExtensionPath }
+          ? { ...freshConfigEnv, BBQ_OMP_STATUS_EXTENSION: statusExtensionPath }
           : freshConfigEnv
       }
       return {}
@@ -225,14 +225,14 @@ export class PiTitlebarExtensionService {
     const installed = this.installManagedExtensions(sourceAgentDir, kind)
     const env: Record<string, string> = { ...freshConfigEnv }
     if (kind === 'omp') {
-      env.ORCA_OMP_SOURCE_AGENT_DIR = installed.sourceAgentDir
+      env.BBQ_OMP_SOURCE_AGENT_DIR = installed.sourceAgentDir
       if (installed.statusExtensionPath) {
-        env.ORCA_OMP_STATUS_EXTENSION = installed.statusExtensionPath
+        env.BBQ_OMP_STATUS_EXTENSION = installed.statusExtensionPath
       }
     } else if (kind === 'prime-agent') {
-      env.ORCA_PRIME_AGENT_SOURCE_AGENT_DIR = installed.sourceAgentDir
+      env.BBQ_PRIME_AGENT_SOURCE_AGENT_DIR = installed.sourceAgentDir
     } else {
-      env.ORCA_PI_SOURCE_AGENT_DIR = installed.sourceAgentDir
+      env.BBQ_PI_SOURCE_AGENT_DIR = installed.sourceAgentDir
     }
     return env
   }

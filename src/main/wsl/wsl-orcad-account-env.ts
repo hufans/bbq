@@ -106,7 +106,7 @@ export async function prepareWslOrcadAccountEnv(
   const codexHome = await dependencies.prepareCodexHome(target)
   const guestHome = codexHome ? guestCodexHomePath(codexHome, distro) : null
   if (guestHome) {
-    // Why not ORCA_CODEX_HOME too: orcad strips CODEX_HOME when it equals that marker.
+    // Why not BBQ_CODEX_HOME too: orcad strips CODEX_HOME when it equals that marker.
     env.CODEX_HOME = guestHome
   }
   const checked = AgentLaunchAccountEnv.safeParse(env)

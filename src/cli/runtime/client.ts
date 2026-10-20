@@ -65,8 +65,8 @@ export class RuntimeClient {
   constructor(
     userDataPath = getDefaultUserDataPath(),
     requestTimeoutMs = 60_000,
-    remotePairingCode = process.env.ORCA_PAIRING_CODE ?? process.env.ORCA_REMOTE_PAIRING ?? null,
-    environmentSelector = process.env.ORCA_ENVIRONMENT ?? null,
+    remotePairingCode = process.env.BBQ_PAIRING_CODE ?? process.env.BBQ_REMOTE_PAIRING ?? null,
+    environmentSelector = process.env.BBQ_ENVIRONMENT ?? null,
     cliExecutable = resolveOrchestrationCliExecutable(),
     originalArgs?: readonly string[]
   ) {

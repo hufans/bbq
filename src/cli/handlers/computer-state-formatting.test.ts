@@ -74,7 +74,7 @@ describe('orca computer get-app-state formatting', () => {
       expiresAt: expect.any(String)
     })
     expect(String(parsed.result.screenshot.path).replaceAll('\\', '/')).toContain(
-      'orca-computer-use/req_state-screenshot.png'
+      'bbq-computer-use/req_state-screenshot.png'
     )
   })
 

@@ -238,19 +238,19 @@ describe('codex wrapper --no-daemon rule', () => {
         expect(lines(result.stdout)).toEqual(ADDED.map((argv) => expectedLine(argv, false)))
       })
 
-      it('adds nothing with ORCA_CODEX_ISOLATE=0, read on every call', () => {
+      it('adds nothing with BBQ_CODEX_ISOLATE=0, read on every call', () => {
         const sandbox = makeSandbox(HELP_WITH_FLAG)
         const setIsolate = (value: string): string =>
           isPowerShell(shell)
-            ? `$env:ORCA_CODEX_ISOLATE = '${value}'`
+            ? `$env:BBQ_CODEX_ISOLATE = '${value}'`
             : shell === 'fish'
-              ? `set -gx ORCA_CODEX_ISOLATE ${value}`
-              : `export ORCA_CODEX_ISOLATE=${value}`
+              ? `set -gx BBQ_CODEX_ISOLATE ${value}`
+              : `export BBQ_CODEX_ISOLATE=${value}`
         const result = run(
           shell,
           ['codex a', setIsolate('1'), 'codex b', setIsolate('0'), 'codex c'].join('\n'),
           sandbox,
-          { ORCA_CODEX_ISOLATE: '0' }
+          { BBQ_CODEX_ISOLATE: '0' }
         )
 
         expect(lines(result.stdout)).toEqual(['ARGV|a', 'ARGV|--no-daemon|b', 'ARGV|c'])
@@ -339,7 +339,7 @@ describe('codex wrapper --no-daemon rule', () => {
           shell,
           'codex x\n"status=$LASTEXITCODE"',
           sandbox,
-          { ORCA_CODEX_LAUNCH_PREFLIGHT: prep },
+          { BBQ_CODEX_LAUNCH_PREFLIGHT: prep },
           [
             'Set-StrictMode -Version Latest',
             '$ErrorActionPreference = "Stop"',

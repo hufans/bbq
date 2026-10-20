@@ -47,7 +47,7 @@ function getManagedScript(target: 'local' | 'posix' = 'local'): string {
     return [
       '@echo off',
       'setlocal',
-      'if defined ORCA_AGENT_HOOK_ENDPOINT if exist "%ORCA_AGENT_HOOK_ENDPOINT%" call "%ORCA_AGENT_HOOK_ENDPOINT%" 2>nul',
+      'if defined BBQ_AGENT_HOOK_ENDPOINT if exist "%BBQ_AGENT_HOOK_ENDPOINT%" call "%BBQ_AGENT_HOOK_ENDPOINT%" 2>nul',
       ...buildWindowsHookEnvironmentGuardLines(),
       buildWindowsAgentHookCurlPostCommand('kiro'),
       'exit /b 0',
@@ -62,10 +62,10 @@ function getManagedScript(target: 'local' | 'posix' = 'local'): string {
     ...buildPosixHookSpoolLines('kiro'),
     // Why: the endpoint file holds the live port/token; a PTY that outlived an Orca
     // restart carries stale env, so source it to reach the new server.
-    'if [ -n "$ORCA_AGENT_HOOK_ENDPOINT" ] && [ -r "$ORCA_AGENT_HOOK_ENDPOINT" ]; then',
-    '  . "$ORCA_AGENT_HOOK_ENDPOINT" 2>/dev/null || :',
+    'if [ -n "$BBQ_AGENT_HOOK_ENDPOINT" ] && [ -r "$BBQ_AGENT_HOOK_ENDPOINT" ]; then',
+    '  . "$BBQ_AGENT_HOOK_ENDPOINT" 2>/dev/null || :',
     'fi',
-    'if [ -z "$ORCA_AGENT_HOOK_PORT" ] || [ -z "$ORCA_AGENT_HOOK_TOKEN" ] || [ -z "$ORCA_PANE_KEY" ]; then',
+    'if [ -z "$BBQ_AGENT_HOOK_PORT" ] || [ -z "$BBQ_AGENT_HOOK_TOKEN" ] || [ -z "$BBQ_PANE_KEY" ]; then',
     '  spool_hook_event',
     '  exit 0',
     'fi',
@@ -215,7 +215,7 @@ export class KiroHookService {
     kiroHomeDir?: string
   ): Promise<AgentHookInstallStatus> {
     const agentsDir = getKiroRemoteAgentsDir(remoteHome, kiroHomeDir)
-    const scriptPath = `${remoteHome.replace(/\/$/, '')}/.orca/agent-hooks/kiro-hook.sh`
+    const scriptPath = `${remoteHome.replace(/\/$/, '')}/.bbq/agent-hooks/kiro-hook.sh`
     try {
       const fileNames = ((await listRemoteDirectory(sftp, agentsDir)) ?? [])
         .filter(isKiroAgentConfigFileName)

@@ -5,7 +5,8 @@ import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   PROVIDER_STDIN_END_GRACE_MS,
-  PROVIDER_SUPERVISOR_MAX_STOP_MS
+  PROVIDER_SUPERVISOR_MAX_STOP_MS,
+  readProviderSupervisorSpec
 } from '../provider-process/provider-process-supervisor'
 import type { CodexAppServerSpawn } from './codex-app-server-process-tree-kill'
 import { CodexAppServerTimeoutError, runCodexAppServerSession } from './codex-app-server-session'
@@ -47,12 +48,8 @@ function captureSpawn(): { spawnImpl: CodexAppServerSpawn; calls: CapturedSpawn[
   }
 }
 
-function decodedSupervisorSpec(env: unknown): unknown {
-  const encoded =
-    typeof env === 'object' && env !== null && 'ORCA_PROVIDER_SUPERVISOR_SPEC' in env
-      ? String(env.ORCA_PROVIDER_SUPERVISOR_SPEC)
-      : ''
-  return JSON.parse(Buffer.from(encoded, 'base64').toString() || 'null')
+function decodedSupervisorSpec(args: readonly string[]): unknown {
+  return readProviderSupervisorSpec(args)
 }
 
 describe('short-lived Codex app-server session spawn', () => {
@@ -78,7 +75,7 @@ describe('short-lived Codex app-server session spawn', () => {
     expect(program).toBe(process.execPath)
     expect(args.slice(args.indexOf('--') + 1)).toEqual(['/bin/codex', 'app-server'])
     expect(options.detached).toBe(true)
-    expect(decodedSupervisorSpec(options.env)).toMatchObject({
+    expect(decodedSupervisorSpec(args)).toMatchObject({
       lifetime: 'session',
       ownerPid: process.pid
     })
@@ -126,7 +123,7 @@ describe('short-lived Codex app-server session spawn', () => {
     ).rejects.toThrow('spawn captured')
 
     const [{ program, args, options }] = calls
-    expect(decodedSupervisorSpec(options.env)).toBeNull()
+    expect(decodedSupervisorSpec(args)).toBeNull()
     expect(program).toBe('C:\\codex.exe')
     expect(args).toEqual(['app-server'])
     expect(options).not.toHaveProperty('detached')

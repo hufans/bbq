@@ -93,8 +93,8 @@ describe.runIf(RUN)('managed orcad on a Windows OpenSSH host', () => {
             await execOrcadRemote(options, orcadLivenessProbeCommand(options.host, slotDir))
           )
         expect(await liveness()).toBe('LIVE')
-        // Managed terminals' `orca`: the native launcher orcad installed in its profile.
-        const cli = joinRemotePath(options.host, context.userDataDir, 'cli', 'bin', 'orca.exe')
+        // Managed terminals' `bbq`: the native launcher orcad installed in its profile.
+        const cli = joinRemotePath(options.host, context.userDataDir, 'cli', 'bin', 'bbq.exe')
         const status = JSON.parse(
           await execOrcadRemote(options, orcadWindowsNodeCommandLine(cli, ['status', '--json']))
         )

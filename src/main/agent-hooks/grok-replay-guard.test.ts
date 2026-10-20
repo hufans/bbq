@@ -14,7 +14,7 @@ import { getManagedScript as getClaudeManagedScript } from '../claude/hook-servi
 import { getManagedScript as getCursorManagedScript } from '../cursor/hook-script'
 
 const POSIX_GROK_GUARD = 'if [ -n "$GROK_HOOK_EVENT" ]; then'
-const WINDOWS_GROK_GUARD = 'if not "%GROK_HOOK_EVENT%"=="" goto :orca_agent_hook_drain_stdin'
+const WINDOWS_GROK_GUARD = 'if not "%GROK_HOOK_EVENT%"=="" goto :bbq_agent_hook_drain_stdin'
 const CLAUDE_SCRIPT_OPTIONS = {
   skipWhenDevinImportsClaude: true,
   skipWhenGrokImportsClaude: true
@@ -72,10 +72,10 @@ function runPosixHook(
         PATH: `${dir}:${process.env.PATH ?? ''}`,
         CURL_LOG: curlLog,
         GROK_HOOK_EVENT: grokHookEvent,
-        ORCA_AGENT_HOOK_ENDPOINT: '',
-        ORCA_AGENT_HOOK_PORT: '1234',
-        ORCA_AGENT_HOOK_TOKEN: 'token',
-        ORCA_PANE_KEY: 'tab:leaf'
+        BBQ_AGENT_HOOK_ENDPOINT: '',
+        BBQ_AGENT_HOOK_PORT: '1234',
+        BBQ_AGENT_HOOK_TOKEN: 'token',
+        BBQ_PANE_KEY: 'tab:leaf'
       }
     })
 

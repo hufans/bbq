@@ -71,8 +71,8 @@ export async function checkRunPendingMail(args: {
   if (
     residual &&
     residual.run_id !== run.id &&
-    (residual.assignee_orca_session_id === null ||
-      residual.assignee_orca_session_id === caller.orcaSessionId) &&
+    (residual.assignee_bbq_session_id === null ||
+      residual.assignee_bbq_session_id === caller.orcaSessionId) &&
     callerHoldsDispatchPane(residual, paneKey) &&
     currentDispatchAssigneeRun(runtime, db, residual)?.id === run.id &&
     (residualAck || !db.hasOutstandingMailboxDelivery(address))

@@ -23,7 +23,7 @@ export async function buildPtyIpcSpawnOptions(
   const settings = ctx.deps.getSettings?.()
   const deletions = assemblePtySpawnEnvDeletions({
     env: ctx.preAllocatedHandle
-      ? { ...ctx.env, ORCA_TERMINAL_HANDLE: ctx.preAllocatedHandle }
+      ? { ...ctx.env, BBQ_TERMINAL_HANDLE: ctx.preAllocatedHandle }
       : ctx.env,
     callerEnvToDelete: args.envToDelete,
     agentTeamsEnvToDelete: ctx.agentTeamsEnvToDelete ?? [],

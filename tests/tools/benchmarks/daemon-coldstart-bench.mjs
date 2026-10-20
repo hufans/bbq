@@ -180,7 +180,7 @@ function runIteration({ exe, fixtureDir, timeoutMs, lingerMs }) {
       ORCA_E2E_HEADLESS: '1'
     }
     delete env.CODEX_HOME
-    delete env.ORCA_CODEX_HOME
+    delete env.BBQ_CODEX_HOME
     const child = spawn(command, commandArgs, {
       env,
       stdio: ['ignore', 'ignore', 'pipe']

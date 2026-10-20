@@ -7,7 +7,7 @@ import { computeTrustedHash, type CodexTrustEntry } from './config-toml-trust'
 // Why: Orca's frozen form-1 POSIX command and the hash codex-cli 0.159.3 `hooks/list` reported
 // for it as an Interrupt hook with `timeout: 3`; fails loudly if Codex's normalization drifts.
 const ORCA_FORM_1_COMMAND =
-  ': orca-agent-hook-form=1; if [ -n "${ORCA_PANE_KEY-}" ] && [ -n "${ORCA_AGENT_HOOK_ROOT-}" ] && [ -f "${ORCA_AGENT_HOOK_ROOT-}/agent-hooks/codex-hook.sh" ]; then /bin/sh "${ORCA_AGENT_HOOK_ROOT-}/agent-hooks/codex-hook.sh" || :; elif [ -z "${ORCA_AGENT_HOOK_ROOT-}" ] && [ -n "${ORCA_PANE_KEY-}" ] && [ -n "${ORCA_AGENT_HOOK_PORT-}" ] && [ -f "${HOME-}/.orca/agent-hooks/codex-hook.sh" ]; then /bin/sh "${HOME-}/.orca/agent-hooks/codex-hook.sh" || :; else { command -p cat 2>/dev/null || cat; } >/dev/null 2>&1 || :; fi'
+  ': orca-agent-hook-form=1; if [ -n "${BBQ_PANE_KEY-}" ] && [ -n "${BBQ_AGENT_HOOK_ROOT-}" ] && [ -f "${BBQ_AGENT_HOOK_ROOT-}/agent-hooks/codex-hook.sh" ]; then /bin/sh "${BBQ_AGENT_HOOK_ROOT-}/agent-hooks/codex-hook.sh" || :; elif [ -z "${BBQ_AGENT_HOOK_ROOT-}" ] && [ -n "${BBQ_PANE_KEY-}" ] && [ -n "${BBQ_AGENT_HOOK_PORT-}" ] && [ -f "${HOME-}/.bbq/agent-hooks/codex-hook.sh" ]; then /bin/sh "${HOME-}/.bbq/agent-hooks/codex-hook.sh" || :; else { command -p cat 2>/dev/null || cat; } >/dev/null 2>&1 || :; fi'
 const REAL_INTERRUPT_HASH =
   'sha256:78b430d1d7794c49e6d83a36964d4082d05ec72023ccc38244e97b8e08d054d2'
 

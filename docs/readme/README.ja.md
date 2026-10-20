@@ -3,8 +3,8 @@
 </h1>
 
 <p align="center">
-  <a href="https://github.com/stablyai/orca"><img src="https://img.shields.io/github/stars/stablyai/orca?style=flat&amp;label=%E2%98%85&amp;color=08C" alt="GitHub スター数" /></a>
-  <a href="https://github.com/stablyai/orca/releases"><img src="../assets/readme-downloads.svg" alt="全リリースの合計ダウンロード数" /></a>
+  <a href="https://github.com/hufans/bbq"><img src="https://img.shields.io/github/stars/hufans/bbq?style=flat&amp;label=%E2%98%85&amp;color=08C" alt="GitHub スター数" /></a>
+  <a href="https://github.com/hufans/bbq/releases"><img src="../assets/readme-downloads.svg" alt="全リリースの合計ダウンロード数" /></a>
   <img src="https://img.shields.io/badge/license-MIT-08C?style=flat" alt="ライセンス: MIT" />
   <a href="https://discord.gg/fzjDKHxv8Q"><img src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=white" alt="Orca の Discord に参加" /></a>
   <a href="https://x.com/orca_build"><img src="https://img.shields.io/badge/X-000000?logo=x&logoColor=white" alt="X で Orca をフォロー" /></a>
@@ -20,7 +20,7 @@
   Codex、Claude Code、OpenCode、Pi を並べて実行 — それぞれを専用のワークツリーで動かし、1 か所で追跡できます。
 </p>
 
-<h3 align="center"><a href="https://onorca.dev/download"><ins>Orca をダウンロード</ins></a></h3>
+<h3 align="center"><a href="https://github.com/hufans/bbq/releases"><ins>Orca をダウンロード</ins></a></h3>
 
 <p align="center">
   <img src="../assets/readme-hero.jpg" alt="並列ワークツリーでエージェントを実行する Orca デスクトップアプリと、隅に表示された Orca モバイル companion アプリ" width="960" />
@@ -164,7 +164,7 @@ PR、Issue、プロジェクトボードをアプリ内で閲覧 — 任意の�
 - **[リッチなリポジトリプレビュー](https://www.onorca.dev/docs/editing/markdown)** — Markdown、画像、PDF、リポジトリ文書をワークスペース内でプレビューできます。
 - **[Computer Use](https://www.onorca.dev/docs/cli/computer-use)** — 実際の操作が必要なワークフローでは、エージェントにデスクトップアプリや画面上の UI を操作させられます。
 - **[通知と未読ステータス](https://www.onorca.dev/docs/notifications)** — エージェントの完了や要対応をすぐに把握し、スレッドを未読に戻して後で確認できます。
-- **その他、まだまだたくさん** — 毎日リリースしているので、このリストは常に追いついていません。本当の機能一覧は[チェンジログ](https://github.com/stablyai/orca/releases)です。
+- **その他、まだまだたくさん** — 毎日リリースしているので、このリストは常に追いついていません。本当の機能一覧は[チェンジログ](https://github.com/hufans/bbq/releases)です。
 
 ---
 
@@ -213,17 +213,15 @@ PR、Issue、プロジェクトボードをアプリ内で閲覧 — 任意の�
 
 ### デスクトップ — macOS, Windows, Linux
 
-- **[onOrca.dev からダウンロード](https://onorca.dev/download)**
-- またはビルドを直接入手: [macOS Apple Silicon](https://github.com/stablyai/orca/releases/latest/download/orca-macos-arm64.dmg) · [macOS Intel](https://github.com/stablyai/orca/releases/latest/download/orca-macos-x64.dmg) · [Windows (.exe)](https://github.com/stablyai/orca/releases/latest/download/orca-windows-setup.exe) · [Linux AppImage](https://github.com/stablyai/orca/releases/latest/download/orca-linux.AppImage) · [すべてのビルド](https://github.com/stablyai/orca/releases/latest)
+- **[onOrca.dev からダウンロード](https://github.com/hufans/bbq/releases)**
+- またはビルドを直接入手: [macOS Apple Silicon](https://github.com/hufans/bbq/releases/latest/download/bbq-macos-arm64.dmg) · [macOS Intel](https://github.com/hufans/bbq/releases/latest/download/bbq-macos-x64.dmg) · [Windows (.exe)](https://github.com/hufans/bbq/releases/latest/download/bbq-windows-setup.exe) · [Linux AppImage](https://github.com/hufans/bbq/releases/latest/download/bbq-linux.AppImage) · [すべてのビルド](https://github.com/hufans/bbq/releases/latest)
 
 _パッケージマネージャーからもインストールできます:_
 
 ```bash
-# macOS (Homebrew)
-brew install --cask stablyai/orca/orca
-
-# Arch Linux (AUR) — or stably-orca-git to build from source
-yay -S stably-orca-bin
+# macOS (Homebrew): Casks/bbq.rb in this repo.
+# Not installable until the first hufans/bbq release fills in version and sha256.
+# brew install --cask bbq
 ```
 
 ### モバイル Companion — iOS, Android
@@ -239,9 +237,9 @@ yay -S stably-orca-bin
 
 - **Discord:** **[Discord](https://discord.gg/fzjDKHxv8Q)** のコミュニティに参加してください。
 - **Twitter / X:** アップデートやお知らせは **[@orca_build](https://x.com/orca_build)** をフォローしてください。
-- **フィードバックとアイデア:** 私たちは高速にリリースしています。足りない機能がありますか？[機能リクエストを送信](https://github.com/stablyai/orca/issues)してください。
+- **フィードバックとアイデア:** 私たちは高速にリリースしています。足りない機能がありますか？[機能リクエストを送信](https://github.com/hufans/bbq/issues)してください。
 - **プライバシー:** Orca が収集する匿名の利用データとオプトアウトの方法については、[プライバシーとテレメトリーのドキュメント](https://www.onorca.dev/docs/telemetry)をご覧ください。
-- **応援する:** 毎日のリリースを追うために、このリポジトリに[スター](https://github.com/stablyai/orca)を付けてください。
+- **応援する:** 毎日のリリースを追うために、このリポジトリに[スター](https://github.com/hufans/bbq)を付けてください。
 
 ---
 
@@ -249,8 +247,8 @@ yay -S stably-orca-bin
 
 貢献したい、またはローカルで実行したいですか？ [CONTRIBUTING.md](../../.github/CONTRIBUTING.md) ガイドをご覧ください。
 
-<a href="https://github.com/stablyai/orca/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=stablyai/orca" alt="Orca のコントリビューター" />
+<a href="https://github.com/hufans/bbq/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=hufans/bbq" alt="Orca のコントリビューター" />
 </a>
 
 ## ライセンス

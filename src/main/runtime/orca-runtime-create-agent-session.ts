@@ -164,7 +164,7 @@ export abstract class OrcaRuntimeWithCreateAgentSession extends OrcaRuntimeWithG
         request.placement?.leafId ?? deterministicAgentSessionUuid(`${executionOperationId}:leaf`)
       const operationHandle = `term_${deterministicAgentSessionUuid(`${executionOperationId}:handle`)}`
       // Why: recorded before dispatch — this handle is exported into the PTY as
-      // ORCA_TERMINAL_HANDLE, so it is the only name a lost spawn can be re-found by.
+      // BBQ_TERMINAL_HANDLE, so it is the only name a lost spawn can be re-found by.
       reclaim.identity = {
         worktreeId: workspace.id,
         connectionId: workspace.connectionId ?? null,

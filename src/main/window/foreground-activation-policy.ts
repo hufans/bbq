@@ -9,7 +9,7 @@ import { app as electronApp, type BrowserWindow } from 'electron'
  * can use ORCA_E2E_FOREGROUND=1 only without an explicit background request.
  * The hosted-Xvfb terminal benchmark explicitly presents after startup; see tests/AGENTS.md.
  * This policy still suppresses its automatic reveals and foreground activation.
- * orcad's browser sidecar (ORCA_ORCAD_SIDECAR=1) is held to the same explicit request.
+ * orcad's browser sidecar (BBQ_ORCAD_SIDECAR=1) is held to the same explicit request.
  */
 
 type ActivationPolicyApp = {
@@ -17,12 +17,12 @@ type ActivationPolicyApp = {
   setActivationPolicy: (policy: 'accessory' | 'prohibited' | 'regular') => void
 }
 
-/** Reads ORCA_BACKGROUND_LAUNCH, ORCA_ORCAD_SIDECAR, ORCA_E2E_FOREGROUND, ORCA_E2E_HEADLESS, ORCA_E2E_HEADFUL. */
+/** Reads ORCA_BACKGROUND_LAUNCH, BBQ_ORCAD_SIDECAR, ORCA_E2E_FOREGROUND, ORCA_E2E_HEADLESS, ORCA_E2E_HEADFUL. */
 type PolicyEnv = Readonly<Record<string, string | undefined>>
 
 /** orcad's headless browser provider: a serve process on a throwaway profile that no user drives. */
 export function isOrcadSidecarLaunch(env: PolicyEnv = process.env): boolean {
-  return env.ORCA_ORCAD_SIDECAR === '1'
+  return env.BBQ_ORCAD_SIDECAR === '1'
 }
 
 function isExplicitBackgroundLaunch(env: PolicyEnv): boolean {

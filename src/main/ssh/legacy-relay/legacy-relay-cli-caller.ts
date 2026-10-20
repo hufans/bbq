@@ -52,8 +52,8 @@ export function resolveLegacyRelayCliCaller(
   /** A retry of a mutation this caller already completed, which may outlive its Dispatch. */
   replay?: { fingerprint: string; requestId: string }
 ): LegacyRelayCliCaller {
-  const handle = bounded(env.ORCA_TERMINAL_HANDLE)
-  const paneKey = bounded(env.ORCA_PANE_KEY)
+  const handle = bounded(env.BBQ_TERMINAL_HANDLE)
+  const paneKey = bounded(env.BBQ_PANE_KEY)
   const pane = handle && paneKey && parsePaneKey(paneKey) ? livePane(paneKey) : null
   if (!handle || !paneKey || !pane) {
     throw new Error(LEGACY_RELAY_CLI_UNVERIFIED)

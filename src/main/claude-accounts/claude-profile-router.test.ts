@@ -167,7 +167,7 @@ describe('ClaudeProfileRouter', () => {
       provenance: 'system'
     })
     expect(f.router.preparation().envPatch).not.toHaveProperty('CLAUDE_CONFIG_DIR')
-    expect(f.router.terminalEnv()).toEqual({ ORCA_CLAUDE_PROFILE_POINTER: f.router.pointerPath })
+    expect(f.router.terminalEnv()).toEqual({ BBQ_CLAUDE_PROFILE_POINTER: f.router.pointerPath })
     expect(f.router.routedHome()).toBeNull()
     // The pointer names the folder actually chosen, so a typed claude agrees with Orca's launches.
     expect(readFileSync(f.router.pointerPath, 'utf8')).toBe('')
@@ -382,7 +382,7 @@ describe('ClaudeProfileRouter', () => {
     f.settings.activeClaudeManagedAccountId = 'b'
     // Before its setup, a terminal still opens; its claude function creates the folder itself.
     expect(() => f.router.preparation()).toThrow(CLAUDE_PROFILE_MISSING_MESSAGE)
-    expect(f.router.terminalEnv()).toEqual({ ORCA_CLAUDE_PROFILE_POINTER: f.router.pointerPath })
+    expect(f.router.terminalEnv()).toEqual({ BBQ_CLAUDE_PROFILE_POINTER: f.router.pointerPath })
     f.router.publish()
     expect(readFileSync(f.router.pointerPath, 'utf8')).toBe(f.home('b'))
     await vi.waitFor(() => expect(f.setup.calls).toBe(1))
@@ -409,15 +409,15 @@ describe('ClaudeProfileRouter', () => {
     expect(f.router.preparation()).toMatchObject({
       configDir: f.home('a'),
       envPatch: {
-        ORCA_CLAUDE_PROFILE_POINTER: f.router.pointerPath,
+        BBQ_CLAUDE_PROFILE_POINTER: f.router.pointerPath,
         CLAUDE_CONFIG_DIR: f.home('a'),
-        ORCA_CLAUDE_INJECTED_CONFIG_DIR: f.home('a')
+        BBQ_CLAUDE_INJECTED_CONFIG_DIR: f.home('a')
       }
     })
     f.settings.activeClaudeManagedAccountId = null
     expect(f.router.preparation()).toMatchObject({
       configDir: resolve('/user/own'),
-      envPatch: { ORCA_CLAUDE_PROFILE_POINTER: f.router.pointerPath }
+      envPatch: { BBQ_CLAUDE_PROFILE_POINTER: f.router.pointerPath }
     })
     expect(f.router.preparation().envPatch).not.toHaveProperty('CLAUDE_CONFIG_DIR')
   })
@@ -426,7 +426,7 @@ describe('ClaudeProfileRouter', () => {
     const f = fixture({ CLAUDE_CONFIG_DIR: 'C:/Claude Config/' })
     f.settings.activeClaudeManagedAccountId = null
     expect(f.router.terminalEnv()).toMatchObject({
-      ORCA_CLAUDE_USER_CONFIG_DIR: 'C:/Claude Config/'
+      BBQ_CLAUDE_USER_CONFIG_DIR: 'C:/Claude Config/'
     })
   })
 
@@ -434,20 +434,20 @@ describe('ClaudeProfileRouter', () => {
     const f = fixture({ CLAUDE_CONFIG_DIR: resolve('/user/own') })
     mkdirSync(f.home('a'), { recursive: true })
     expect(f.router.terminalEnv()).toEqual({
-      ORCA_CLAUDE_PROFILE_POINTER: f.router.pointerPath,
+      BBQ_CLAUDE_PROFILE_POINTER: f.router.pointerPath,
       CLAUDE_CONFIG_DIR: f.home('a'),
-      ORCA_CLAUDE_INJECTED_CONFIG_DIR: f.home('a'),
-      ORCA_CLAUDE_USER_CONFIG_DIR: resolve('/user/own')
+      BBQ_CLAUDE_INJECTED_CONFIG_DIR: f.home('a'),
+      BBQ_CLAUDE_USER_CONFIG_DIR: resolve('/user/own')
     })
-    expect(f.router.preparation().envPatch).not.toHaveProperty('ORCA_CLAUDE_USER_CONFIG_DIR')
+    expect(f.router.preparation().envPatch).not.toHaveProperty('BBQ_CLAUDE_USER_CONFIG_DIR')
     f.settings.activeClaudeManagedAccountId = null
     expect(f.router.terminalEnv()).toEqual({
-      ORCA_CLAUDE_PROFILE_POINTER: f.router.pointerPath,
-      ORCA_CLAUDE_USER_CONFIG_DIR: resolve('/user/own')
+      BBQ_CLAUDE_PROFILE_POINTER: f.router.pointerPath,
+      BBQ_CLAUDE_USER_CONFIG_DIR: resolve('/user/own')
     })
     const none = fixture()
     mkdirSync(none.home('a'), { recursive: true })
-    expect(none.router.terminalEnv()).not.toHaveProperty('ORCA_CLAUDE_USER_CONFIG_DIR')
+    expect(none.router.terminalEnv()).not.toHaveProperty('BBQ_CLAUDE_USER_CONFIG_DIR')
   })
 
   // Why not win32: runs the POSIX claude function under bash.
@@ -518,7 +518,7 @@ describe('ClaudeProfileRouter', () => {
       userHome: f.userHome,
       runSetup: async () => ({ outcome: 'prepared', warnings: [], surfaces: {} })
     })
-    expect(router.terminalEnv()).toEqual({ ORCA_CLAUDE_PROFILE_POINTER: router.pointerPath })
+    expect(router.terminalEnv()).toEqual({ BBQ_CLAUDE_PROFILE_POINTER: router.pointerPath })
     await vi.waitFor(() => expect(readFileSync(router.pointerPath, 'utf8')).toBe(f.home('a')))
     expect(router.terminalEnv()).toMatchObject({ CLAUDE_CONFIG_DIR: f.home('a') })
   })
@@ -540,13 +540,13 @@ describe('ClaudeProfileRouter', () => {
   it('treats a CLAUDE_CONFIG_DIR an outer Orca injected as not the user’s', () => {
     const f = fixture({
       CLAUDE_CONFIG_DIR: '/outer/profile',
-      ORCA_CLAUDE_INJECTED_CONFIG_DIR: '/outer/profile'
+      BBQ_CLAUDE_INJECTED_CONFIG_DIR: '/outer/profile'
     })
     expect(f.router.systemDefaultHome()).toBe(join(f.userHome, '.claude'))
     const carried = fixture({
       CLAUDE_CONFIG_DIR: '/outer/profile',
-      ORCA_CLAUDE_INJECTED_CONFIG_DIR: '/outer/profile',
-      ORCA_CLAUDE_USER_CONFIG_DIR: '/user/own'
+      BBQ_CLAUDE_INJECTED_CONFIG_DIR: '/outer/profile',
+      BBQ_CLAUDE_USER_CONFIG_DIR: '/user/own'
     })
     expect(carried.router.systemDefaultHome()).toBe(resolve('/user/own'))
   })

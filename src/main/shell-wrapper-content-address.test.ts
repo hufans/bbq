@@ -25,7 +25,7 @@ describe('resolveShellWrapperRoot', () => {
   it('gives builds with different wrapper contents different trees', () => {
     const base = makeBase()
     expect(resolveShellWrapperRoot(base, builderFor('ORCA_SHELL_READY_MARKER'))).not.toEqual(
-      resolveShellWrapperRoot(base, builderFor('ORCA_SHELL_FEATURES'))
+      resolveShellWrapperRoot(base, builderFor('BBQ_SHELL_FEATURES'))
     )
   })
 

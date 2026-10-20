@@ -65,9 +65,7 @@ for (const shell of shells) {
         if (config === '') {
           expect(actual).toBe('.omp')
         }
-        expect(managed.ORCA_OMP_SOURCE_AGENT_DIR).toBe(
-          join(fixture.home, actual || '.omp', 'agent')
-        )
+        expect(managed.BBQ_OMP_SOURCE_AGENT_DIR).toBe(join(fixture.home, actual || '.omp', 'agent'))
       }
     )
   }

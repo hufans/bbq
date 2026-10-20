@@ -129,7 +129,7 @@ export abstract class OrcaRuntimeWithResolveTerminalSplitSourceAuthority extends
   }): Promise<{ env: Record<string, string> }> {
     const handle = this.getTerminalHandleForPaneKey(args.paneKey)
     if (!handle) {
-      throw new Error('claude_agent_teams_requires_orca_terminal')
+      throw new Error('claude_agent_teams_requires_bbq_terminal')
     }
     return await this.prepareClaudeAgentTeamsLeaderForHandle({
       handle,

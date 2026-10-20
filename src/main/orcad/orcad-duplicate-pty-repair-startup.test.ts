@@ -171,7 +171,7 @@ const directories: string[] = []
 
 beforeEach(() => {
   // startOrcad canonicalizes this; stubbing restores the prior value after each test.
-  vi.stubEnv('ORCA_USER_DATA_PATH', '')
+  vi.stubEnv('BBQ_USER_DATA_PATH', '')
 })
 
 afterEach(() => {

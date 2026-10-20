@@ -30,7 +30,7 @@ describe('hasCustomCodexHomeOverride', () => {
     expect(
       hasCustomCodexHomeOverride({
         CODEX_HOME: `${managedHome}${sep}.`,
-        ORCA_CODEX_HOME: managedHome
+        BBQ_CODEX_HOME: managedHome
       })
     ).toBe(false)
   })
@@ -39,7 +39,7 @@ describe('hasCustomCodexHomeOverride', () => {
     expect(
       hasCustomCodexHomeOverride({
         CODEX_HOME: `${process.cwd()}${sep}custom-codex-home`,
-        ORCA_CODEX_HOME: `${process.cwd()}${sep}codex-runtime-home${sep}home`
+        BBQ_CODEX_HOME: `${process.cwd()}${sep}codex-runtime-home${sep}home`
       })
     ).toBe(true)
   })

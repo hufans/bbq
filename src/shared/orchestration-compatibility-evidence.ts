@@ -1,12 +1,11 @@
 const MAX_EVIDENCE_FIELD_LENGTH = 4_096
 
-export const ORCHESTRATION_COMPATIBILITY_HOST_KIND_ENV =
-  'ORCA_ORCHESTRATION_COMPATIBILITY_HOST_KIND'
-export const ORCHESTRATION_COMPATIBILITY_HOST_ID_ENV = 'ORCA_ORCHESTRATION_COMPATIBILITY_HOST_ID'
+export const ORCHESTRATION_COMPATIBILITY_HOST_KIND_ENV = 'BBQ_ORCHESTRATION_COMPATIBILITY_HOST_KIND'
+export const ORCHESTRATION_COMPATIBILITY_HOST_ID_ENV = 'BBQ_ORCHESTRATION_COMPATIBILITY_HOST_ID'
 export const ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION_ENV =
-  'ORCA_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION'
+  'BBQ_ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION'
 export const ORCHESTRATION_COMPATIBILITY_ATTACHMENT_ENV =
-  'ORCA_ORCHESTRATION_COMPATIBILITY_ATTACHMENT'
+  'BBQ_ORCHESTRATION_COMPATIBILITY_ATTACHMENT'
 
 export type OrchestrationCompatibilityHostStamp =
   | {
@@ -39,7 +38,7 @@ const SECRET_KEYS = new Set([
   'attachmentId',
   'compatibilityEvidence',
   'orchestrationCompatibilityEvidence',
-  'ORCA_AGENT_LAUNCH_TOKEN',
+  'BBQ_AGENT_LAUNCH_TOKEN',
   ORCHESTRATION_COMPATIBILITY_HOST_INCARNATION_ENV,
   ORCHESTRATION_COMPATIBILITY_ATTACHMENT_ENV
 ])
@@ -52,9 +51,9 @@ function boundedValue(value: string | undefined): string | undefined {
 export function readOrchestrationCompatibilityEvidence(
   env: Readonly<Record<string, string | undefined>>
 ): OrchestrationCompatibilityEvidence | undefined {
-  const terminalHandle = boundedValue(env.ORCA_TERMINAL_HANDLE)
-  const paneKey = boundedValue(env.ORCA_PANE_KEY)
-  const launchToken = boundedValue(env.ORCA_AGENT_LAUNCH_TOKEN)
+  const terminalHandle = boundedValue(env.BBQ_TERMINAL_HANDLE)
+  const paneKey = boundedValue(env.BBQ_PANE_KEY)
+  const launchToken = boundedValue(env.BBQ_AGENT_LAUNCH_TOKEN)
   const host = readHostStamp(env)
   if (!terminalHandle && !paneKey && !launchToken && !host) {
     return undefined

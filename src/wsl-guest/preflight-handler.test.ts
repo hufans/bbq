@@ -47,7 +47,7 @@ function shLookupScript(command: string): string {
       { skipWindowsMountDirs: true }
     ),
     'if [ -n "$resolved" ]; then',
-    'printf \'__ORCA_AGENT_PATH__%s\\n\' "$resolved"',
+    'printf \'__BBQ_AGENT_PATH__%s\\n\' "$resolved"',
     'fi'
   ].join('\n')
 }
@@ -126,7 +126,7 @@ describe('isCommandOnPathForRelay', () => {
   it('falls back to inherited PATH when shell startup returns no absolute command path', async () => {
     execFileAsyncMock
       .mockResolvedValueOnce({ stdout: 'welcome\ncodex is a function\n' })
-      .mockResolvedValueOnce({ stdout: '__ORCA_AGENT_PATH__/relay/path/codex\n' })
+      .mockResolvedValueOnce({ stdout: '__BBQ_AGENT_PATH__/relay/path/codex\n' })
 
     await expect(
       isCommandOnPathForRelay('codex', {
@@ -150,7 +150,7 @@ describe('isCommandOnPathForRelay', () => {
   it('falls back to inherited PATH when shell startup fails', async () => {
     execFileAsyncMock
       .mockRejectedValueOnce(new Error('startup failed'))
-      .mockResolvedValueOnce({ stdout: '__ORCA_AGENT_PATH__/relay/path/codex\n' })
+      .mockResolvedValueOnce({ stdout: '__BBQ_AGENT_PATH__/relay/path/codex\n' })
 
     await expect(
       isCommandOnPathForRelay('codex', {
@@ -163,7 +163,7 @@ describe('isCommandOnPathForRelay', () => {
   })
 
   it('does not execute an untrusted configured shell before inherited PATH lookup', async () => {
-    execFileAsyncMock.mockResolvedValueOnce({ stdout: '__ORCA_AGENT_PATH__/relay/path/codex\n' })
+    execFileAsyncMock.mockResolvedValueOnce({ stdout: '__BBQ_AGENT_PATH__/relay/path/codex\n' })
 
     await expect(
       isCommandOnPathForRelay('codex', {
@@ -190,7 +190,7 @@ describe('hasAbsoluteCommandPath', () => {
 describe('PreflightHandler', () => {
   it('reports a requested version from the resolved execution-host binary', async () => {
     execFileAsyncMock.mockResolvedValue({
-      stdout: '__ORCA_AGENT_PATH__/home/dev/.local/bin/claude\n'
+      stdout: '__BBQ_AGENT_PATH__/home/dev/.local/bin/claude\n'
     })
     runProcessMock.mockResolvedValue({
       code: 0,
@@ -229,7 +229,7 @@ describe('PreflightHandler', () => {
     execFileAsyncMock.mockImplementation(async (_file, args) => {
       const script = String(args[1])
       if (script.includes("'orca'")) {
-        return { stdout: '__ORCA_AGENT_PATH__/relay/path/orca\n' }
+        return { stdout: '__BBQ_AGENT_PATH__/relay/path/orca\n' }
       }
       throw new Error('not found')
     })

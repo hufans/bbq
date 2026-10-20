@@ -38,8 +38,8 @@ describe('structured worker Orca session id backfill', () => {
   function orcaSessionIds(dispatchId: string): { assignee: string | null; creator: string | null } {
     const row = db.getDispatchContextById(dispatchId)
     return {
-      assignee: row?.assignee_orca_session_id ?? null,
-      creator: row?.creator_orca_session_id ?? null
+      assignee: row?.assignee_bbq_session_id ?? null,
+      creator: row?.creator_bbq_session_id ?? null
     }
   }
 
@@ -98,7 +98,7 @@ describe('structured worker Orca session id backfill', () => {
     })
     // Rows a writer without the column left; a current writer records the incarnation's Orca session id.
     db.db.exec(
-      'UPDATE dispatch_contexts SET assignee_orca_session_id = NULL, creator_orca_session_id = NULL'
+      'UPDATE dispatch_contexts SET assignee_bbq_session_id = NULL, creator_bbq_session_id = NULL'
     )
 
     backfillStructuredWorkerOrcaSessionIds(db.db)
@@ -117,7 +117,7 @@ describe('structured worker Orca session id backfill', () => {
       incarnation: structuredWorkerProcessIncarnation(SESSION_A)
     })
     db.db
-      .prepare('UPDATE dispatch_contexts SET assignee_orca_session_id = ? WHERE id = ?')
+      .prepare('UPDATE dispatch_contexts SET assignee_bbq_session_id = ? WHERE id = ?')
       .run(SESSION_C, id)
 
     backfillStructuredWorkerOrcaSessionIds(db.db)
@@ -140,8 +140,8 @@ describe('structured worker Orca session id backfill', () => {
     const stale = runFor(SESSION_A)
     const recorded = runFor(SESSION_B)
     const setOrcaSessionId = db.db.prepare(
-      `UPDATE runs SET coordinator_orca_session_id = ?,
-         coordinator_orca_session_id_generation = consumer_generation - ?
+      `UPDATE runs SET coordinator_bbq_session_id = ?,
+         coordinator_bbq_session_id_generation = consumer_generation - ?
        WHERE id = ?`
     )
     // An older binary rebound this Run to the worker over session C's id, which it cannot see.
@@ -152,8 +152,8 @@ describe('structured worker Orca session id backfill', () => {
     backfillStructuredWorkerOrcaSessionIds(db.db)
 
     const filled = db.getRunRaw(stale)
-    expect(filled?.coordinator_orca_session_id).toBe(SESSION_A)
-    expect(filled?.coordinator_orca_session_id_generation).toBe(filled?.consumer_generation)
-    expect(db.getRunRaw(recorded)?.coordinator_orca_session_id).toBe(SESSION_C)
+    expect(filled?.coordinator_bbq_session_id).toBe(SESSION_A)
+    expect(filled?.coordinator_bbq_session_id_generation).toBe(filled?.consumer_generation)
+    expect(db.getRunRaw(recorded)?.coordinator_bbq_session_id).toBe(SESSION_C)
   })
 })

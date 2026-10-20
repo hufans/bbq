@@ -56,7 +56,7 @@ function fakePowerShell(spec: { env: NodeJS.ProcessEnv }, failed = false): Event
     if (!failed) {
       stdout.emit(
         'data',
-        Buffer.from(`__ORCA_LOGIN_SHELL_ENV_START__${printed}__ORCA_LOGIN_SHELL_ENV_END__`)
+        Buffer.from(`__BBQ_LOGIN_SHELL_ENV_START__${printed}__BBQ_LOGIN_SHELL_ENV_END__`)
       )
     }
     child.emit('close', failed ? 1 : 0)
@@ -121,7 +121,7 @@ const shellEnv = {
   UNSET: undefined
 }
 
-const processEnv = { PATH: '/orca/bin', HOME: '/home/me', ORCA_USER_DATA_PATH: '/orca' }
+const processEnv = { PATH: '/orca/bin', HOME: '/home/me', BBQ_USER_DATA_PATH: '/orca' }
 
 describe('structuredAgentBaseEnvironment', () => {
   it('is the whole shell snapshot, and nothing else, when inheriting all', () => {
@@ -153,7 +153,7 @@ describe('structuredAgentBaseEnvironment', () => {
     ).toEqual({
       PATH: '/shell/bin',
       HOME: '/home/me',
-      ORCA_USER_DATA_PATH: '/orca',
+      BBQ_USER_DATA_PATH: '/orca',
       LANG: 'en_US.UTF-8',
       SSH_AUTH_SOCK: '/tmp/agent.sock',
       CODEX_LB_API_KEY: 'lb-key'
@@ -343,7 +343,7 @@ describe('createStructuredAgentEnvironmentResolvers', () => {
           '#!/bin/sh',
           `n=$(cat '${counter}' 2>/dev/null || echo 0); n=$((n+1)); echo $n > '${counter}'`,
           'case $n in 1) p=/profile/A ;; 2) exit 1 ;; *) p=/profile/B ;; esac',
-          'printf \'\\000__ORCA_LOGIN_SHELL_ENV_START__\\000PATH=%s\\000\\000__ORCA_LOGIN_SHELL_ENV_END__\\000\' "$p"',
+          'printf \'\\000__BBQ_LOGIN_SHELL_ENV_START__\\000PATH=%s\\000\\000__BBQ_LOGIN_SHELL_ENV_END__\\000\' "$p"',
           ''
         ].join('\n')
       )
@@ -391,7 +391,7 @@ describe('createStructuredAgentEnvironmentResolvers', () => {
         [
           '#!/bin/sh',
           `echo run >> '${counter}'`,
-          "printf '\\000__ORCA_LOGIN_SHELL_ENV_START__\\000PATH=/profile/bin\\000\\000__ORCA_LOGIN_SHELL_ENV_END__\\000'",
+          "printf '\\000__BBQ_LOGIN_SHELL_ENV_START__\\000PATH=/profile/bin\\000\\000__BBQ_LOGIN_SHELL_ENV_END__\\000'",
           ''
         ].join('\n')
       )
@@ -433,7 +433,7 @@ describe('createStructuredAgentEnvironmentResolvers', () => {
           '#!/bin/sh',
           `echo run >> '${counter}'; n=$(wc -l < '${counter}'); p=$(cat '${pathFile}')`,
           `if [ $n -eq 2 ]; then while [ -f '${hold}' ]; do sleep 0.02; done; fi`,
-          'printf \'\\000__ORCA_LOGIN_SHELL_ENV_START__\\000PATH=%s\\000\\000__ORCA_LOGIN_SHELL_ENV_END__\\000\' "$p"',
+          'printf \'\\000__BBQ_LOGIN_SHELL_ENV_START__\\000PATH=%s\\000\\000__BBQ_LOGIN_SHELL_ENV_END__\\000\' "$p"',
           ''
         ].join('\n')
       )
@@ -490,7 +490,7 @@ describe('createStructuredAgentEnvironmentResolvers', () => {
           '#!/bin/sh',
           `echo run >> '${counter}'; n=$(wc -l < '${counter}')`,
           'if [ $n -gt 1 ]; then exec sleep 30; fi',
-          "printf '\\000__ORCA_LOGIN_SHELL_ENV_START__\\000PATH=/profile/A\\000\\000__ORCA_LOGIN_SHELL_ENV_END__\\000'",
+          "printf '\\000__BBQ_LOGIN_SHELL_ENV_START__\\000PATH=/profile/A\\000\\000__BBQ_LOGIN_SHELL_ENV_END__\\000'",
           ''
         ].join('\n')
       )

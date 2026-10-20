@@ -4,7 +4,7 @@ import type { RunRow } from '../../types'
 
 type RunCoordinatorOrcaSessionFields = Pick<
   RunRow,
-  'coordinator_orca_session_id' | 'coordinator_orca_session_id_generation' | 'consumer_generation'
+  'coordinator_bbq_session_id' | 'coordinator_bbq_session_id_generation' | 'consumer_generation'
 >
 
 /**
@@ -15,15 +15,15 @@ type RunCoordinatorOrcaSessionFields = Pick<
 export function currentRunCoordinatorOrcaSessionId(
   run: RunCoordinatorOrcaSessionFields
 ): OrcaSessionId | null {
-  return run.coordinator_orca_session_id_generation === run.consumer_generation
-    ? run.coordinator_orca_session_id
+  return run.coordinator_bbq_session_id_generation === run.consumer_generation
+    ? run.coordinator_bbq_session_id
     : null
 }
 
 /** The same rule in SQL, for a `runs` row named `row` (a table name, alias, or `NEW`). */
 export function currentRunCoordinatorOrcaSessionIdSql(row: string): string {
-  return `(CASE WHEN ${row}.coordinator_orca_session_id_generation = ${row}.consumer_generation
-    THEN ${row}.coordinator_orca_session_id END)`
+  return `(CASE WHEN ${row}.coordinator_bbq_session_id_generation = ${row}.consumer_generation
+    THEN ${row}.coordinator_bbq_session_id END)`
 }
 
 /** The coordinator's `orca_session_id:<id>` address in SQL; NULL when it has no current Orca session id. */

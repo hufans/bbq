@@ -9,18 +9,18 @@ import {
 } from '../pi/agent-status-extension-test-harness'
 
 const ownerEnv = {
-  ORCA_PI_STATUS_OWNED: String(AGENT_STATUS_EXTENSION_SELF_PID - 1),
-  ORCA_PRIME_AGENT_STATUS_OWNED: String(AGENT_STATUS_EXTENSION_SELF_PID - 1),
-  ORCA_PI_TITLE_MARKER_OWNED: String(AGENT_STATUS_EXTENSION_SELF_PID - 1)
+  BBQ_PI_STATUS_OWNED: String(AGENT_STATUS_EXTENSION_SELF_PID - 1),
+  BBQ_PRIME_AGENT_STATUS_OWNED: String(AGENT_STATUS_EXTENSION_SELF_PID - 1),
+  BBQ_PI_TITLE_MARKER_OWNED: String(AGENT_STATUS_EXTENSION_SELF_PID - 1)
 }
 const terminalEnv = {
-  ORCA_PANE_KEY: 'new-tab:new-leaf',
-  ORCA_TAB_ID: 'new-tab',
-  ORCA_WORKTREE_ID: 'folder:workspace',
-  ORCA_AGENT_LAUNCH_TOKEN: 'new-launch',
-  ORCA_AGENT_HOOK_PORT: '4321',
-  ORCA_AGENT_HOOK_TOKEN: 'receiver-token',
-  ORCA_PI_SOURCE_AGENT_DIR: 'user-config',
+  BBQ_PANE_KEY: 'new-tab:new-leaf',
+  BBQ_TAB_ID: 'new-tab',
+  BBQ_WORKTREE_ID: 'folder:workspace',
+  BBQ_AGENT_LAUNCH_TOKEN: 'new-launch',
+  BBQ_AGENT_HOOK_PORT: '4321',
+  BBQ_AGENT_HOOK_TOKEN: 'receiver-token',
+  BBQ_PI_SOURCE_AGENT_DIR: 'user-config',
   KEEP_ME: 'terminal-value'
 }
 

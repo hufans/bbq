@@ -139,9 +139,9 @@ describePosix('OMP shell wrapper node-pty reproduction', () => {
       HOME: tempDir,
       PATH: `${binDir}:${process.env.PATH ?? ''}`,
       PI_CODING_AGENT_DIR: '',
-      ORCA_PI_CODING_AGENT_DIR: '',
-      ORCA_OMP_CODING_AGENT_DIR: '',
-      ORCA_OMP_STATUS_EXTENSION: statusExtension,
+      BBQ_PI_CODING_AGENT_DIR: '',
+      BBQ_OMP_CODING_AGENT_DIR: '',
+      BBQ_OMP_STATUS_EXTENSION: statusExtension,
       ORCA_FAKE_OMP_DEFAULT_DIR: ompDir,
       ORCA_CAPTURE_FILE: captureFile,
       ORCA_AFTER_PI_FILE: afterPiFile,
@@ -210,10 +210,10 @@ exit 0
         HOME: tempDir,
         PATH: `${binDir}:${process.env.PATH ?? ''}`,
         PI_CODING_AGENT_DIR: '',
-        ORCA_PI_CODING_AGENT_DIR: '',
-        ORCA_OMP_CODING_AGENT_DIR: '',
-        ORCA_OMP_SOURCE_AGENT_DIR: sourceDir,
-        ORCA_OMP_STATUS_EXTENSION: statusExtension,
+        BBQ_PI_CODING_AGENT_DIR: '',
+        BBQ_OMP_CODING_AGENT_DIR: '',
+        BBQ_OMP_SOURCE_AGENT_DIR: sourceDir,
+        BBQ_OMP_STATUS_EXTENSION: statusExtension,
         ORCA_FAKE_OMP_DEFAULT_DIR: sourceDir,
         ORCA_CAPTURE_FILE: captureFile,
         TERM: process.env.TERM || 'xterm-256color'
@@ -265,10 +265,10 @@ exit 0
         HOME: tempDir,
         PATH: `${binDir}:${process.env.PATH ?? ''}`,
         PI_CODING_AGENT_DIR: '',
-        ORCA_PI_CODING_AGENT_DIR: '',
-        ORCA_OMP_CODING_AGENT_DIR: '',
-        ORCA_OMP_SOURCE_AGENT_DIR: sourceDir,
-        ORCA_OMP_STATUS_EXTENSION: statusExtension,
+        BBQ_PI_CODING_AGENT_DIR: '',
+        BBQ_OMP_CODING_AGENT_DIR: '',
+        BBQ_OMP_SOURCE_AGENT_DIR: sourceDir,
+        BBQ_OMP_STATUS_EXTENSION: statusExtension,
         ORCA_FAKE_OMP_DEFAULT_DIR: sourceDir,
         ORCA_CAPTURE_FILE: captureFile,
         TERM: process.env.TERM || 'xterm-256color'
@@ -308,9 +308,9 @@ exit 0
           HOME: tempDir,
           PATH: `${binDir}:${process.env.PATH ?? ''}`,
           PI_CODING_AGENT_DIR: '',
-          ORCA_PI_CODING_AGENT_DIR: '',
-          ORCA_OMP_CODING_AGENT_DIR: '',
-          ORCA_OMP_STATUS_EXTENSION: statusExtension,
+          BBQ_PI_CODING_AGENT_DIR: '',
+          BBQ_OMP_CODING_AGENT_DIR: '',
+          BBQ_OMP_STATUS_EXTENSION: statusExtension,
           ORCA_FAKE_OMP_DEFAULT_DIR: defaultOmpDir,
           ORCA_CAPTURE_FILE: captureFile,
           TERM: process.env.TERM || 'xterm-256color'
@@ -361,53 +361,53 @@ exit 0
       `ORCA_CAPTURE_FILE="$ORCA_UNSET_PWD_CAPTURE_FILE"
 unset PWD
 omp
-__orca_test_unset_status=$?
+__bbq_test_unset_status=$?
 if [[ -z "\${PWD+x}" ]]; then
-  __orca_test_pwd_state=unset
+  __bbq_test_pwd_state=unset
 else
-  __orca_test_pwd_state=set
+  __bbq_test_pwd_state=set
 fi
 builtin cd -- "$ORCA_LOGICAL_PROJECT_LINK"
 /bin/rm -- "$ORCA_LOGICAL_PROJECT_LINK"
 ORCA_CAPTURE_FILE="$ORCA_DELETED_LINK_CAPTURE_FILE"
 omp
-__orca_test_deleted_link_status=$?
+__bbq_test_deleted_link_status=$?
 builtin cd -P -- "$ORCA_STALE_PROJECT_DIR"
 ORCA_CAPTURE_FILE="$ORCA_STALE_CAPTURE_FILE"
 /bin/rm -rf -- "$ORCA_STALE_PROJECT_DIR"
 /bin/mkdir -p -- "$ORCA_STALE_PROJECT_DIR"
 omp
-__orca_test_first_status=$?
+__bbq_test_first_status=$?
 ORCA_CAPTURE_FILE="$ORCA_SKIP_CAPTURE_FILE"
 omp --version
-__orca_test_skip_status=$?
+__bbq_test_skip_status=$?
 if [[ "$PWD" -ef . ]]; then
-  __orca_test_parent_state=live
+  __bbq_test_parent_state=live
 else
-  __orca_test_parent_state=stale
+  __bbq_test_parent_state=stale
 fi
 unset PWD
 ORCA_CAPTURE_FILE="$ORCA_STALE_UNSET_CAPTURE_FILE"
 omp
-__orca_test_stale_unset_status=$?
-unset ORCA_WORKTREE_PATH ORCA_ROOT_PATH
+__bbq_test_stale_unset_status=$?
+unset BBQ_WORKTREE_PATH BBQ_ROOT_PATH
 ORCA_CAPTURE_FILE="$ORCA_NO_LOGICAL_CAPTURE_FILE"
 omp
-__orca_test_no_logical_status=$?
+__bbq_test_no_logical_status=$?
 PWD="$ORCA_STALE_PROJECT_DIR"
 /bin/rm -rf -- "$ORCA_STALE_PROJECT_DIR"
 omp
-__orca_test_missing_status=$?
+__bbq_test_missing_status=$?
 {
-  echo "UNSET=$__orca_test_unset_status"
-  echo "PWD=$__orca_test_pwd_state"
-  echo "LINK=$__orca_test_deleted_link_status"
-  echo "FIRST=$__orca_test_first_status"
-  echo "SKIP=$__orca_test_skip_status"
-  echo "PARENT=$__orca_test_parent_state"
-  echo "STALE_UNSET=$__orca_test_stale_unset_status"
-  echo "NO_LOGICAL=$__orca_test_no_logical_status"
-  echo "MISSING=$__orca_test_missing_status"
+  echo "UNSET=$__bbq_test_unset_status"
+  echo "PWD=$__bbq_test_pwd_state"
+  echo "LINK=$__bbq_test_deleted_link_status"
+  echo "FIRST=$__bbq_test_first_status"
+  echo "SKIP=$__bbq_test_skip_status"
+  echo "PARENT=$__bbq_test_parent_state"
+  echo "STALE_UNSET=$__bbq_test_stale_unset_status"
+  echo "NO_LOGICAL=$__bbq_test_no_logical_status"
+  echo "MISSING=$__bbq_test_missing_status"
 } > "$ORCA_RESULT_FILE"
 exit 0
 `
@@ -428,10 +428,10 @@ ${getPosixOmpShellWrapper()}`,
         ORCA_SKIP_CAPTURE_FILE: skipCaptureFile,
         ORCA_STALE_UNSET_CAPTURE_FILE: staleUnsetCaptureFile,
         ORCA_NO_LOGICAL_CAPTURE_FILE: noLogicalCaptureFile,
-        ORCA_WORKTREE_PATH: workspaceDir,
+        BBQ_WORKTREE_PATH: workspaceDir,
         HOME: homeDir,
         PATH: `${binDir}:/usr/bin:/bin:/usr/sbin:/sbin`,
-        ORCA_OMP_STATUS_EXTENSION: statusExtension,
+        BBQ_OMP_STATUS_EXTENSION: statusExtension,
         ORCA_CAPTURE_FILE: staleCaptureFile,
         ORCA_RESULT_FILE: resultFile,
         ORCA_SCENARIO_FILE: scenarioFile,

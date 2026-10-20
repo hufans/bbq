@@ -48,9 +48,9 @@ export type RunRow = {
   coordinator_handle: string | null
   coordinator_pane_key: string | null
   /** Bare Orca session id the coordinator is addressed by, when it has one (today only structured sessions); a `/clear`ed chat's lineage root. */
-  coordinator_orca_session_id: OrcaSessionId | null
+  coordinator_bbq_session_id: OrcaSessionId | null
   /** The consumer_generation the id was written at; see currentRunCoordinatorOrcaSessionId. */
-  coordinator_orca_session_id_generation: number | null
+  coordinator_bbq_session_id_generation: number | null
   consumer_generation: number
   legacy: number
   created_at: string
@@ -285,7 +285,7 @@ export type DispatchContextRow = {
   assignee_handle: string | null
   assignee_pane_key: string | null
   /** Bare Orca session id the assignee is addressed by, when it has one (today only structured sessions); a `/clear`ed chat's lineage root. */
-  assignee_orca_session_id: OrcaSessionId | null
+  assignee_bbq_session_id: OrcaSessionId | null
   /** Written only by hosts that minted a per-Dispatch capability; never read for authority. */
   capability_hash: string | null
   process_incarnation: string | null
@@ -298,7 +298,7 @@ export type DispatchContextRow = {
   creator_handle: string | null
   creator_pane_key: string | null
   /** Bare Orca session id the creator is addressed by, when it has one (today only structured sessions); a `/clear`ed chat's lineage root. */
-  creator_orca_session_id: OrcaSessionId | null
+  creator_bbq_session_id: OrcaSessionId | null
   host_scope: string | null
   status: DispatchStatus
   failure_count: number

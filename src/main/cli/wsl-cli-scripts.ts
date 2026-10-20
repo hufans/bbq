@@ -75,9 +75,9 @@ export function buildWslBridgeScript(app?: {
 }): string {
   const setAppEnv = app
     ? [
-        `$env:ORCA_USER_DATA_PATH = ${quotePowerShellLiteral(app.userDataPath)}`,
+        `$env:BBQ_USER_DATA_PATH = ${quotePowerShellLiteral(app.userDataPath)}`,
         // Why: WSLENV /p maps this guest-only dir back; an app the CLI starts must not inherit it.
-        'Remove-Item Env:ORCA_WSL_CLI_DIR -ErrorAction SilentlyContinue',
+        'Remove-Item Env:BBQ_WSL_CLI_DIR -ErrorAction SilentlyContinue',
         ...(app.cliEntryPath ? buildDevCliEnv(app.cliEntryPath) : [])
       ]
     : []
@@ -141,9 +141,9 @@ try {
     $ForwardArgs = @($args[$ForwardArgStart..($args.Count - 1)])
   }
   if ([string]::IsNullOrEmpty($WslCwd)) {
-    Remove-Item Env:ORCA_CLI_CWD -ErrorAction SilentlyContinue
+    Remove-Item Env:BBQ_CLI_CWD -ErrorAction SilentlyContinue
   } else {
-    $env:ORCA_CLI_CWD = $WslCwd
+    $env:BBQ_CLI_CWD = $WslCwd
   }
   # Do not let an inherited Windows environment choose the caller's account location.
   if ([string]::IsNullOrEmpty($WslDistro)) {
@@ -186,9 +186,9 @@ exit $exitCode
 function buildDevCliEnv(cliEntryPath: string): string[] {
   return [
     "$env:ELECTRON_RUN_AS_NODE = '1'",
-    "if (-not $env:ORCA_APP_EXECUTABLE) { $env:ORCA_APP_EXECUTABLE = $OrcaLauncher; $env:ORCA_APP_EXECUTABLE_NEEDS_APP_ROOT = '1' }",
-    '$env:ORCA_NODE_OPTIONS = $env:NODE_OPTIONS',
-    '$env:ORCA_NODE_REPL_EXTERNAL_MODULE = $env:NODE_REPL_EXTERNAL_MODULE',
+    "if (-not $env:BBQ_APP_EXECUTABLE) { $env:BBQ_APP_EXECUTABLE = $OrcaLauncher; $env:BBQ_APP_EXECUTABLE_NEEDS_APP_ROOT = '1' }",
+    '$env:BBQ_NODE_OPTIONS = $env:NODE_OPTIONS',
+    '$env:BBQ_NODE_REPL_EXTERNAL_MODULE = $env:NODE_REPL_EXTERNAL_MODULE',
     'Remove-Item Env:NODE_OPTIONS, Env:NODE_REPL_EXTERNAL_MODULE -ErrorAction SilentlyContinue',
     `$ForwardArgs = @(${quotePowerShellLiteral(cliEntryPath)}) + $ForwardArgs`
   ]
@@ -201,7 +201,7 @@ function bridgeLines(lines: readonly string[]): string {
 export function getBridgePathFromCommandPath(commandPath: string): string {
   // Why: both the current Linux command and the legacy pre-rename command
   // share one WSL bridge under ~/.local/share/orca.
-  return `${commandPath.replace(/\/\.local\/bin\/(?:orca|orca-ide)$/, '/.local/share/orca')}/orca-wsl-bridge.ps1`
+  return `${commandPath.replace(/\/\.local\/bin\/(?:bbq|orca|orca-ide)$/, '/.local/share/orca')}/orca-wsl-bridge.ps1`
 }
 
 export function buildSafeReplaceGuard(path: string, managedMarker: string): string {

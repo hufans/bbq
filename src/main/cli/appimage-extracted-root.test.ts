@@ -199,7 +199,7 @@ describe('appimage extracted root', () => {
         appImagePath,
         cacheRootPath,
         runExtract: async (_path, cwd) => {
-          const launcherPath = join(cwd, 'squashfs-root', 'resources', 'bin', 'orca-ide')
+          const launcherPath = join(cwd, 'squashfs-root', 'resources', 'bin', 'bbq')
           if (entryKind === 'directory') {
             await mkdir(launcherPath, { recursive: true })
           } else {
@@ -224,7 +224,7 @@ describe('appimage extracted root', () => {
         appImagePath,
         cacheRootPath,
         runExtract: async (_path, cwd) => {
-          const launcherPath = join(cwd, 'squashfs-root', 'resources', 'bin', 'orca-ide')
+          const launcherPath = join(cwd, 'squashfs-root', 'resources', 'bin', 'bbq')
           await mkdir(dirname(launcherPath), { recursive: true })
           await symlink(executable, launcherPath)
         }
@@ -366,7 +366,7 @@ describe('appimage extracted root', () => {
     expect(
       isAppImageExtractedLauncherPath(
         { appImagePath, cacheRootPath },
-        join(root, 'foreign', 'resources', 'bin', 'orca-ide')
+        join(root, 'foreign', 'resources', 'bin', 'bbq')
       )
     ).toBe(false)
   })

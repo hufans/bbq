@@ -1,3 +1,4 @@
+import { PRODUCT_COMMAND } from '../shared/product-brand'
 import type { CommandSpec } from './args'
 import { findCommandSpec, isCommandGroup, matches, supportsBrowserPageFlag } from './args'
 import { unknownCommandData } from './command-suggestion'
@@ -64,7 +65,13 @@ export function formatCommandHelp(spec: CommandSpec): string {
 
 export function formatGroupHelp(specs: CommandSpec[], groupPath: string[]): string {
   const group = groupPath.join(' ')
-  const lines = [`orca ${group}`, '', `Usage: orca ${group} <command> [options]`, '', 'Commands:']
+  const lines = [
+    `${PRODUCT_COMMAND} ${group}`,
+    '',
+    `Usage: ${PRODUCT_COMMAND} ${group} <command> [options]`,
+    '',
+    'Commands:'
+  ]
   for (const spec of specs) {
     if (
       spec.hidden === true ||
@@ -75,7 +82,7 @@ export function formatGroupHelp(specs: CommandSpec[], groupPath: string[]): stri
     }
     lines.push(`  ${spec.path.slice(groupPath.length).join(' ').padEnd(18)} ${spec.summary}`)
   }
-  lines.push('', `Run \`orca ${group} <command> --help\` for command-specific usage.`)
+  lines.push('', `Run \`${PRODUCT_COMMAND} ${group} <command> --help\` for command-specific usage.`)
   return lines.join('\n')
 }
 

@@ -72,10 +72,10 @@ export function resolveCli(target, root = projectDir) {
   const built = join(root, 'out', 'cli', 'index.js')
   return existsSync(built)
     ? { command: process.execPath, prefix: [built] }
-    : { command: 'orca', prefix: [] }
+    : { command: 'bbq', prefix: [] }
 }
 
-/** The `orca` CLI, driven with an explicit pairing code so it targets this server only. */
+/** The `bbq` CLI, driven with an explicit pairing code so it targets this server only. */
 function orca(pairingCode, args) {
   const cli = resolveCli(smokeTarget())
   const result = spawnSync(

@@ -39,10 +39,10 @@ export { encodePowerShellCommand } from '../shared/powershell-command-encoding'
 const POWERSHELL_OSC133_BOOTSTRAP = `# Orca OSC 133 shell integration for PowerShell.
 # Profiles have already loaded normally by the time -EncodedCommand runs.
 # Restore managed ownership before the shell-integration compatibility guard.
-if ($env:ORCA_OPENCODE_CONFIG_DIR) { $env:OPENCODE_CONFIG_DIR = $env:ORCA_OPENCODE_CONFIG_DIR }
+if ($env:BBQ_OPENCODE_CONFIG_DIR) { $env:OPENCODE_CONFIG_DIR = $env:BBQ_OPENCODE_CONFIG_DIR }
 ${MANAGED_DATA_ACCOUNT_POWERSHELL_RESTORE}
-if ($env:ORCA_MIMOCODE_HOME) { $env:MIMOCODE_HOME = $env:ORCA_MIMOCODE_HOME }
-if ($env:ORCA_CODEX_HOME) { $env:CODEX_HOME = $env:ORCA_CODEX_HOME }
+if ($env:BBQ_MIMOCODE_HOME) { $env:MIMOCODE_HOME = $env:BBQ_MIMOCODE_HOME }
+if ($env:BBQ_CODEX_HOME) { $env:CODEX_HOME = $env:BBQ_CODEX_HOME }
 
 if ($ExecutionContext.SessionState.LanguageMode -eq "FullLanguage" -and
     ((-not (Test-Path variable:global:__OrcaOsc133State)) -or

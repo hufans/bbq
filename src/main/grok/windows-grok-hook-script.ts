@@ -31,7 +31,7 @@ export function buildWindowsGrokHookScript(): string {
     // value on the curl line is then eaten as a delayed reference — silently mangling
     // paneKey and dropping worktreeId. `!` is legal in a Windows path.
     'setlocal DisableDelayedExpansion',
-    'if defined ORCA_AGENT_HOOK_ENDPOINT if exist "%ORCA_AGENT_HOOK_ENDPOINT%" call "%ORCA_AGENT_HOOK_ENDPOINT%" 2>nul',
+    'if defined BBQ_AGENT_HOOK_ENDPOINT if exist "%BBQ_AGENT_HOOK_ENDPOINT%" call "%BBQ_AGENT_HOOK_ENDPOINT%" 2>nul',
     ...buildWindowsHookEnvironmentGuardLines(),
     'set "ORCA_GROK_HOME="',
     'if not defined GROK_HOME goto :orca_grok_home_ready',

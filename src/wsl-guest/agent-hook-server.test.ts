@@ -53,9 +53,9 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token,
-          'X-Orca-Agent-Hook-Meta-Encoding': 'base64',
-          'X-Orca-Agent-Hook-Meta': Buffer.from(
+          'X-Bbq-Agent-Hook-Token': token,
+          'X-Bbq-Agent-Hook-Meta-Encoding': 'base64',
+          'X-Bbq-Agent-Hook-Meta': Buffer.from(
             [PANE_KEY, 'tab-1', '', 'wt-1', 'remote', '1'].join('\x1f')
           ).toString('base64')
         },
@@ -188,7 +188,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({
           paneKey: PANE_KEY,
@@ -225,7 +225,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({
           paneKey: PANE_KEY,
@@ -254,7 +254,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({
           paneKey: PANE_KEY,
@@ -274,7 +274,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({
           paneKey: PANE_KEY,
@@ -289,7 +289,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({
           paneKey: PANE_KEY,
@@ -317,7 +317,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': 'wrong'
+          'X-Bbq-Agent-Hook-Token': 'wrong'
         },
         body: '{}'
       })
@@ -338,7 +338,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({ value: 'x'.repeat(HOOK_REQUEST_MAX_BYTES + 1) })
       })
@@ -359,7 +359,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({
           paneKey: PANE_KEY,
@@ -395,7 +395,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({
           paneKey: PANE_KEY,
@@ -451,7 +451,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({
           paneKey: PANE_KEY,
@@ -480,7 +480,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({
           paneKey: 'tab-1:0',
@@ -507,12 +507,12 @@ describe('RelayAgentHookServer', () => {
     await server.start()
     try {
       const env = server.buildPtyEnv()
-      expect(env.ORCA_AGENT_HOOK_PORT).toMatch(/^\d+$/)
-      expect(env.ORCA_AGENT_HOOK_TOKEN).toBeTruthy()
-      expect(env.ORCA_AGENT_HOOK_ENV).toBe('remote')
-      expect(env.ORCA_AGENT_HOOK_VERSION).toBe('1')
-      expect(env.ORCA_AGENT_HOOK_TRANSPORT).toBe('raw-json-v1')
-      expect(env.ORCA_AGENT_HOOK_ENDPOINT).toBeTruthy()
+      expect(env.BBQ_AGENT_HOOK_PORT).toMatch(/^\d+$/)
+      expect(env.BBQ_AGENT_HOOK_TOKEN).toBeTruthy()
+      expect(env.BBQ_AGENT_HOOK_ENV).toBe('remote')
+      expect(env.BBQ_AGENT_HOOK_VERSION).toBe('1')
+      expect(env.BBQ_AGENT_HOOK_TRANSPORT).toBe('raw-json-v1')
+      expect(env.BBQ_AGENT_HOOK_ENDPOINT).toBeTruthy()
     } finally {
       server.stop()
     }
@@ -523,9 +523,9 @@ describe('RelayAgentHookServer', () => {
     const server = new RelayAgentHookServer({ endpointDir: dir, forward })
     await server.start({ publishEndpoint: false })
     try {
-      expect(server.buildPtyEnv().ORCA_AGENT_HOOK_ENDPOINT).toBeUndefined()
+      expect(server.buildPtyEnv().BBQ_AGENT_HOOK_ENDPOINT).toBeUndefined()
       expect(server.publishEndpointFile()).toBe(true)
-      expect(server.buildPtyEnv().ORCA_AGENT_HOOK_ENDPOINT).toBeTruthy()
+      expect(server.buildPtyEnv().BBQ_AGENT_HOOK_ENDPOINT).toBeTruthy()
     } finally {
       server.stop()
     }
@@ -543,7 +543,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({
           paneKey: PANE_KEY,
@@ -557,7 +557,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({
           paneKey: PANE_KEY,
@@ -605,7 +605,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({
           paneKey: PANE_KEY,
@@ -619,7 +619,7 @@ describe('RelayAgentHookServer', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Orca-Agent-Hook-Token': token
+          'X-Bbq-Agent-Hook-Token': token
         },
         body: JSON.stringify({
           paneKey: PANE_KEY,
@@ -661,7 +661,7 @@ describe('RelayAgentHookServer', () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Orca-Agent-Hook-Token': token
+            'X-Bbq-Agent-Hook-Token': token
           },
           body: JSON.stringify({
             paneKey,
@@ -717,7 +717,7 @@ describe('RelayAgentHookServer', () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Orca-Agent-Hook-Token': token
+            'X-Bbq-Agent-Hook-Token': token
           },
           body: JSON.stringify({
             paneKey: PANE_KEY,
@@ -766,7 +766,7 @@ describe('RelayAgentHookServer', () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Orca-Agent-Hook-Token': token
+            'X-Bbq-Agent-Hook-Token': token
           },
           body: JSON.stringify({
             paneKey: PANE_KEY,

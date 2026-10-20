@@ -4,7 +4,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { CODEX_READ_ONLY_APP_SERVER_ARGS } from '../codex-cli/codex-read-only-app-server-args'
 import {
   PROVIDER_STDIN_END_GRACE_MS,
-  PROVIDER_SUPERVISOR_MAX_STOP_MS
+  PROVIDER_SUPERVISOR_MAX_STOP_MS,
+  readProviderSupervisorSpec
 } from '../provider-process/provider-process-supervisor'
 import {
   spawnCodexAppServerProcess,
@@ -30,12 +31,8 @@ setInterval(() => {}, 60_000)
 `
 
 const originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform')
-function decodedSupervisorSpec(env: unknown): unknown {
-  const encoded =
-    typeof env === 'object' && env !== null && 'ORCA_PROVIDER_SUPERVISOR_SPEC' in env
-      ? String(env.ORCA_PROVIDER_SUPERVISOR_SPEC)
-      : ''
-  return JSON.parse(Buffer.from(encoded, 'base64').toString() || 'null')
+function decodedSupervisorSpec(args: readonly string[]): unknown {
+  return readProviderSupervisorSpec(args)
 }
 
 describe('Codex backfill recovery app-server supervision', () => {
@@ -79,7 +76,7 @@ describe('Codex backfill recovery app-server supervision', () => {
     ])
     expect(options).toMatchObject({ cwd: '/managed-home', detached: true })
     expect(options.env).toMatchObject({ CODEX_HOME: '/managed-home' })
-    expect(decodedSupervisorSpec(options.env)).toMatchObject({
+    expect(decodedSupervisorSpec(args)).toMatchObject({
       lifetime: 'session',
       cwd: '/managed-home'
     })

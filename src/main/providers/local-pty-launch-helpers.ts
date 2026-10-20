@@ -7,10 +7,10 @@ import { resolveSafePtyDefaultCwd } from './pty-default-cwd'
 import { ORCAD_MANAGED_ACTIVATION_ROOT_ENV } from '../../shared/orcad-managed-launch-env'
 
 const PANE_IDENTITY_ENV_KEYS = [
-  'ORCA_PANE_KEY',
-  'ORCA_TAB_ID',
-  'ORCA_WORKTREE_ID',
-  'ORCA_AGENT_LAUNCH_TOKEN',
+  'BBQ_PANE_KEY',
+  'BBQ_TAB_ID',
+  'BBQ_WORKTREE_ID',
+  'BBQ_AGENT_LAUNCH_TOKEN',
   'JCODE_RUNTIME_DIR',
   // A server's own launch marker; a user's `orcad` in this shell is not client-managed.
   ORCAD_MANAGED_ACTIVATION_ROOT_ENV
@@ -35,7 +35,7 @@ export function promoteAgentTeamsShimPath(
   env: Record<string, string>,
   requestedPath: string | undefined
 ): void {
-  if (!env.ORCA_AGENT_TEAMS_TEAM_ID || !requestedPath) {
+  if (!env.BBQ_AGENT_TEAMS_TEAM_ID || !requestedPath) {
     return
   }
   const normalizedRequestedPath =

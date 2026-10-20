@@ -9,7 +9,7 @@ import type { TerminalCreateOptions } from './runtime-terminal-contracts'
 
 const ACCOUNT_ENV = {
   CLAUDE_CONFIG_DIR: '/home/u/.orca/claude-accounts/a/config',
-  ORCA_CLAUDE_INJECTED_CONFIG_DIR: '/home/u/.orca/claude-accounts/a/config',
+  BBQ_CLAUDE_INJECTED_CONFIG_DIR: '/home/u/.orca/claude-accounts/a/config',
   CODEX_HOME: '/home/u/.orca/codex-b'
 }
 

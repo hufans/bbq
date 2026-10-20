@@ -87,7 +87,7 @@ describe('registerPtyHandlers', () => {
               agentStatusHooksEnabled: false
             }
           )
-          expect(env.ORCA_CLI_BIN_DIR).toBe('/tmp/orca-user-data/cli/bin')
+          expect(env.BBQ_CLI_BIN_DIR).toBe('/tmp/orca-user-data/cli/bin')
           expect(
             selectShellStartupFeatures({
               shellPath,
@@ -162,7 +162,7 @@ describe('registerPtyHandlers', () => {
       )
 
       expect(piBuildPtyEnvMock).not.toHaveBeenCalled()
-      expect(env.ORCA_OMP_FRESH_CONFIG).toBe('/tmp/orca-fresh-session.yml')
+      expect(env.BBQ_OMP_FRESH_CONFIG).toBe('/tmp/orca-fresh-session.yml')
     })
 
     it('threads disabled Pi settings through a bare PTY spawn', async () => {
@@ -178,7 +178,7 @@ describe('registerPtyHandlers', () => {
     it('prepares fresh OMP settings even when status hooks are disabled', () => {
       const env = buildPtyHostEnv(
         'fresh-without-hooks',
-        { ORCA_OMP_FRESH_CONFIG: '/other-host/stale.yml' },
+        { BBQ_OMP_FRESH_CONFIG: '/other-host/stale.yml' },
         {
           isPackaged: true,
           userDataPath: '/tmp/orca-user-data',
@@ -187,8 +187,8 @@ describe('registerPtyHandlers', () => {
           launchCommand: withFreshOmpLaunch('omp', 'posix')
         }
       )
-      expect(env.ORCA_OMP_FRESH_CONFIG).toBe('/tmp/orca-fresh-session.yml')
-      expect(env.ORCA_OMP_STATUS_EXTENSION).toBeUndefined()
+      expect(env.BBQ_OMP_FRESH_CONFIG).toBe('/tmp/orca-fresh-session.yml')
+      expect(env.BBQ_OMP_STATUS_EXTENSION).toBeUndefined()
     })
 
     it('routes headless browser launches through the owning Orca workspace', () => {
@@ -358,7 +358,7 @@ describe('registerPtyHandlers', () => {
           terminalWindowsWslDistro: 'Ubuntu',
           env: {
             PATH: 'C:\\Orca\\bin;C:\\Users\\me\\AppData\\Local\\Microsoft\\WindowsApps',
-            WSLENV: 'ORCA_TERMINAL_HANDLE/u'
+            WSLENV: 'BBQ_TERMINAL_HANDLE/u'
           }
         })
         const [file, , options] = spawnMock.mock.calls.at(-1)!
@@ -370,7 +370,7 @@ describe('registerPtyHandlers', () => {
         const forwardedKeys = options.env.WSLENV.split(':').map((entry) =>
           entry.split('/')[0]!.toLowerCase()
         )
-        expect(options.env.WSLENV).toContain('ORCA_TERMINAL_HANDLE/u')
+        expect(options.env.WSLENV).toContain('BBQ_TERMINAL_HANDLE/u')
         expect(forwardedKeys).not.toContain('path')
       } finally {
         __resetPersistedWindowsPathCacheForTests()
@@ -408,7 +408,7 @@ describe('registerPtyHandlers', () => {
       await handlers.get('pty:spawn')!(null, {
         cols: 80,
         rows: 24,
-        env: { ORCA_PANE_KEY: paneKey },
+        env: { BBQ_PANE_KEY: paneKey },
         tabId,
         leafId,
         worktreeId: 'wt-1'
@@ -452,7 +452,7 @@ describe('registerPtyHandlers', () => {
           }
           const spawnedEnv = spawnMock.mock.calls.at(-1)?.[2]?.env
           expect(spawnedEnv?.JCODE_RUNTIME_DIR).toBe(lane === 'host' ? customDir : undefined)
-          expect(spawnedEnv?.ORCA_PANE_KEY).toBe(paneKey)
+          expect(spawnedEnv?.BBQ_PANE_KEY).toBe(paneKey)
           expect(env).toEqual({ JCODE_RUNTIME_DIR: customDir })
         } finally {
           if (managedFileCreated) {
@@ -479,11 +479,11 @@ describe('registerPtyHandlers', () => {
       // Why: an Orca launched inside a structured session inherits its id; every pane would then
       // present that session as its orchestration caller instead of its own terminal.
       const env = await spawnAndGetEnv(undefined, {
-        ORCA_AGENT_SESSION_ID: 'a0b1c2d3-0000-4000-8000-00000000abcd',
-        ORCA_STRUCTURED_SESSION: '1'
+        BBQ_AGENT_SESSION_ID: 'a0b1c2d3-0000-4000-8000-00000000abcd',
+        BBQ_STRUCTURED_SESSION: '1'
       })
-      expect(env.ORCA_AGENT_SESSION_ID).toBeUndefined()
-      expect(env.ORCA_STRUCTURED_SESSION).toBeUndefined()
+      expect(env.BBQ_AGENT_SESSION_ID).toBeUndefined()
+      expect(env.BBQ_STRUCTURED_SESSION).toBeUndefined()
     })
     it('keeps an explicitly requested Claude child-session stamp on a local spawn', async () => {
       const env = await spawnAndGetEnv(
@@ -496,11 +496,11 @@ describe('registerPtyHandlers', () => {
       const env = await spawnAndGetEnv()
       expect(env.TERM).toBe('xterm-256color')
       expect(env.COLORTERM).toBe('truecolor')
-      expect(env.TERM_PROGRAM).toBe('Orca')
+      expect(env.TERM_PROGRAM).toBe('BBQ')
     })
-    it('hints inline-image support to agents via ORCA_IMAGE_PROTOCOL', async () => {
+    it('hints inline-image support to agents via BBQ_IMAGE_PROTOCOL', async () => {
       const env = await spawnAndGetEnv()
-      expect(env.ORCA_IMAGE_PROTOCOL).toBe('kitty')
+      expect(env.BBQ_IMAGE_PROTOCOL).toBe('kitty')
     })
     it('keeps indexed Git prompt guards in a local agent terminal env', async () => {
       const env = await spawnAndGetEnv(undefined, undefined, undefined, undefined, 'claude')
@@ -526,12 +526,12 @@ describe('registerPtyHandlers', () => {
       const env = await spawnAndGetEnv()
       expect(env.FORCE_HYPERLINK).toBe('1')
     })
-    it('surfaces ORCA_APP_VERSION as TERM_PROGRAM_VERSION for TUI feature gating', async () => {
-      const env = await spawnAndGetEnv(undefined, { ORCA_APP_VERSION: '1.2.3-test' })
+    it('surfaces BBQ_APP_VERSION as TERM_PROGRAM_VERSION for TUI feature gating', async () => {
+      const env = await spawnAndGetEnv(undefined, { BBQ_APP_VERSION: '1.2.3-test' })
       expect(env.TERM_PROGRAM_VERSION).toBe('1.2.3-test')
     })
-    it('falls back to a placeholder version when ORCA_APP_VERSION is unset', async () => {
-      const env = await spawnAndGetEnv(undefined, { ORCA_APP_VERSION: undefined })
+    it('falls back to a placeholder version when BBQ_APP_VERSION is unset', async () => {
+      const env = await spawnAndGetEnv(undefined, { BBQ_APP_VERSION: undefined })
       expect(env.TERM_PROGRAM_VERSION).toBe('0.0.0-dev')
     })
     it('injects the selected Codex home into Orca terminal PTYs', async () => {
@@ -539,9 +539,9 @@ describe('registerPtyHandlers', () => {
         spawnAndGetEnv(undefined, undefined, () => TEST_CODEX_HOME)
       )
       expect(env.CODEX_HOME).toBe(TEST_CODEX_HOME)
-      expect(env.ORCA_CODEX_HOME).toBe(TEST_CODEX_HOME)
+      expect(env.BBQ_CODEX_HOME).toBe(TEST_CODEX_HOME)
       // Why: the app prepares a native pane's Codex home; only WSL panes run the preflight.
-      expect(env.ORCA_CODEX_LAUNCH_PREFLIGHT).toBeUndefined()
+      expect(env.BBQ_CODEX_LAUNCH_PREFLIGHT).toBeUndefined()
     })
     it('does not install the Codex launch preflight when Codex hooks are disabled', async () => {
       const env = await spawnAndGetEnv(
@@ -552,7 +552,7 @@ describe('registerPtyHandlers', () => {
       )
 
       expect(env.CODEX_HOME).toBe(TEST_CODEX_HOME)
-      expect(env.ORCA_CODEX_LAUNCH_PREFLIGHT).toBeUndefined()
+      expect(env.BBQ_CODEX_LAUNCH_PREFLIGHT).toBeUndefined()
     })
     it('resumes an automatic Codex session from its prepared originating home', async () => {
       const selectedHome = vi.fn(() => '/managed/current/home')
@@ -591,7 +591,7 @@ describe('registerPtyHandlers', () => {
       )
       expect(selectedHome).not.toHaveBeenCalled()
       expect(env.CODEX_HOME).toBe('/managed/origin/home')
-      expect(env.ORCA_CODEX_HOME).toBe('/managed/origin/home')
+      expect(env.BBQ_CODEX_HOME).toBe('/managed/origin/home')
     })
     it('blocks a shared-runtime resume when auth reconciliation fails', async () => {
       const selectedHome = vi.fn(() => {
@@ -653,7 +653,7 @@ describe('registerPtyHandlers', () => {
         rows: 24,
         command: 'codex resume session-a',
         env: { CODEX_HOME: '/custom/codex', REMOVE_ME: 'stale' },
-        envToDelete: ['CODEX_HOME', 'ORCA_CODEX_HOME', 'REMOVE_ME'],
+        envToDelete: ['CODEX_HOME', 'BBQ_CODEX_HOME', 'REMOVE_ME'],
         launchAgent: 'codex',
         resumeProviderSession: {
           key: 'session_id',
@@ -665,7 +665,7 @@ describe('registerPtyHandlers', () => {
       const env = spawnMock.mock.calls.at(-1)![2].env as Record<string, string>
       expect(selectedHome).not.toHaveBeenCalled()
       expect(env.CODEX_HOME).toBe(systemHome)
-      expect(env.ORCA_CODEX_HOME).toBe(systemHome)
+      expect(env.BBQ_CODEX_HOME).toBe(systemHome)
       expect(env.REMOVE_ME).toBeUndefined()
     })
     it('does not fall back to the selected account when automatic resume provenance is rejected', async () => {

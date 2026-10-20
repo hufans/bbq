@@ -236,7 +236,7 @@ describe('hydrateShellPath', () => {
   })
 
   it('sets a probe marker so rc files can take a fast path', async () => {
-    expect((await captureProbeEnv()).ORCA_SHELL_PATH_PROBE).toBe('1')
+    expect((await captureProbeEnv()).BBQ_SHELL_PATH_PROBE).toBe('1')
   })
 
   // Why: on Windows the probe is PowerShell or Git Bash, so these argv are never produced.

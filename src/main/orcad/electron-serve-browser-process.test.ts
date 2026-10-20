@@ -210,7 +210,7 @@ describe('ElectronServeBrowserProcess start-up', () => {
       vi.stubEnv(key, `leaked-${key}`)
     }
     vi.stubEnv('ORCA_HARNESS_UNRELATED', 'preserved')
-    for (const key of ['ORCA_E2E_USER_DATA_DIR', 'ORCA_USER_DATA', 'ORCA_USER_DATA_PATH']) {
+    for (const key of ['ORCA_E2E_USER_DATA_DIR', 'ORCA_USER_DATA', 'BBQ_USER_DATA_PATH']) {
       vi.stubEnv(key, harnessRoot)
     }
     const isolatedHome = join(harnessRoot, 'home')
@@ -242,7 +242,7 @@ describe('ElectronServeBrowserProcess start-up', () => {
       expect(spec.env).not.toHaveProperty(key)
     }
     expect(spec.env?.ORCA_HARNESS_UNRELATED).toBe('preserved')
-    for (const key of ['ORCA_USER_DATA', 'ORCA_USER_DATA_PATH']) {
+    for (const key of ['ORCA_USER_DATA', 'BBQ_USER_DATA_PATH']) {
       expect(spec.env).not.toHaveProperty(key)
     }
     expect(spec.env?.ORCA_E2E_USER_DATA_DIR).toBe(userDataArg?.slice('--user-data-dir='.length))
@@ -257,7 +257,7 @@ describe('ElectronServeBrowserProcess start-up', () => {
   it('marks the launch as the orcad sidecar so the installed app hands user opens on', async () => {
     await startProvider()
 
-    expect(spawnSpec().env?.ORCA_ORCAD_SIDECAR).toBe('1')
+    expect(spawnSpec().env?.BBQ_ORCAD_SIDECAR).toBe('1')
   })
 
   it('keeps polling until the sidecar advertises browser.headless.v1', async () => {

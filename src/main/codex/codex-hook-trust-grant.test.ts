@@ -49,8 +49,8 @@ beforeEach(() => {
   // ordering prevents test-only canonical-path drift during ledger setup.
   mkdirSync(runtimeHomeDir, { recursive: true })
   writeFileSync(join(runtimeHomeDir, 'hooks.json'), '{"hooks":{}}\n', 'utf-8')
-  previousUserDataPath = process.env.ORCA_USER_DATA_PATH
-  process.env.ORCA_USER_DATA_PATH = userDataDir
+  previousUserDataPath = process.env.BBQ_USER_DATA_PATH
+  process.env.BBQ_USER_DATA_PATH = userDataDir
   codexAppServerCapabilityCache.clear()
   _internals.resetDiagnostics()
 })
@@ -61,9 +61,9 @@ afterEach(() => {
   setCodexTrustGrantTelemetry(() => {})
   codexAppServerCapabilityCache.clear()
   if (previousUserDataPath === undefined) {
-    delete process.env.ORCA_USER_DATA_PATH
+    delete process.env.BBQ_USER_DATA_PATH
   } else {
-    process.env.ORCA_USER_DATA_PATH = previousUserDataPath
+    process.env.BBQ_USER_DATA_PATH = previousUserDataPath
   }
   delete process.env.ORCA_DISABLE_CODEX_TRUST_RPC
   rmSync(userDataDir, { recursive: true, force: true })

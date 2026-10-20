@@ -158,7 +158,7 @@ describe('the caller a session id resolves to and the recipient its address reso
 describe('every session-to-party step goes through the canonical session id', () => {
   it('binds a claimed alias as its canonical session', async () => {
     const { run } = await as(ALIAS_X, 'orchestration.runCreate', { objective: 'o' })
-    expect(h.db.getRunRaw(idOf(run))?.coordinator_orca_session_id).toBe(SESSION_X)
+    expect(h.db.getRunRaw(idOf(run))?.coordinator_bbq_session_id).toBe(SESSION_X)
     expect(await as(SESSION_X, 'orchestration.runCurrent', {})).toMatchObject({
       run: { id: idOf(run) }
     })

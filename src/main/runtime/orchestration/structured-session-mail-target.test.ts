@@ -373,7 +373,7 @@ describe('a coordinator chat continued by /clear', () => {
       creator: { kind: 'system' },
       maxDepth: Number.MAX_SAFE_INTEGER
     })
-    expect(db.getDispatchContextById(dispatch.id)?.assignee_orca_session_id).toBe(CHAT)
+    expect(db.getDispatchContextById(dispatch.id)?.assignee_bbq_session_id).toBe(CHAT)
   })
 
   it("never unbinds the successor's own Run", () => {
@@ -389,7 +389,7 @@ describe('a coordinator chat continued by /clear', () => {
 
     const successor = resolveOrcaSessionParty(SUCCESSOR, db)
     expect(db.getRunRaw(ownRun)).toMatchObject({
-      coordinator_orca_session_id: successor.orcaSessionId,
+      coordinator_bbq_session_id: successor.orcaSessionId,
       consumer_generation: generation
     })
     expect(db.getCurrentRunForCoordinator(successor)?.id).toBe(ownRun)
@@ -404,7 +404,7 @@ describe('a coordinator chat continued by /clear', () => {
     expect(idleEdge(SUCCESSOR)).toContain(`run:${runId}`)
 
     expect(db.getRunRaw(runId)).toMatchObject({
-      coordinator_orca_session_id: CHAT,
+      coordinator_bbq_session_id: CHAT,
       consumer_generation: generation
     })
     for (const member of [CHAT, MIDDLE, SUCCESSOR]) {
@@ -424,7 +424,7 @@ describe('a coordinator chat continued by /clear', () => {
 
     const successor = resolveOrcaSessionParty(SUCCESSOR, db)
     expect(db.getRunRaw(middleRun)).toMatchObject({
-      coordinator_orca_session_id: successor.orcaSessionId,
+      coordinator_bbq_session_id: successor.orcaSessionId,
       consumer_generation: generation
     })
     expect(db.getCurrentRunForCoordinator(successor)?.id).toBe(middleRun)

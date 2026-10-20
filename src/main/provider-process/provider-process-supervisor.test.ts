@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest'
 import type { ProviderProcessLaunch } from './provider-process-launch'
 import {
   createProviderSpawnSpec,
+  isProviderSupervisorArgv,
   POSIX_PROVIDER_SUPERVISOR_SCRIPT,
   PROVIDER_SIGTERM_GRACE_MS,
   PROVIDER_STDIN_END_GRACE_MS,
+  readProviderSupervisorSpec,
   supervisedPosixLaunch
 } from './provider-process-supervisor'
 
@@ -22,18 +24,11 @@ describe('structured provider supervision', () => {
     const spec = supervisedPosixLaunch(command, childEnv)
 
     expect(spec.command).toBe(process.execPath)
-    expect(spec.args).toEqual([
-      '-e',
-      POSIX_PROVIDER_SUPERVISOR_SCRIPT,
-      '--',
-      '/opt/codex',
-      'app-server',
-      '--flag'
-    ])
+    expect(isProviderSupervisorArgv(spec.args)).toBe(true)
+    expect(spec.args.slice(2)).toEqual(['--', '/opt/codex', 'app-server', '--flag'])
     expect(spec.env.PATH).toBe('/bin')
-    expect(
-      JSON.parse(Buffer.from(spec.env.ORCA_PROVIDER_SUPERVISOR_SPEC!, 'base64').toString())
-    ).toEqual(
+    expect(spec.env).not.toHaveProperty('BBQ_PROVIDER_SUPERVISOR_SPEC')
+    expect(readProviderSupervisorSpec(spec.args)).toEqual(
       expect.objectContaining({
         cwd: '/work/repo',
         ownerPid: process.pid,
@@ -43,12 +38,9 @@ describe('structured provider supervision', () => {
         sigtermGraceMs: PROVIDER_SIGTERM_GRACE_MS
       })
     )
-    expect(
-      JSON.parse(Buffer.from(spec.env.ORCA_PROVIDER_SUPERVISOR_SPEC!, 'base64').toString())
-    ).not.toHaveProperty('env')
-    expect(POSIX_PROVIDER_SUPERVISOR_SCRIPT).toContain(
-      'delete childEnv.ORCA_PROVIDER_SUPERVISOR_SPEC'
-    )
+    expect(readProviderSupervisorSpec(spec.args)).not.toHaveProperty('env')
+    expect(POSIX_PROVIDER_SUPERVISOR_SCRIPT).not.toContain('base64')
+    expect(POSIX_PROVIDER_SUPERVISOR_SCRIPT).not.toMatch(/orca/i)
     expect(POSIX_PROVIDER_SUPERVISOR_SCRIPT).toContain('delete childEnv.ELECTRON_RUN_AS_NODE')
     expect(spec.env.ELECTRON_RUN_AS_NODE).toBe('1')
     expect(POSIX_PROVIDER_SUPERVISOR_SCRIPT).toContain(
@@ -63,9 +55,7 @@ describe('structured provider supervision', () => {
     })
 
     expect(spec).toMatchObject({ program: process.execPath, detached: true, supervised: true })
-    expect(
-      JSON.parse(Buffer.from(spec.env.ORCA_PROVIDER_SUPERVISOR_SPEC!, 'base64').toString())
-    ).toMatchObject({ lifetime: 'one-shot' })
+    expect(readProviderSupervisorSpec(spec.args)).toMatchObject({ lifetime: 'one-shot' })
   })
 
   it('keeps the resolved Node options out of the supervisor env and in the provider spec', () => {
@@ -78,9 +68,11 @@ describe('structured provider supervision', () => {
 
     expect(spec.env).not.toHaveProperty('NODE_OPTIONS')
     expect(spec.env).not.toHaveProperty('NODE_REPL_EXTERNAL_MODULE')
-    expect(
-      JSON.parse(Buffer.from(spec.env.ORCA_PROVIDER_SUPERVISOR_SPEC!, 'base64').toString()).nodeEnv
-    ).toEqual({ NODE_OPTIONS: '--require /missing.js', NODE_REPL_EXTERNAL_MODULE: '/repl.js' })
+    expect(spec.env).not.toHaveProperty('BBQ_PROVIDER_SUPERVISOR_SPEC')
+    expect(readProviderSupervisorSpec(spec.args)?.nodeEnv).toEqual({
+      NODE_OPTIONS: '--require /missing.js',
+      NODE_REPL_EXTERNAL_MODULE: '/repl.js'
+    })
   })
 
   it('keeps every argv and env string of a 120 KiB argv prompt under the Linux 128 KiB cap', () => {

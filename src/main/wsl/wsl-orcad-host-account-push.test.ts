@@ -22,11 +22,11 @@ function dependencies(
       wslDistro: 'Ubuntu',
       envPatch: {
         CLAUDE_CONFIG_DIR: CLAUDE_HOME,
-        ORCA_CLAUDE_INJECTED_CONFIG_DIR: CLAUDE_HOME
+        BBQ_CLAUDE_INJECTED_CONFIG_DIR: CLAUDE_HOME
       },
       provenance: 'profile:acct-a:wsl:Ubuntu'
     })),
-    claudeTerminalEnv: vi.fn(() => ({ ORCA_CLAUDE_PROFILE_POINTER: POINTER })),
+    claudeTerminalEnv: vi.fn(() => ({ BBQ_CLAUDE_PROFILE_POINTER: POINTER })),
     prepareCodexHome: vi.fn(async () => '\\\\wsl.localhost\\Ubuntu\\home\\u\\.orca\\codex-b'),
     managedAccountSelected: vi.fn(() => true),
     accountNotApplied: vi.fn(),
@@ -62,11 +62,11 @@ describe('pushWslOrcadHostAccountEnv', () => {
       wslDistro: 'Ubuntu',
       claude: {
         CLAUDE_CONFIG_DIR: CLAUDE_HOME,
-        ORCA_CLAUDE_INJECTED_CONFIG_DIR: CLAUDE_HOME,
+        BBQ_CLAUDE_INJECTED_CONFIG_DIR: CLAUDE_HOME,
         CODEX_HOME: '/home/u/.orca/codex-b'
       },
       terminal: {
-        ORCA_CLAUDE_PROFILE_POINTER: POINTER,
+        BBQ_CLAUDE_PROFILE_POINTER: POINTER,
         CODEX_HOME: '/home/u/.orca/codex-b'
       }
     })

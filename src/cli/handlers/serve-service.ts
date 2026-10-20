@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { dirname } from 'node:path'
+import { dirname, join } from 'node:path'
 import { runProcess } from '@orca/process-host'
 import type { CommandHandler } from '../dispatch'
 import { RuntimeClientError } from '../runtime/types'
@@ -12,11 +12,15 @@ import {
   clearServeSupervisorBrake,
   readServeSupervisorBrake
 } from '../runtime/serve-supervisor-brake'
+import { SERVE_LAUNCHD_LABEL_PREFIX } from '../../shared/serve-bundle-coordination'
 import {
   renderServeService,
   resolveServeServiceManager,
   type ServeServiceSpec
 } from '../runtime/serve-service-unit'
+
+const LEGACY_LAUNCHD_LABEL = 'com.stablyai.orca.serve'
+const LEGACY_SYSTEMD_UNIT = 'orca-serve.service'
 import { resolveServiceCommand } from '../runtime/serve-app-launcher'
 
 type Run = (program: string, args: string[]) => Promise<{ code: number | null; out: string }>
@@ -52,7 +56,7 @@ function requireManager(platform: NodeJS.Platform): void {
   if (!resolveServeServiceManager(platform)) {
     throw new RuntimeClientError(
       'unsupported_platform',
-      '`orca serve service` is not available on Windows yet. Run `orca serve` under a service wrapper of your own.'
+      '`bbq serve service` is not available on Windows yet. Run `bbq serve` under a service wrapper of your own.'
     )
   }
 }
@@ -82,6 +86,32 @@ async function lingerState(deps: ServeServiceDeps): Promise<'yes' | 'no' | 'unkn
   ])
   const value = result.out.trim()
   return result.code === 0 && (value === 'yes' || value === 'no') ? value : 'unknown'
+}
+
+function legacyServeUnitNames(spec: ServeServiceSpec): string[] {
+  if (spec.manager === 'launchd') {
+    const suffix = spec.name.startsWith(`${SERVE_LAUNCHD_LABEL_PREFIX}.`)
+      ? spec.name.slice(SERVE_LAUNCHD_LABEL_PREFIX.length + 1)
+      : ''
+    return suffix
+      ? [LEGACY_LAUNCHD_LABEL, `${LEGACY_LAUNCHD_LABEL}.${suffix}`]
+      : [LEGACY_LAUNCHD_LABEL]
+  }
+  const match = /^bbq-serve-([0-9a-f]{8})\.service$/.exec(spec.name)
+  return match ? [LEGACY_SYSTEMD_UNIT, `orca-serve-${match[1]}.service`] : [LEGACY_SYSTEMD_UNIT]
+}
+
+/** Stop a supervisor the previous product name left loaded. Missing units are ignored. */
+async function stopLegacyServeUnits(deps: ServeServiceDeps, spec: ServeServiceSpec): Promise<void> {
+  for (const name of legacyServeUnitNames(spec)) {
+    if (spec.manager === 'launchd') {
+      await deps.run('launchctl', ['bootout', `gui/${deps.uid}/${name}`])
+      rmSync(join(deps.homeDir, 'Library', 'LaunchAgents', `${name}.plist`), { force: true })
+      continue
+    }
+    await deps.run('systemctl', ['--user', 'disable', '--now', name])
+    rmSync(join(deps.homeDir, '.config', 'systemd', 'user', name), { force: true })
+  }
 }
 
 async function mustRun(deps: ServeServiceDeps, program: string, args: string[]): Promise<void> {
@@ -118,6 +148,7 @@ export async function installServeService(
   }
   // Why: installing is the documented way to retry after the crash-loop brake gave up.
   clearServeSupervisorBrake(resolveLaunchUserDataPath(deps.env))
+  await stopLegacyServeUnits(deps, spec)
   if (spec.manager === 'launchd') {
     await deps.run('launchctl', ['bootout', `gui/${deps.uid}/${spec.name}`])
     await mustRun(deps, 'launchctl', ['bootstrap', `gui/${deps.uid}`, spec.unitPath])
@@ -157,7 +188,7 @@ export async function readServeServiceStatus(
   deps: ServeServiceDeps = defaultDeps()
 ): Promise<ServeServiceStatus> {
   requireManager(deps.platform)
-  const spec = serviceSpec(deps, { command: 'orca' })
+  const spec = serviceSpec(deps, { command: 'bbq' })
   const base = {
     installed: existsSync(spec.unitPath),
     manager: spec.manager,
@@ -216,7 +247,8 @@ export async function uninstallServeService(
   deps: ServeServiceDeps = defaultDeps()
 ): Promise<Record<string, unknown>> {
   requireManager(deps.platform)
-  const spec = serviceSpec(deps, { command: 'orca' })
+  const spec = serviceSpec(deps, { command: 'bbq' })
+  await stopLegacyServeUnits(deps, spec)
   await (spec.manager === 'launchd'
     ? deps.run('launchctl', ['bootout', `gui/${deps.uid}/${spec.name}`])
     : deps.run('systemctl', ['--user', 'disable', '--now', spec.name]))

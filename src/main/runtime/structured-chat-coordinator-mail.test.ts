@@ -525,7 +525,7 @@ describe('a /clear keeps the chat its orchestration address', () => {
     })
     // Clear preserves the original Run binding and consumer generation.
     expect(db.getRunRaw(runId)).toMatchObject({
-      coordinator_orca_session_id: COORDINATOR,
+      coordinator_bbq_session_id: COORDINATOR,
       consumer_generation: generation
     })
   })
@@ -564,14 +564,14 @@ describe('a /clear keeps the chat its orchestration address', () => {
       { sessionId: firstClear }
     )
     const runId = idOf(created.run)
-    expect(db.getRunRaw(runId)!.coordinator_orca_session_id).toBe(COORDINATOR)
+    expect(db.getRunRaw(runId)!.coordinator_bbq_session_id).toBe(COORDINATOR)
     const cleared = await clearChat(firstClear)
     await startClearedContext(cleared)
 
     await expect(
       call('orchestration.runCurrent', {}, { sessionId: cleared })
     ).resolves.toMatchObject({ run: { id: runId } })
-    expect(db.getRunRaw(runId)!.coordinator_orca_session_id).toBe(COORDINATOR)
+    expect(db.getRunRaw(runId)!.coordinator_bbq_session_id).toBe(COORDINATOR)
     // What it sends carries the same address.
     await openChat(PEER_CHAT)
     await expect(
@@ -594,8 +594,8 @@ describe('a /clear keeps the chat its orchestration address', () => {
       (await call('orchestration.runCreate', { objective: 'first' }, { sessionId: firstClear })).run
     )
     expect(db.getRunRaw(first)).toMatchObject({
-      coordinator_orca_session_id: root,
-      coordinator_orca_session_id_generation: db.getRunRaw(first)!.consumer_generation
+      coordinator_bbq_session_id: root,
+      coordinator_bbq_session_id_generation: db.getRunRaw(first)!.consumer_generation
     })
     expect(boundOrcaSessionId(first)).toBe(root)
     const second = idOf(
@@ -608,8 +608,8 @@ describe('a /clear keeps the chat its orchestration address', () => {
     await startClearedContext(cleared)
     await call('orchestration.runUse', { id: first }, { sessionId: cleared })
     const rebound = db.getRunRaw(first)!
-    expect(rebound.coordinator_orca_session_id).toBe(root)
-    expect(rebound.coordinator_orca_session_id_generation).toBe(rebound.consumer_generation)
+    expect(rebound.coordinator_bbq_session_id).toBe(root)
+    expect(rebound.coordinator_bbq_session_id_generation).toBe(rebound.consumer_generation)
     expect(boundOrcaSessionId(second)).toBeNull()
     await expect(
       call('orchestration.runCurrent', {}, { sessionId: cleared })

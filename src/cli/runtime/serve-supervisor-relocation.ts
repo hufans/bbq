@@ -11,7 +11,7 @@ import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:pat
 import { isProcessAlive } from '../../shared/serve-bundle-coordination'
 
 /** Set on the re-run supervisor: the app root its own `__dirname` no longer points at. */
-export const SERVE_SUPERVISOR_APP_ROOT_ENV = 'ORCA_SERVE_SUPERVISOR_APP_ROOT'
+export const SERVE_SUPERVISOR_APP_ROOT_ENV = 'BBQ_SERVE_SUPERVISOR_APP_ROOT'
 
 const PACKAGED_APP_ROOT_NAME = 'app.asar.unpacked'
 const COMPLETE_MARKER = '.complete'
@@ -157,7 +157,7 @@ export async function relocateServeSupervisor(
     return 'already-relocated'
   }
   // Why packaged only: a dev or overridden executable has no app swapped under it by an update.
-  const override = deps.env.ORCA_APP_EXECUTABLE
+  const override = deps.env.BBQ_APP_EXECUTABLE
   if (
     deps.env.ELECTRON_RUN_AS_NODE !== '1' ||
     (typeof override === 'string' && override.trim().length > 0) ||

@@ -204,7 +204,7 @@ stop_log_stream() {
   fi
 }
 
-latest_orca_pid_for_app() {
+latest_bbq_pid_for_app() {
   pgrep -nf "$APP_DIR/Contents/MacOS/Orca" || true
 }
 
@@ -218,7 +218,7 @@ sample_process_once() {
 
 terminate_app_processes() {
   local pid
-  pid="$(latest_orca_pid_for_app)"
+  pid="$(latest_bbq_pid_for_app)"
   if [[ -n "$pid" ]]; then
     kill "$pid" >/dev/null 2>&1 || true
     sleep 1
@@ -237,7 +237,7 @@ wait_for_probe() {
 
   for i in $(seq 1 200); do
     local app_pid
-    app_pid="$(latest_orca_pid_for_app)"
+    app_pid="$(latest_bbq_pid_for_app)"
     if [[ "$sampled" -eq 0 && -n "$app_pid" ]]; then
       sampled=1
       echo "sampled_pid=$app_pid" >>"$OUT_DIR/$label.meta"

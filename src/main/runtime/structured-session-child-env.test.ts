@@ -6,6 +6,7 @@ import { resolveProviderChildEnv } from '../provider-process/provider-process-la
 const shim = vi.hoisted(() => ({ ensureLinuxTerminalOrcaCliShimDir: vi.fn() }))
 vi.mock('../cli/linux-terminal-orca-cli-shim', () => shim)
 
+import { sealStructuredSessionChild } from './structured-session-child-env'
 import {
   SEALED_TEST_SPAWN_TOKEN,
   sealedChildEnv
@@ -21,7 +22,7 @@ import {
 const SESSION_ID = 'f7a1c0de-1111-4222-8333-444455556666'
 const USER_DATA = '/data/orca'
 const RESOURCES = '/app/Resources'
-const SHIM_DIR = join(USER_DATA, 'linux-orca-cli-shim')
+const SHIM_DIR = join(USER_DATA, 'linux-bbq-cli-shim')
 
 const platformDescriptor = Object.getOwnPropertyDescriptor(process, 'platform')!
 const resourcesDescriptor = Object.getOwnPropertyDescriptor(process, 'resourcesPath')
@@ -70,26 +71,44 @@ describe('sealStructuredSessionChild identity', () => {
     const env = sealedChildEnv(SESSION_ID, childEnv)
     expect(env).toEqual({
       PATH: `${SHIM_DIR}:/usr/bin`,
-      ORCA_AGENT_SESSION_ID: SESSION_ID,
+      BBQ_AGENT_SESSION_ID: SESSION_ID,
       // For a CLI that predates the id, which refuses on it instead of guessing a sibling.
-      ORCA_STRUCTURED_SESSION: '1',
-      ORCA_CLI_COMMAND: join(SHIM_DIR, 'orca'),
-      ORCA_CLI_BIN_DIR: SHIM_DIR,
+      BBQ_STRUCTURED_SESSION: '1',
+      BBQ_CLI_COMMAND: join(SHIM_DIR, 'bbq'),
+      BBQ_CLI_BIN_DIR: SHIM_DIR,
       // The instance that minted the id, so any current CLI dials it rather than the default.
-      ORCA_USER_DATA_PATH: USER_DATA,
+      BBQ_USER_DATA_PATH: USER_DATA,
       // Empty, which the CLI reads as unset, so a profile's selector cannot send it elsewhere.
-      ORCA_ENVIRONMENT: '',
-      ORCA_PAIRING_CODE: '',
-      ORCA_REMOTE_PAIRING: '',
-      ORCA_AGENT_SESSION_SPAWN_TOKEN: SEALED_TEST_SPAWN_TOKEN
+      BBQ_ENVIRONMENT: '',
+      BBQ_PAIRING_CODE: '',
+      BBQ_REMOTE_PAIRING: '',
+      BBQ_AGENT_SESSION_SPAWN_TOKEN: SEALED_TEST_SPAWN_TOKEN
     })
     // A chat names itself by its id alone: no handle, no pane key.
-    expect(env.ORCA_TERMINAL_HANDLE).toBeUndefined()
-    expect(env.ORCA_PANE_KEY).toBeUndefined()
+    expect(env.BBQ_TERMINAL_HANDLE).toBeUndefined()
+    expect(env.BBQ_PANE_KEY).toBeUndefined()
     expect(childEnv).toEqual({ PATH: '/usr/bin' })
   })
 
-  it.each(['ORCA_ENVIRONMENT', 'ORCA_PAIRING_CODE', 'ORCA_REMOTE_PAIRING'])(
+  it('deletes a retired Claude status-settings path instead of copying it', () => {
+    installFakeAppEnvironment({ isPackaged: () => false, getPath: () => USER_DATA })
+    const sealed = sealStructuredSessionChild({
+      sessionId: SESSION_ID,
+      spawnToken: SEALED_TEST_SPAWN_TOKEN,
+      env: { PATH: '/usr/bin' },
+      inheritedEnvToDelete: []
+    })
+    expect(sealed.envToDelete).toContain('ORCA_CLAUDE_AGENT_STATUS_SETTINGS')
+    expect(sealed.env.ORCA_CLAUDE_AGENT_STATUS_SETTINGS).toBeUndefined()
+    const child = resolveProviderChildEnv(
+      { command: 'claude', args: [], env: sealed.env, envToDelete: sealed.envToDelete },
+      { PATH: '/usr/bin', ORCA_CLAUDE_AGENT_STATUS_SETTINGS: '/tmp/stale.json' }
+    )
+    expect(child.ORCA_CLAUDE_AGENT_STATUS_SETTINGS).toBeUndefined()
+    expect(child.BBQ_CLAUDE_AGENT_STATUS_SETTINGS).toBeUndefined()
+  })
+
+  it.each(['BBQ_ENVIRONMENT', 'BBQ_PAIRING_CODE', 'BBQ_REMOTE_PAIRING'])(
     "keeps an inherited %s from sending the agent's CLI to another server",
     (key) => {
       installFakeAppEnvironment({ isPackaged: () => true, getPath: () => USER_DATA })
@@ -99,10 +118,10 @@ describe('sealStructuredSessionChild identity', () => {
       const launch = { env: sealedChildEnv(SESSION_ID, inherited) }
       const childEnv = resolveProviderChildEnv(launch, inherited)
       expect(childEnv).toMatchObject({
-        ORCA_USER_DATA_PATH: USER_DATA,
-        ORCA_ENVIRONMENT: '',
-        ORCA_PAIRING_CODE: '',
-        ORCA_REMOTE_PAIRING: ''
+        BBQ_USER_DATA_PATH: USER_DATA,
+        BBQ_ENVIRONMENT: '',
+        BBQ_PAIRING_CODE: '',
+        BBQ_REMOTE_PAIRING: ''
       })
     }
   )
@@ -110,10 +129,10 @@ describe('sealStructuredSessionChild identity', () => {
   it('replaces an id inherited from an Orca launched inside another session', () => {
     installFakeAppEnvironment({ isPackaged: () => false, getPath: () => USER_DATA })
     const env = sealedChildEnv(SESSION_ID, {
-      ORCA_AGENT_SESSION_ID: 'a0b1c2d3-0000-4000-8000-00000000abcd',
+      BBQ_AGENT_SESSION_ID: 'a0b1c2d3-0000-4000-8000-00000000abcd',
       PATH: '/usr/bin'
     })
-    expect(env.ORCA_AGENT_SESSION_ID).toBe(SESSION_ID)
+    expect(env.BBQ_AGENT_SESSION_ID).toBe(SESSION_ID)
   })
 
   it('gives a structured worker its id and keeps the handle it was minted', () => {
@@ -122,8 +141,8 @@ describe('sealStructuredSessionChild identity', () => {
     installFakeAppEnvironment({ isPackaged: () => false, getPath: () => USER_DATA })
     const handle = registerWorker()
     const env = sealedChildEnv(SESSION_ID, { PATH: '/usr/bin' })
-    expect(env.ORCA_AGENT_SESSION_ID).toBe(SESSION_ID)
-    expect(env.ORCA_TERMINAL_HANDLE).toBe(handle)
+    expect(env.BBQ_AGENT_SESSION_ID).toBe(SESSION_ID)
+    expect(env.BBQ_TERMINAL_HANDLE).toBe(handle)
   })
 
   describe.each(['chat', 'worker'] as const)("reaches this app's CLI as a %s", (kind) => {
@@ -136,19 +155,19 @@ describe('sealStructuredSessionChild identity', () => {
       })
       const env = sealedChildEnv(SESSION_ID, {
         PATH: '/usr/bin',
-        ORCA_USER_DATA_PATH: '/other/profile',
-        ORCA_ENVIRONMENT: 'stale-shell-selection',
-        ORCA_PAIRING_CODE: 'stale-pairing',
-        ORCA_REMOTE_PAIRING: 'stale-remote-pairing'
+        BBQ_USER_DATA_PATH: '/other/profile',
+        BBQ_ENVIRONMENT: 'stale-shell-selection',
+        BBQ_PAIRING_CODE: 'stale-pairing',
+        BBQ_REMOTE_PAIRING: 'stale-remote-pairing'
       })
-      expect(env.ORCA_CLI_COMMAND).toBe(launcher)
-      expect(env.ORCA_USER_DATA_PATH).toBe(USER_DATA)
+      expect(env.BBQ_CLI_COMMAND).toBe(launcher)
+      expect(env.BBQ_USER_DATA_PATH).toBe(USER_DATA)
       expect(env).toMatchObject({
-        ORCA_ENVIRONMENT: '',
-        ORCA_PAIRING_CODE: '',
-        ORCA_REMOTE_PAIRING: ''
+        BBQ_ENVIRONMENT: '',
+        BBQ_PAIRING_CODE: '',
+        BBQ_REMOTE_PAIRING: ''
       })
-      expect(env.ORCA_AGENT_SESSION_ID).toBe(SESSION_ID)
+      expect(env.BBQ_AGENT_SESSION_ID).toBe(SESSION_ID)
       expect(env.PATH).toBe(`${join(USER_DATA, 'cli', 'bin')}:/usr/bin`)
     })
     beforeEach(() => {
@@ -163,7 +182,7 @@ describe('sealStructuredSessionChild identity', () => {
       pinPlatform('linux')
       installFakeAppEnvironment({ isPackaged: () => true, getPath: () => USER_DATA })
       const env = sealedChildEnv(SESSION_ID, { PATH: '/usr/bin:/bin' })
-      expect(env.ORCA_CLI_COMMAND).toBe(join(SHIM_DIR, 'orca'))
+      expect(env.BBQ_CLI_COMMAND).toBe(join(SHIM_DIR, 'bbq'))
       expect(env.PATH).toBe(`${SHIM_DIR}:/usr/bin:/bin`)
     })
 
@@ -172,7 +191,7 @@ describe('sealStructuredSessionChild identity', () => {
       installFakeAppEnvironment({ isPackaged: () => true, getPath: () => USER_DATA })
       const env = sealedChildEnv(SESSION_ID, { PATH: '/usr/bin' })
       expect(env.PATH).toBe(`${join(RESOURCES, 'bin')}:/usr/bin`)
-      expect(env.ORCA_CLI_COMMAND).toBe(join(RESOURCES, 'bin', 'orca'))
+      expect(env.BBQ_CLI_COMMAND).toBe(join(RESOURCES, 'bin', 'bbq'))
     })
 
     it('on packaged Windows, through the bundled CLI dir under the env block spelling', () => {
@@ -182,8 +201,8 @@ describe('sealStructuredSessionChild identity', () => {
       expect(env.Path).toBe(`${join(RESOURCES, 'bin')};C:\\Windows`)
       expect(env.PATH).toBeUndefined()
       // The native launcher: `orca.cmd` refuses message bodies cmd.exe would mangle.
-      expect(env.ORCA_CLI_COMMAND).toBe(join(RESOURCES, 'bin', 'orca.exe'))
-      expect(env.ORCA_CLI_BIN_DIR).toBeUndefined()
+      expect(env.BBQ_CLI_COMMAND).toBe(join(RESOURCES, 'bin', 'bbq.exe'))
+      expect(env.BBQ_CLI_BIN_DIR).toBeUndefined()
     })
 
     it('unpackaged, through the dev launcher dir', () => {
@@ -191,7 +210,7 @@ describe('sealStructuredSessionChild identity', () => {
       installFakeAppEnvironment({ isPackaged: () => false, getPath: () => USER_DATA })
       const env = sealedChildEnv(SESSION_ID, { PATH: '/usr/bin' })
       expect(env.PATH).toBe(`${join(USER_DATA, 'cli', 'bin')}:/usr/bin`)
-      expect(env.ORCA_CLI_COMMAND).toBe(join(USER_DATA, 'cli', 'bin', 'orca-dev'))
+      expect(env.BBQ_CLI_COMMAND).toBe(join(USER_DATA, 'cli', 'bin', 'bbq-dev'))
     })
   })
 
@@ -204,12 +223,12 @@ describe('sealStructuredSessionChild identity', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {})
     const env = sealedChildEnv(SESSION_ID, {
       PATH: '/usr/bin',
-      ORCA_CLI_COMMAND: '/Applications/Other Orca.app/Contents/Resources/bin/orca',
-      ORCA_USER_DATA_PATH: '/data/other-orca'
+      BBQ_CLI_COMMAND: '/Applications/Other Orca.app/Contents/Resources/bin/orca',
+      BBQ_USER_DATA_PATH: '/data/other-orca'
     })
-    expect(env).not.toHaveProperty('ORCA_CLI_COMMAND')
+    expect(env).not.toHaveProperty('BBQ_CLI_COMMAND')
     expect(env.PATH).toBe('/usr/bin')
-    expect(env.ORCA_USER_DATA_PATH).toBe(USER_DATA)
+    expect(env.BBQ_USER_DATA_PATH).toBe(USER_DATA)
     expect(console.warn).toHaveBeenCalledOnce()
   })
 
@@ -220,7 +239,7 @@ describe('sealStructuredSessionChild identity', () => {
     installFakeAppEnvironment({ isPackaged: () => true, getPath: () => USER_DATA })
     registerWorker()
     const env = sealedChildEnv(SESSION_ID, { PATH: '/usr/bin' })
-    expect(env.ORCA_PANE_KEY).toBeUndefined()
+    expect(env.BBQ_PANE_KEY).toBeUndefined()
     expect(Object.keys(env).filter((key) => key.includes('PANE'))).toEqual([])
   })
 
@@ -239,6 +258,6 @@ describe('sealStructuredSessionChild identity', () => {
     pinPlatform('linux')
     installFakeAppEnvironment({ isPackaged: () => true, getPath: () => USER_DATA })
     registerWorker()
-    expect(sealedChildEnv(SESSION_ID, { PATH: '/usr/bin' }).ORCA_CLI_COMMAND).not.toBe('orca-ide')
+    expect(sealedChildEnv(SESSION_ID, { PATH: '/usr/bin' }).BBQ_CLI_COMMAND).not.toBe('orca-ide')
   })
 })

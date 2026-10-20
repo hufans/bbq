@@ -9,6 +9,7 @@ import {
 import { nodeFileContentsEqual } from '../../shared/node-file-content-equality'
 import { buildUnixCliLauncher } from '../cli/cli-dev-launcher'
 import { writeFileAtomically } from '../codex-accounts/fs-utils'
+import { PRODUCT_COMMAND } from '../../shared/product-brand'
 import { resolveOrcadInstallRoot, resolveUserDataPath } from './orcad-app-paths'
 
 // Read by native/windows-cli-launcher: its presence beside orca.exe selects the server mode.
@@ -35,7 +36,7 @@ export async function prepareOrcadCliLauncher(): Promise<void> {
     launcherPath = await prepareWindowsLauncher(installRoot, entry, userDataPath, binDir)
     return
   }
-  const path = join(binDir, 'orca')
+  const path = join(binDir, PRODUCT_COMMAND)
   const script = buildUnixCliLauncher(process.execPath, entry, userDataPath, 'node')
   await mkdir(binDir, { recursive: true })
   const current = await readFile(path, 'utf8').catch(() => null)
@@ -65,7 +66,7 @@ async function prepareWindowsLauncher(
   if (!existsSync(source)) {
     return null
   }
-  const path = join(binDir, 'orca.exe')
+  const path = join(binDir, `${PRODUCT_COMMAND}.exe`)
   await mkdir(binDir, { recursive: true })
   await removeRetiredLaunchers(binDir)
   const binary = await readFile(source)

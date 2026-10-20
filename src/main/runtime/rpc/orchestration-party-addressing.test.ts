@@ -155,7 +155,7 @@ describe('every target param resolves both spellings of a party to one canonical
 
       expect(dispatch).toMatchObject({
         assignee_handle: handle,
-        assignee_orca_session_id: SESSION_Y
+        assignee_bbq_session_id: SESSION_Y
       })
       expect(await as(SESSION_Y, 'orchestration.check', { peek: true })).toMatchObject({
         dispatchId: idOf(dispatch)
@@ -174,7 +174,7 @@ describe('every target param resolves both spellings of a party to one canonical
 
     expect(dispatch).toMatchObject({
       assignee_handle: ADDRESS_Z,
-      assignee_orca_session_id: SESSION_Z,
+      assignee_bbq_session_id: SESSION_Z,
       assignee_pane_key: null,
       process_incarnation: null
     })
@@ -422,8 +422,8 @@ describe('no writer stores a structured worker under its session address', () =>
     const stored = h.db.db
       .prepare(
         `SELECT m.id FROM messages AS m JOIN dispatch_contexts AS d
-           ON d.assignee_orca_session_id IS NOT NULL
-          AND 'orca_session_id:' || d.assignee_orca_session_id IN (m.to_handle, m.from_handle)`
+           ON d.assignee_bbq_session_id IS NOT NULL
+          AND 'orca_session_id:' || d.assignee_bbq_session_id IN (m.to_handle, m.from_handle)`
       )
       .all()
     expect(h.db.getInbox(100).length).toBeGreaterThanOrEqual(7)

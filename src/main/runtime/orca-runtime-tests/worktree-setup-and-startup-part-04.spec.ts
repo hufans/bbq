@@ -293,8 +293,8 @@ describe('OrcaRuntimeService', () => {
     vi.mocked(createSetupRunnerScript).mockReturnValue({
       runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
       envVars: {
-        ORCA_ROOT_PATH: '/tmp/repo',
-        ORCA_WORKTREE_PATH: '/tmp/workspaces/runtime-startup-setup-split'
+        BBQ_ROOT_PATH: '/tmp/repo',
+        BBQ_WORKTREE_PATH: '/tmp/workspaces/runtime-startup-setup-split'
       },
       waitForAgentStartup: true
     })
@@ -334,8 +334,8 @@ describe('OrcaRuntimeService', () => {
         cwd: '/tmp/workspaces/runtime-startup-setup-split',
         command: expect.stringContaining('bash /tmp/repo/.git/orca/setup-runner.sh'),
         env: expect.objectContaining({
-          ORCA_ROOT_PATH: '/tmp/repo',
-          ORCA_WORKTREE_PATH: '/tmp/workspaces/runtime-startup-setup-split'
+          BBQ_ROOT_PATH: '/tmp/repo',
+          BBQ_WORKTREE_PATH: '/tmp/workspaces/runtime-startup-setup-split'
         }),
         worktreeId: result.worktree.id
       })
@@ -363,14 +363,14 @@ describe('OrcaRuntimeService', () => {
       state: 'running',
       terminalHandle: expect.stringMatching(/^term_/)
     })
-    expect(mainEnv.ORCA_TAB_ID).toBeDefined()
-    expect(mainEnv.ORCA_PANE_KEY).toBeDefined()
-    expect(setupEnv.ORCA_TAB_ID).not.toBe(mainEnv.ORCA_TAB_ID)
+    expect(mainEnv.BBQ_TAB_ID).toBeDefined()
+    expect(mainEnv.BBQ_PANE_KEY).toBeDefined()
+    expect(setupEnv.BBQ_TAB_ID).not.toBe(mainEnv.BBQ_TAB_ID)
     expect(revealTerminalSession).toHaveBeenLastCalledWith(
       result.worktree.id,
       expect.objectContaining({
         ptyId: 'pty-startup-split-setup',
-        tabId: setupEnv.ORCA_TAB_ID,
+        tabId: setupEnv.BBQ_TAB_ID,
         activate: false,
         title: 'Setup'
       })
@@ -420,8 +420,8 @@ describe('OrcaRuntimeService', () => {
       runnerScriptPath: 'C:\\tmp\\repo\\.git\\orca\\setup-runner.sh',
       shell: { family: 'posix', executable: 'wsl.exe' },
       envVars: {
-        ORCA_ROOT_PATH: '/tmp/repo',
-        ORCA_WORKTREE_PATH: '/tmp/workspaces/runtime-startup-setup-retry'
+        BBQ_ROOT_PATH: '/tmp/repo',
+        BBQ_WORKTREE_PATH: '/tmp/workspaces/runtime-startup-setup-retry'
       },
       waitForAgentStartup: true
     })

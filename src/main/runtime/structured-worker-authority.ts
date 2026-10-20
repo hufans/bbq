@@ -125,7 +125,7 @@ export function isRecordedStructuredWorkerSession(
     db.db
       .prepare(
         `SELECT 1 FROM dispatch_contexts
-         WHERE assignee_orca_session_id = ? AND process_incarnation = ? LIMIT 1`
+         WHERE assignee_bbq_session_id = ? AND process_incarnation = ? LIMIT 1`
       )
       .get(sessionId, structuredWorkerProcessIncarnation(sessionId))
   )

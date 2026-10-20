@@ -42,7 +42,7 @@ function input(overrides: { appVersion?: string; environment?: NodeJS.ProcessEnv
 /** An extracted generation of `appImagePath` as `orca` registration leaves it. */
 function extractGeneration(options: { node?: boolean; version?: string } = {}): string {
   const generation = resolveAppImageExtractedRoot({ appImagePath, cacheRootPath })!.rootPath
-  const launcher = join(generation, 'resources', 'bin', 'orca-ide')
+  const launcher = join(generation, 'resources', 'bin', 'bbq')
   mkdirSync(join(launcher, '..'), { recursive: true })
   writeFileSync(launcher, '#!/bin/sh\n')
   chmodSync(launcher, 0o755)

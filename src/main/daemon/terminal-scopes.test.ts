@@ -38,8 +38,8 @@ vi.mock('./daemon-cgroup-scope', async (importOriginal) => {
 })
 
 const SLICE_CGROUP =
-  '/user.slice/user-1000.slice/user@1000.service/orca_ptys_orca_daemon_1f_2e.slice'
-const SCOPE_ON = { on: expect.objectContaining({ slice: 'orca_ptys_orca_daemon_1f_2e.slice' }) }
+  '/user.slice/user-1000.slice/user@1000.service/orca_ptys_bbq_daemon_1f_2e.slice'
+const SCOPE_ON = { on: expect.objectContaining({ slice: 'orca_ptys_bbq_daemon_1f_2e.slice' }) }
 
 type Call = { program: string; args: string[] }
 
@@ -111,7 +111,7 @@ describe('resolveTerminalScopes', () => {
     expect(resolved.ceiling).toEqual({ state: 'off', reason: 'disabled' })
     expect(resolved.scopes).toEqual({
       on: {
-        slice: 'orca_ptys_orca_daemon_1f_2e.slice',
+        slice: 'orca_ptys_bbq_daemon_1f_2e.slice',
         sliceCgroupPath: `/sys/fs/cgroup${SLICE_CGROUP}`,
         systemdRun: '/usr/bin/systemd-run',
         envBinary: '/usr/bin/env',
@@ -129,7 +129,7 @@ describe('resolveTerminalScopes', () => {
         'org.freedesktop.systemd1.Manager',
         'StartTransientUnit',
         'ssa(sv)a(sa(sv))',
-        'orca_ptys_orca_daemon_1f_2e.slice',
+        'orca_ptys_bbq_daemon_1f_2e.slice',
         'fail',
         '2',
         'BindsTo',
@@ -148,7 +148,7 @@ describe('resolveTerminalScopes', () => {
       '--scope',
       '--quiet',
       '--collect',
-      '--slice=orca_ptys_orca_daemon_1f_2e.slice',
+      '--slice=orca_ptys_bbq_daemon_1f_2e.slice',
       '--property=OOMPolicy=continue',
       '--property=TimeoutStopSec=5s'
     ])
@@ -196,7 +196,7 @@ describe('resolveTerminalScopes', () => {
       '--user',
       '--no-block',
       'stop',
-      'orca_ptys_orca_daemon_1f_2e.slice'
+      'orca_ptys_bbq_daemon_1f_2e.slice'
     ])
   })
 
@@ -228,7 +228,7 @@ describe('resolveTerminalScopes', () => {
       state: 'on',
       limit: 2048,
       mechanism: 'systemd-slice',
-      unit: 'orca_ptys_orca_daemon_1f_2e.slice',
+      unit: 'orca_ptys_bbq_daemon_1f_2e.slice',
       controlGroup: SLICE_CGROUP
     })
     expect(resolved.scopes).toMatchObject({

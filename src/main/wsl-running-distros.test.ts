@@ -70,11 +70,11 @@ describe('running WSL distro discovery', () => {
 
   it('runs the startup probe from the system root, never the profile (#29845)', async () => {
     runProcessMock.mockResolvedValue(exited('Ubuntu\n'))
-    const saved = { SystemRoot: process.env.SystemRoot, profile: process.env.ORCA_USER_DATA_PATH }
+    const saved = { SystemRoot: process.env.SystemRoot, profile: process.env.BBQ_USER_DATA_PATH }
     const systemRoot = mkdtempSync(join(tmpdir(), 'orca-wsl-probe-system-root-'))
     const profile = mkdtempSync(join(tmpdir(), 'orca-wsl-probe-profile-'))
     process.env.SystemRoot = systemRoot
-    process.env.ORCA_USER_DATA_PATH = profile
+    process.env.BBQ_USER_DATA_PATH = profile
     resetWslInteropSpawnDirectoryCache()
     try {
       await withPlatform('win32', () => listRunningWslDistrosAsync({ requireConfirmed: true }))
@@ -83,7 +83,7 @@ describe('running WSL distro discovery', () => {
       )
     } finally {
       restoreEnv('SystemRoot', saved.SystemRoot)
-      restoreEnv('ORCA_USER_DATA_PATH', saved.profile)
+      restoreEnv('BBQ_USER_DATA_PATH', saved.profile)
       resetWslInteropSpawnDirectoryCache()
       rmSync(systemRoot, { recursive: true, force: true })
       rmSync(profile, { recursive: true, force: true })

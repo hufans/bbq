@@ -112,10 +112,10 @@ describe('bundled skill guide generator', () => {
       const cases = [
         [{}, homeDefault],
         [{ XDG_CONFIG_HOME: xdg }, xdgDefault],
-        [{ ORCA_USER_DATA_PATH: custom, XDG_CONFIG_HOME: xdg }, custom],
-        [{ ORCA_USER_DATA_PATH: '', XDG_CONFIG_HOME: xdg }, xdgDefault],
+        [{ BBQ_USER_DATA_PATH: custom, XDG_CONFIG_HOME: xdg }, custom],
+        [{ BBQ_USER_DATA_PATH: '', XDG_CONFIG_HOME: xdg }, xdgDefault],
         [{ XDG_CONFIG_HOME: '' }, homeDefault],
-        [{ ORCA_USER_DATA_PATH: '', XDG_CONFIG_HOME: '' }, homeDefault]
+        [{ BBQ_USER_DATA_PATH: '', XDG_CONFIG_HOME: '' }, homeDefault]
       ]
 
       for (const [environment, expected] of cases) {

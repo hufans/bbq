@@ -24,14 +24,14 @@ fn main() {
     let (major, minor, patch) = numeric_version_parts(&version);
 
     let mut resource = winresource::WindowsResource::new();
-    resource.set("ProductName", "Orca");
-    resource.set("FileDescription", "Orca CLI Launcher");
+    resource.set("ProductName", "BBQ");
+    resource.set("FileDescription", "BBQ CLI Launcher");
     resource.set("CompanyName", "Stably AI");
     resource.set(
         "LegalCopyright",
         "Copyright (C) Stably AI. All rights reserved.",
     );
-    let filename = env::var("ORCA_LAUNCHER_FILENAME").unwrap_or_else(|_| "orca.exe".into());
+    let filename = env::var("ORCA_LAUNCHER_FILENAME").unwrap_or_else(|_| "bbq.exe".into());
     resource.set("InternalName", &filename);
     resource.set("OriginalFilename", &filename);
     resource.set("FileVersion", &format!("{major}.{minor}.{patch}.0"));

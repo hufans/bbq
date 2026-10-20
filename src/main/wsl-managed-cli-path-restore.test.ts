@@ -26,7 +26,7 @@ const SHELLS = [
   {
     name: 'zsh',
     enabled: hasZsh,
-    args: (body: string) => ['-fuc', `__orca_hook() {\n  emulate -L zsh\n${body}\n}\n__orca_hook`]
+    args: (body: string) => ['-fuc', `__bbq_hook() {\n  emulate -L zsh\n${body}\n}\n__bbq_hook`]
   }
 ] as const
 
@@ -43,14 +43,14 @@ function run(
 
 describe.each(SHELLS)('WSL_MANAGED_CLI_PATH_RESTORE in $name', (shell) => {
   it.skipIf(!shell.enabled)('leads PATH with a directory holding an executable CLI', () => {
-    const result = run(shell, { ORCA_WSL_CLI_DIR: root, ORCA_CLI_COMMAND: 'orca-dev' })
+    const result = run(shell, { BBQ_WSL_CLI_DIR: root, BBQ_CLI_COMMAND: 'orca-dev' })
     expect(result).toMatchObject({ code: 0, stdout: `${root}:/usr/bin:/bin`, stderr: '' })
   })
 
   it.skipIf(!shell.enabled)('warns and keeps PATH when the CLI cannot run', () => {
-    const result = run(shell, { ORCA_WSL_CLI_DIR: root, ORCA_CLI_COMMAND: 'orca-ide' })
+    const result = run(shell, { BBQ_WSL_CLI_DIR: root, BBQ_CLI_COMMAND: 'orca-ide' })
     expect(result).toMatchObject({ code: 0, stdout: '/usr/bin:/bin' })
-    expect(result.stderr).toContain('Orca CLI unavailable')
+    expect(result.stderr).toContain('BBQ CLI unavailable')
   })
 
   it.skipIf(!shell.enabled)('does nothing without a managed directory', () => {

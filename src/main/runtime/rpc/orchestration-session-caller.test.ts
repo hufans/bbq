@@ -208,7 +208,7 @@ describe('orchestration session callers at the dispatch entry', () => {
         paneKey: null,
         orcaSessionId: SESSION_X
       })
-    ).toMatchObject({ objective: 'o', coordinator_orca_session_id: SESSION_X })
+    ).toMatchObject({ objective: 'o', coordinator_bbq_session_id: SESSION_X })
   })
 
   describe('refuses a session that cannot act, before any destructive or consuming lookup', () => {
@@ -271,7 +271,7 @@ describe('orchestration session callers at the dispatch entry', () => {
         ok: false,
         error: {
           code: CODES.providerId,
-          message: `${PROVIDER_ID_X} is the provider's own session id, which changes on /clear. This session's Orca session ID is orca_session_id:${SESSION_X}; set ORCA_AGENT_SESSION_ID=${SESSION_X} instead. No effects were applied.`,
+          message: `${PROVIDER_ID_X} is the provider's own session id, which changes on /clear. This session's Orca session ID is orca_session_id:${SESSION_X}; set BBQ_AGENT_SESSION_ID=${SESSION_X} instead. No effects were applied.`,
           data: { orcaSessionId: SESSION_X, effectsApplied: false }
         }
       })
@@ -343,9 +343,9 @@ describe('orchestration session callers at the dispatch entry', () => {
         ok: false,
         error: { code: CODES.notLive, message: expect.stringContaining('no longer has') }
       })
-      expect(
-        h.db.listRuns().runs.filter((row) => row.coordinator_orca_session_id !== null)
-      ).toEqual([])
+      expect(h.db.listRuns().runs.filter((row) => row.coordinator_bbq_session_id !== null)).toEqual(
+        []
+      )
     })
 
     it('an agent-session host that cannot be brought up to verify it', async () => {
@@ -406,7 +406,7 @@ describe('orchestration session callers at the dispatch entry', () => {
           )
         )
       ).run
-      expect(h.db.getRunRaw(idOf(run))?.coordinator_orca_session_id).toBe(SESSION_X)
+      expect(h.db.getRunRaw(idOf(run))?.coordinator_bbq_session_id).toBe(SESSION_X)
 
       const stranger = 'orca_session_id:0b5e2d7c-9a41-4c3e-8f62-7d1a3e5b9c08'
       const refused = await h.dispatch(
@@ -481,6 +481,6 @@ describe('orchestration session callers at the dispatch entry', () => {
 
     const run = resultOf(await h.dispatch(request)).run
     expect(run).toMatchObject({ coordinator_handle: 'term_worker' })
-    expect(h.db.getRunRaw(idOf(run))?.coordinator_orca_session_id).toBeNull()
+    expect(h.db.getRunRaw(idOf(run))?.coordinator_bbq_session_id).toBeNull()
   })
 })

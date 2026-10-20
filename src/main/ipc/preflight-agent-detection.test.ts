@@ -402,7 +402,7 @@ describe('preflight', () => {
         return {
           environmentResolved: true,
           code: 0,
-          stdout: '__ORCA_AGENT_PATH__claude\t/home/test/.local/bin/claude\n',
+          stdout: '__BBQ_AGENT_PATH__claude\t/home/test/.local/bin/claude\n',
           stderr: '',
           timedOut: false
         }
@@ -429,7 +429,7 @@ describe('preflight', () => {
         return {
           environmentResolved: true,
           code: 0,
-          stdout: '__ORCA_AGENT_PATH__claude\t/home/test/.local/bin/claude\n',
+          stdout: '__BBQ_AGENT_PATH__claude\t/home/test/.local/bin/claude\n',
           stderr: '',
           timedOut: false
         }
@@ -484,7 +484,7 @@ describe('preflight', () => {
         return {
           environmentResolved: true,
           code: 0,
-          stdout: '__ORCA_AGENT_PATH__claude\t/home/test/.local/bin/claude\n',
+          stdout: '__BBQ_AGENT_PATH__claude\t/home/test/.local/bin/claude\n',
           stderr: '',
           timedOut: false
         }
@@ -514,7 +514,7 @@ describe('preflight', () => {
         return {
           environmentResolved: true,
           code: 0,
-          stdout: '__ORCA_AGENT_PATH__codex\t/home/test/.local/bin/codex\n',
+          stdout: '__BBQ_AGENT_PATH__codex\t/home/test/.local/bin/codex\n',
           stderr: '',
           timedOut: false
         }

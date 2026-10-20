@@ -2,12 +2,12 @@ import { ORCA_AGENT_SESSION_ID_ENV } from '../../../../shared/agent-session-call
 import { ORCA_STRUCTURED_SESSION_ENV } from '../../../../shared/structured-session-marker'
 
 export const AGENT_HOOK_RUNTIME_ENV_KEYS = [
-  'ORCA_AGENT_HOOK_PORT',
-  'ORCA_AGENT_HOOK_TOKEN',
-  'ORCA_AGENT_HOOK_ENV',
-  'ORCA_AGENT_HOOK_VERSION',
-  'ORCA_AGENT_HOOK_TRANSPORT',
-  'ORCA_AGENT_HOOK_ENDPOINT',
+  'BBQ_AGENT_HOOK_PORT',
+  'BBQ_AGENT_HOOK_TOKEN',
+  'BBQ_AGENT_HOOK_ENV',
+  'BBQ_AGENT_HOOK_VERSION',
+  'BBQ_AGENT_HOOK_TRANSPORT',
+  'BBQ_AGENT_HOOK_ENDPOINT',
   // Why: PR 2778 briefly exported this path; keep deleting stale inherited values so older PTYs can't leak the reverted path.
   'ORCA_CLAUDE_AGENT_STATUS_SETTINGS'
 ] as const

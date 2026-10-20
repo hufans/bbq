@@ -16,6 +16,7 @@ import { superviseForegroundServe } from './serve-update-supervisor'
 import { isSupervisedSpawnHeld } from './serve-supervised-stop'
 import { redactingSpawn, shouldRedactSupervisedStdout } from './serve-pairing-redaction'
 import { orcadServeArgs, type ServeOrcaAppArgs } from '../../shared/orcad-serve-argv'
+import { stripLegacyExportedProductEnv } from '../../shared/product-brand'
 
 /** A first run may download and verify the pinned Node; bound it well past that. */
 const SELECTION_TIMEOUT_MS = 10 * 60_000
@@ -83,10 +84,11 @@ export function serveWithOrcad(
     env: {
       ...baseEnv,
       // The desktop's profile: its instance lock makes the two refuse each other.
-      ORCA_USER_DATA: userDataPath,
+      BBQ_USER_DATA: userDataPath,
       ORCA_VERSION: selection.version
     }
   }
+  stripLegacyExportedProductEnv(spec.env)
   const spawnChild = shouldRedactSupervisedStdout(args.supervise === true)
     ? redactingSpawn(spawnProcess)
     : spawnProcess

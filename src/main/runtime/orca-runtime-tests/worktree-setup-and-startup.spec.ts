@@ -48,8 +48,8 @@ describe('OrcaRuntimeService', () => {
     vi.mocked(createSetupRunnerScript).mockReturnValue({
       runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
       envVars: {
-        ORCA_ROOT_PATH: '/tmp/repo',
-        ORCA_WORKTREE_PATH: '/tmp/workspaces/runtime-hook-test'
+        BBQ_ROOT_PATH: '/tmp/repo',
+        BBQ_WORKTREE_PATH: '/tmp/workspaces/runtime-hook-test'
       }
     })
     vi.mocked(listWorktrees).mockResolvedValueOnce([
@@ -95,8 +95,8 @@ describe('OrcaRuntimeService', () => {
       setup: {
         runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
         envVars: {
-          ORCA_ROOT_PATH: '/tmp/repo',
-          ORCA_WORKTREE_PATH: '/tmp/workspaces/runtime-hook-test'
+          BBQ_ROOT_PATH: '/tmp/repo',
+          BBQ_WORKTREE_PATH: '/tmp/workspaces/runtime-hook-test'
         }
       }
     })
@@ -138,8 +138,8 @@ describe('OrcaRuntimeService', () => {
     vi.mocked(createSetupRunnerScript).mockReturnValue({
       runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
       envVars: {
-        ORCA_ROOT_PATH: '/tmp/repo',
-        ORCA_WORKTREE_PATH: '/tmp/workspaces/runtime-hook-activate'
+        BBQ_ROOT_PATH: '/tmp/repo',
+        BBQ_WORKTREE_PATH: '/tmp/workspaces/runtime-hook-activate'
       }
     })
     vi.mocked(listWorktrees).mockResolvedValueOnce([
@@ -208,8 +208,8 @@ describe('OrcaRuntimeService', () => {
       runnerScriptPath: 'C:\\repo\\.git\\orca\\setup-runner.sh',
       shell: { family: 'posix' },
       envVars: {
-        ORCA_ROOT_PATH: 'C:\\repo',
-        ORCA_WORKTREE_PATH: 'C:\\workspaces\\runtime-hook-activate'
+        BBQ_ROOT_PATH: 'C:\\repo',
+        BBQ_WORKTREE_PATH: 'C:\\workspaces\\runtime-hook-activate'
       }
     })
     vi.mocked(listWorktrees).mockResolvedValueOnce([
@@ -292,8 +292,8 @@ describe('OrcaRuntimeService', () => {
     vi.mocked(createSetupRunnerScript).mockReturnValue({
       runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
       envVars: {
-        ORCA_ROOT_PATH: '/tmp/repo',
-        ORCA_WORKTREE_PATH: '/tmp/workspaces/runtime-hook-skip'
+        BBQ_ROOT_PATH: '/tmp/repo',
+        BBQ_WORKTREE_PATH: '/tmp/workspaces/runtime-hook-skip'
       }
     })
     vi.mocked(listWorktrees).mockResolvedValue([
@@ -344,10 +344,10 @@ describe('OrcaRuntimeService', () => {
         cwd: '/tmp/workspaces/runtime-hook-skip',
         command: 'bash /tmp/repo/.git/orca/setup-runner.sh',
         env: expect.objectContaining({
-          ORCA_ROOT_PATH: '/tmp/repo',
-          ORCA_WORKTREE_PATH: '/tmp/workspaces/runtime-hook-skip'
+          BBQ_ROOT_PATH: '/tmp/repo',
+          BBQ_WORKTREE_PATH: '/tmp/workspaces/runtime-hook-skip'
         }),
-        // Why: the spawn step stamps ORCA_PANE_KEY/TAB_ID/WORKTREE_ID from these ids for hook status.
+        // Why: the spawn step stamps BBQ_PANE_KEY/TAB_ID/WORKTREE_ID from these ids for hook status.
         tabId: expect.stringMatching(UUID_RE),
         leafId: expect.any(String),
         worktreeId: result.worktree.id
@@ -355,7 +355,7 @@ describe('OrcaRuntimeService', () => {
     )
     const setupSpawnEnv = spawnedPtyEnv(spawn.mock.calls[1]?.[0])
     expectStablePaneKeyEnv(setupSpawnEnv)
-    const setupLeafId = setupSpawnEnv.ORCA_PANE_KEY.slice(`${setupSpawnEnv.ORCA_TAB_ID}:`.length)
+    const setupLeafId = setupSpawnEnv.BBQ_PANE_KEY.slice(`${setupSpawnEnv.BBQ_TAB_ID}:`.length)
     // Why: a background CLI create adopts its tabs silently — surfaceOwner:false
     // keeps the sidebar from scrolling to a workspace the user never asked for.
     expect(revealTerminalSession).toHaveBeenLastCalledWith(result.worktree.id, {
@@ -363,7 +363,7 @@ describe('OrcaRuntimeService', () => {
       title: 'Setup',
       activate: false,
       surfaceOwner: false,
-      tabId: setupSpawnEnv.ORCA_TAB_ID,
+      tabId: setupSpawnEnv.BBQ_TAB_ID,
       leafId: setupLeafId
     })
   })
@@ -410,8 +410,8 @@ describe('OrcaRuntimeService', () => {
       runnerScriptPath: 'C:\\repo\\.git\\orca\\setup-runner.sh',
       shell: { family: 'posix', executable: 'wsl.exe' },
       envVars: {
-        ORCA_ROOT_PATH: 'C:\\repo',
-        ORCA_WORKTREE_PATH: 'C:\\workspaces\\runtime-hook-wsl'
+        BBQ_ROOT_PATH: 'C:\\repo',
+        BBQ_WORKTREE_PATH: 'C:\\workspaces\\runtime-hook-wsl'
       }
     })
     vi.mocked(listWorktrees).mockResolvedValue([
@@ -436,8 +436,8 @@ describe('OrcaRuntimeService', () => {
       expect.objectContaining({
         command: 'bash /mnt/c/repo/.git/orca/setup-runner.sh',
         env: expect.objectContaining({
-          ORCA_ROOT_PATH: 'C:\\repo',
-          ORCA_WORKTREE_PATH: 'C:\\workspaces\\runtime-hook-wsl'
+          BBQ_ROOT_PATH: 'C:\\repo',
+          BBQ_WORKTREE_PATH: 'C:\\workspaces\\runtime-hook-wsl'
         }),
         tabId: expect.stringMatching(UUID_RE),
         leafId: expect.any(String),
@@ -492,8 +492,8 @@ describe('OrcaRuntimeService', () => {
       runnerScriptPath: 'C:\\repo\\.git\\orca\\setup-runner.sh',
       shell: { family: 'posix' },
       envVars: {
-        ORCA_ROOT_PATH: 'C:\\repo',
-        ORCA_WORKTREE_PATH: 'C:\\workspaces\\runtime-hook-windowless'
+        BBQ_ROOT_PATH: 'C:\\repo',
+        BBQ_WORKTREE_PATH: 'C:\\workspaces\\runtime-hook-windowless'
       }
     })
     vi.mocked(listWorktrees).mockResolvedValue([

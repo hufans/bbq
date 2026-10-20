@@ -71,38 +71,38 @@ export type ZshStartupHookSpec = {
   restores: ZshWrapperRestoreSpec
 }
 
-const AGENT_TEAMS_PATH_RESTORE_BLOCK = `__orca_restore_agent_teams_path() {
-  [[ -n "\${ORCA_AGENT_TEAMS_SHIM_DIR:-}" ]] || return 0
+const AGENT_TEAMS_PATH_RESTORE_BLOCK = `__bbq_restore_agent_teams_path() {
+  [[ -n "\${BBQ_AGENT_TEAMS_SHIM_DIR:-}" ]] || return 0
   case "$PATH" in
-    "\${ORCA_AGENT_TEAMS_SHIM_DIR}"|"\${ORCA_AGENT_TEAMS_SHIM_DIR}:"*) return 0 ;;
+    "\${BBQ_AGENT_TEAMS_SHIM_DIR}"|"\${BBQ_AGENT_TEAMS_SHIM_DIR}:"*) return 0 ;;
   esac
-  export PATH="\${ORCA_AGENT_TEAMS_SHIM_DIR}:$PATH"
+  export PATH="\${BBQ_AGENT_TEAMS_SHIM_DIR}:$PATH"
 }
-__orca_restore_agent_teams_path`
+__bbq_restore_agent_teams_path`
 
-const OPENCODE_CONFIG_DIR_RESTORE = `[[ -n "\${ORCA_OPENCODE_CONFIG_DIR:-}" ]] && export OPENCODE_CONFIG_DIR="\${ORCA_OPENCODE_CONFIG_DIR}"`
-const MIMOCODE_HOME_RESTORE = `[[ -n "\${ORCA_MIMOCODE_HOME:-}" ]] && export MIMOCODE_HOME="\${ORCA_MIMOCODE_HOME}"`
-const REMOTE_CLI_BIN_DIR_RESTORE = `[[ -n "\${ORCA_REMOTE_CLI_BIN_DIR:-}" ]] && case ":$PATH:" in *:"\${ORCA_REMOTE_CLI_BIN_DIR}":*) ;; *) export PATH="\${ORCA_REMOTE_CLI_BIN_DIR}:$PATH" ;; esac`
+const OPENCODE_CONFIG_DIR_RESTORE = `[[ -n "\${BBQ_OPENCODE_CONFIG_DIR:-}" ]] && export OPENCODE_CONFIG_DIR="\${BBQ_OPENCODE_CONFIG_DIR}"`
+const MIMOCODE_HOME_RESTORE = `[[ -n "\${BBQ_MIMOCODE_HOME:-}" ]] && export MIMOCODE_HOME="\${BBQ_MIMOCODE_HOME}"`
+const REMOTE_CLI_BIN_DIR_RESTORE = `[[ -n "\${BBQ_REMOTE_CLI_BIN_DIR:-}" ]] && case ":$PATH:" in *:"\${BBQ_REMOTE_CLI_BIN_DIR}":*) ;; *) export PATH="\${BBQ_REMOTE_CLI_BIN_DIR}:$PATH" ;; esac`
 const CODEX_HOME_RESTORE = `# Why: Codex must keep using Orca's runtime CODEX_HOME after rc files.
-[[ -n "\${ORCA_CODEX_HOME:-}" ]] && export CODEX_HOME="\${ORCA_CODEX_HOME}"`
+[[ -n "\${BBQ_CODEX_HOME:-}" ]] && export CODEX_HOME="\${BBQ_CODEX_HOME}"`
 
 /**
  * The OSC 133 hooks, defined at top level so their bodies are parsed before the
  * user's `.zshenv` can change the parsing mode.
  */
-const ZSH_OSC133_FUNCTION_BLOCK = `__orca_osc133_precmd() {
+const ZSH_OSC133_FUNCTION_BLOCK = `__bbq_osc133_precmd() {
   local exit_code=$?
-  if [[ -n "\${__orca_in_command:-}" ]]; then
+  if [[ -n "\${__bbq_in_command:-}" ]]; then
     builtin printf "\\033]133;D;%s\\007" "$exit_code"
-    builtin unset __orca_in_command
+    builtin unset __bbq_in_command
   fi
   builtin printf "\\033]133;A\\007"
 }
-__orca_osc133_preexec() {
+__bbq_osc133_preexec() {
   builtin printf "\\033]133;C\\007"
   # Why typeset -g: a plain assignment here creates a global inside a function,
   # which prints a warning above every command under warn_create_global.
-  builtin typeset -g __orca_in_command=1
+  builtin typeset -g __bbq_in_command=1
 }`
 
 function joinBlocks(blocks: (string | null)[]): string {
@@ -116,13 +116,13 @@ function indentBlock(block: string, indent: string): string {
     .join('\n')
 }
 
-/** One hook feature: `if __orca_has_feature <name>; then ... fi`. */
+/** One hook feature: `if __bbq_has_feature <name>; then ... fi`. */
 function featureGuard(name: string, body: (string | null)[]): string | null {
   const blocks = body.filter((block): block is string => block !== null)
   if (blocks.length === 0) {
     return null
   }
-  return `  if __orca_has_feature ${name}; then\n${indentBlock(joinBlocks(blocks).replace(/\n$/, ''), '    ')}\n  fi`
+  return `  if __bbq_has_feature ${name}; then\n${indentBlock(joinBlocks(blocks).replace(/\n$/, ''), '    ')}\n  fi`
 }
 
 /** The env/PATH restores that must outlast the user's own startup files. */
@@ -152,32 +152,32 @@ function buildDeferredInit(spec: ZshStartupHookSpec): string {
   // Verified on zsh 5.9 that self-removal mid-sweep skips no later hook, from
   // the head, the middle and the tail of the array.
   const permanentPrecmd = spec.osc133CommandMarkers
-    ? `  if __orca_has_feature markers; then
-    precmd_functions=(\${precmd_functions:/__orca_deferred_init/__orca_osc133_precmd})
-    (( \${precmd_functions[(Ie)__orca_osc133_precmd]} )) || precmd_functions+=(__orca_osc133_precmd)
-    preexec_functions=(__orca_osc133_preexec \${preexec_functions[@]})
+    ? `  if __bbq_has_feature markers; then
+    precmd_functions=(\${precmd_functions:/__bbq_deferred_init/__bbq_osc133_precmd})
+    (( \${precmd_functions[(Ie)__bbq_osc133_precmd]} )) || precmd_functions+=(__bbq_osc133_precmd)
+    preexec_functions=(__bbq_osc133_preexec \${preexec_functions[@]})
   else
-    precmd_functions=(\${precmd_functions:#__orca_deferred_init})
+    precmd_functions=(\${precmd_functions:#__bbq_deferred_init})
   fi`
-    : `  precmd_functions=(\${precmd_functions:#__orca_deferred_init})`
+    : `  precmd_functions=(\${precmd_functions:#__bbq_deferred_init})`
   const lineInitRegistration = spec.startupCommandDelivery
-    ? `  if __orca_has_feature ready || __orca_has_feature startup; then
-    __orca_emit_ready_marker=""
-    __orca_has_feature ready && __orca_emit_ready_marker=1
+    ? `  if __bbq_has_feature ready || __bbq_has_feature startup; then
+    __bbq_emit_ready_marker=""
+    __bbq_has_feature ready && __bbq_emit_ready_marker=1
 ${indentBlock(getZshShellReadyMarkerRegistrationBlock(spec.readyMarkerEscaped, true), '    ')}
   fi`
     : featureGuard('ready', [
         indentBlock(getZshShellReadyMarkerRegistrationBlock(spec.readyMarkerEscaped), '')
       ])
 
-  return `__orca_deferred_init() {
+  return `__bbq_deferred_init() {
   # Why first: this body runs after the user's own config, so it would otherwise
   # inherit whatever options that config left set. Under NO_UNSET an unset
   # precmd_functions is fatal, and KSH_ARRAYS makes the 1-based feature lookup
   # drop whichever feature is listed first.
   builtin emulate -L zsh
-  (( $+_orca_deferred_init_done )) && return 0
-  builtin typeset -g _orca_deferred_init_done=1
+  (( $+_bbq_deferred_init_done )) && return 0
+  builtin typeset -g _bbq_deferred_init_done=1
   builtin typeset -g precmd_functions
 ${ZSH_DEFERRED_LINE_INIT_RETIRE_BLOCK}
 ${permanentPrecmd}
@@ -192,8 +192,8 @@ ${joinBlocks([
   ),
   // Why no /etc/zshrc repair branch: ZDOTDIR was handed back before that file
   // ran, so the value it derives is the user's own path. #11044 is unreachable.
-  `  if [[ -n "\${_orca_histfile:-}" ]]; then
-    HISTFILE="$_orca_histfile"
+  `  if [[ -n "\${_bbq_histfile:-}" ]]; then
+    HISTFILE="$_bbq_histfile"
   fi`,
   lineInitRegistration
 ])}
@@ -201,11 +201,11 @@ ${
   spec.osc133CommandMarkers
     ? `  # Why called here: we were appended during this prompt's own precmd sweep, so
   # the permanent hook has not run yet and the first prompt would lose its mark.
-  __orca_has_feature markers && __orca_osc133_precmd\n`
+  __bbq_has_feature markers && __bbq_osc133_precmd\n`
     : ''
-}  builtin unset _orca_shell_features _orca_histfile
+}  builtin unset _bbq_shell_features _bbq_histfile
 ${ZSH_DEFERRED_LINE_INIT_CLEANUP_BLOCK}
-  builtin unfunction __orca_deferred_init __orca_has_feature __orca_arm_deferred_line_init
+  builtin unfunction __bbq_deferred_init __bbq_has_feature __bbq_arm_deferred_line_init
 }`
 }
 

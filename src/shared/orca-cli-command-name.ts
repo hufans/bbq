@@ -1,9 +1,9 @@
+import { PRODUCT_COMMAND } from './product-brand'
+
+/** Shell command this app tells agents to run. The function name keeps the upstream spelling. */
 export function getOrcaCliCommandNameForPlatform(platform: NodeJS.Platform): string {
-  if (platform === 'linux') {
-    return 'orca-ide'
-  }
   if (platform === 'win32') {
-    return 'orca.cmd'
+    return `${PRODUCT_COMMAND}.cmd`
   }
-  return 'orca'
+  return PRODUCT_COMMAND
 }

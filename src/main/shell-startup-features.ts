@@ -11,7 +11,7 @@
  * unsets it before the user's own config (or anything it spawns) can see it.
  */
 
-export const SHELL_STARTUP_FEATURE_ENV = 'ORCA_SHELL_FEATURES'
+export const SHELL_STARTUP_FEATURE_ENV = 'BBQ_SHELL_FEATURES'
 
 export const SHELL_STARTUP_FEATURES = [
   'overlay',
@@ -26,13 +26,13 @@ export type ShellStartupFeature = (typeof SHELL_STARTUP_FEATURES)[number]
 
 /** Spawn-env keys that mean this pane carries an Orca overlay the wrapper must re-apply. */
 const OVERLAY_ENV_KEYS = [
-  'ORCA_DATA_ACCOUNT_DATA_HOME',
-  'ORCA_OPENCODE_CONFIG_DIR',
-  'ORCA_MIMOCODE_HOME',
-  'ORCA_OMP_STATUS_EXTENSION',
-  'ORCA_CODEX_HOME',
-  'ORCA_AGENT_TEAMS_SHIM_DIR',
-  'ORCA_REMOTE_CLI_BIN_DIR'
+  'BBQ_DATA_ACCOUNT_DATA_HOME',
+  'BBQ_OPENCODE_CONFIG_DIR',
+  'BBQ_MIMOCODE_HOME',
+  'BBQ_OMP_STATUS_EXTENSION',
+  'BBQ_CODEX_HOME',
+  'BBQ_AGENT_TEAMS_SHIM_DIR',
+  'BBQ_REMOTE_CLI_BIN_DIR'
 ] as const
 
 export type ShellStartupFeatureInput = {
@@ -54,7 +54,7 @@ function shellName(shellPath: string): string {
 
 /**
  * Pure function of spawn env + launch intent. Nothing here reads
- * `ORCA_SHELL_FEATURES`, so a value inherited from a parent shell cannot
+ * `BBQ_SHELL_FEATURES`, so a value inherited from a parent shell cannot
  * enable or disable anything for the shell Orca is about to launch.
  */
 export function selectShellStartupFeatures(input: ShellStartupFeatureInput): ShellStartupFeature[] {
@@ -69,7 +69,7 @@ export function selectShellStartupFeatures(input: ShellStartupFeatureInput): She
   // place while the system zshrc runs, so the clobbered value it derives lands
   // inside Orca's wrapper dir and has to be repaired the same way.
   const history =
-    shellName(input.shellPath) === 'zsh' && (Boolean(input.env.ORCA_HISTFILE) || wrappedBefore)
+    shellName(input.shellPath) === 'zsh' && (Boolean(input.env.BBQ_HISTFILE) || wrappedBefore)
 
   const features: ShellStartupFeature[] = []
   if (overlay) {

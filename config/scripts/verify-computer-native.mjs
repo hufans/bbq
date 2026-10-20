@@ -148,7 +148,7 @@ function verifyMacOSHelperApp() {
     'computer-use-macos',
     '.build',
     'release',
-    'Orca Computer Use.app'
+    'BBQ Computer Use.app'
   )
   if (!existsSync(appPath)) {
     console.error(
@@ -160,7 +160,7 @@ function verifyMacOSHelperApp() {
 }
 
 function verifyWindowsProviderHandshake() {
-  const dir = mkdtempSync(join(tmpdir(), 'orca-computer-use-verify-'))
+  const dir = mkdtempSync(join(tmpdir(), 'bbq-computer-use-verify-'))
   const operationPath = join(dir, 'operation.json')
   try {
     writeFileSync(operationPath, JSON.stringify({ tool: 'handshake' }), { mode: 0o600 })

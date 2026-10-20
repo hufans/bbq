@@ -54,14 +54,14 @@ type WindowsGrokHookRun = {
 
 function createWindowsGrokHookEnvironment(grokHome?: string): NodeJS.ProcessEnv {
   const env = { ...process.env } as NodeJS.ProcessEnv
-  delete env.ORCA_AGENT_HOOK_ENDPOINT
+  delete env.BBQ_AGENT_HOOK_ENDPOINT
   if (grokHome === undefined) {
     delete env.GROK_HOME
   } else {
     env.GROK_HOME = grokHome
   }
-  env.ORCA_AGENT_HOOK_TOKEN = 'test-token'
-  env.ORCA_PANE_KEY = 'pane-test'
+  env.BBQ_AGENT_HOOK_TOKEN = 'test-token'
+  env.BBQ_PANE_KEY = 'pane-test'
   return env
 }
 
@@ -93,7 +93,7 @@ async function runWindowsGrokHook(
   if (!address || typeof address === 'string') {
     throw new Error('Could not resolve Windows Grok hook test listener port')
   }
-  env.ORCA_AGENT_HOOK_PORT = String(address.port)
+  env.BBQ_AGENT_HOOK_PORT = String(address.port)
   try {
     const result = await new Promise<Omit<WindowsGrokHookRun, 'request'>>((resolve, reject) => {
       const child = spawn(process.env.ComSpec ?? 'cmd.exe', ['/d', '/c', scriptPath], {
@@ -281,16 +281,13 @@ describe('GrokHookService', () => {
     expect(registersManagedGrokScript(config.hooks.PostToolUse[0].hooks[0].command)).toBe(true)
     if (process.platform !== 'win32') {
       const command = config.hooks.PostToolUse[0].hooks[0].command
-      expect(command).toContain(join(homeDir, '.orca'))
+      expect(command).toContain(join(homeDir, '.bbq'))
       // Why: with no Orca pane in the environment the guard short-circuits, so a standalone Grok
       // session never spawns a shell for the managed script at all.
-      expect(command).toMatch(/^if \[ -n "\$\{ORCA_PANE_KEY-\}" \] && /)
+      expect(command).toMatch(/^if \[ -n "\$\{BBQ_PANE_KEY-\}" \] && /)
     }
 
-    const script = readFileSync(
-      join(homeDir, '.orca', 'agent-hooks', GROK_SCRIPT_FILE_NAME),
-      'utf8'
-    )
+    const script = readFileSync(join(homeDir, '.bbq', 'agent-hooks', GROK_SCRIPT_FILE_NAME), 'utf8')
     expect(script).toContain('/hook/grok')
     if (process.platform === 'win32') {
       expect(script).toContain('%SystemRoot%\\System32\\curl.exe')

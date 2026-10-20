@@ -141,13 +141,13 @@ describe('Claude profile namespace', () => {
     expect(
       readUserClaudeConfigDir({
         CLAUDE_CONFIG_DIR: '/data/claude-profiles/a/home',
-        ORCA_CLAUDE_INJECTED_CONFIG_DIR: '/data/claude-profiles/a/home'
+        BBQ_CLAUDE_INJECTED_CONFIG_DIR: '/data/claude-profiles/a/home'
       })
     ).toBeUndefined()
     expect(
       readUserClaudeConfigDir({
         CLAUDE_CONFIG_DIR: '/cfg/claude',
-        ORCA_CLAUDE_INJECTED_CONFIG_DIR: '/data/claude-profiles/a/home'
+        BBQ_CLAUDE_INJECTED_CONFIG_DIR: '/data/claude-profiles/a/home'
       })
     ).toBe(resolve('/cfg/claude'))
   })
@@ -155,11 +155,11 @@ describe('Claude profile namespace', () => {
     expect(readUserClaudeConfigDirAsSet({ CLAUDE_CONFIG_DIR: '/cfg/claude/' })).toBe('/cfg/claude/')
     const outer = {
       CLAUDE_CONFIG_DIR: '/data/claude-profiles/a/home',
-      ORCA_CLAUDE_INJECTED_CONFIG_DIR: '/data/claude-profiles/a/home'
+      BBQ_CLAUDE_INJECTED_CONFIG_DIR: '/data/claude-profiles/a/home'
     }
     expect(readUserClaudeConfigDirAsSet(outer)).toBeUndefined()
     expect(
-      readUserClaudeConfigDirAsSet({ ...outer, ORCA_CLAUDE_USER_CONFIG_DIR: 'C:/Claude Config/' })
+      readUserClaudeConfigDirAsSet({ ...outer, BBQ_CLAUDE_USER_CONFIG_DIR: 'C:/Claude Config/' })
     ).toBe('C:/Claude Config/')
   })
   it("refuses a profile at or around the user's own CLAUDE_CONFIG_DIR", () => {

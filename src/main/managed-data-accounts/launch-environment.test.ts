@@ -35,9 +35,9 @@ function inheritedProfile(): Record<string, string> {
     XDG_STATE_HOME: join(tmpdir(), 'old-account', 'state'),
     OPENCODE_DB: 'opencode.db',
     OPENCODE_AUTH_CONTENT: '',
-    ORCA_DATA_ACCOUNT_DATA_HOME: join(tmpdir(), 'old-account', 'data'),
-    ORCA_DATA_ACCOUNT_STATE_HOME: join(tmpdir(), 'old-account', 'state'),
-    ORCA_DATA_ACCOUNT_PROVIDER: 'opencode'
+    BBQ_DATA_ACCOUNT_DATA_HOME: join(tmpdir(), 'old-account', 'data'),
+    BBQ_DATA_ACCOUNT_STATE_HOME: join(tmpdir(), 'old-account', 'state'),
+    BBQ_DATA_ACCOUNT_PROVIDER: 'opencode'
   }
 }
 
@@ -54,7 +54,7 @@ describe('managed account inherited environment', () => {
       const env: Record<string, string> = {}
       applyManagedDataAccountEnvironment(env, { launchCommand: `sleep 30 && ${agent}` })
       expect(env.XDG_DATA_HOME).toBe(selected.value.XDG_DATA_HOME)
-      expect(env.ORCA_DATA_ACCOUNT_PROVIDER).toBe(agent === 'devin' ? 'devin' : 'opencode')
+      expect(env.BBQ_DATA_ACCOUNT_PROVIDER).toBe(agent === 'devin' ? 'devin' : 'opencode')
     }
   )
 
@@ -76,7 +76,7 @@ describe('managed account inherited environment', () => {
     const final = createDaemonPtyEnvironment({ sessionId: 'test', cols: 80, rows: 24, env })
     expect(final.XDG_DATA_HOME).toBe(join(tmpdir(), 'user-data'))
     expect(final.XDG_STATE_HOME).toBeUndefined()
-    expect(final.ORCA_DATA_ACCOUNT_DATA_HOME).toBeUndefined()
+    expect(final.BBQ_DATA_ACCOUNT_DATA_HOME).toBeUndefined()
   })
 
   it('keeps a fresh selection after the daemon restores its own parent profile', () => {

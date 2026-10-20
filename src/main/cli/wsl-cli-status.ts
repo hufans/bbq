@@ -1,8 +1,9 @@
 import type { CliInstallStatus } from '../../shared/cli-install-types'
 import { getBridgePathFromCommandPath, getPosixDirname } from './wsl-cli-scripts'
 import { quotePosixShellDoubleQuotedApostrophe } from '../../shared/shell-argument-quoting'
+import { LINUX_CLI_COMMAND_NAME } from './bundled-cli-launcher-path'
 
-const WSL_COMMAND_NAME = 'orca-ide'
+const WSL_COMMAND_NAME = LINUX_CLI_COMMAND_NAME
 
 export type WslCliRunOptions = {
   /** Only the `$PATH` check needs it; everything else reads $HOME or absolute paths. */

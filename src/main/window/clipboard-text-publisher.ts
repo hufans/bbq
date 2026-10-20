@@ -80,14 +80,14 @@ let stagedPublisher: Promise<string> | undefined
 
 function publisherPath(): string | Promise<string> {
   const source = app.isPackaged
-    ? join(process.resourcesPath, 'bin', 'orca-wayland-clipboard')
+    ? join(process.resourcesPath, 'bin', 'bbq-wayland-clipboard')
     : join(
         app.getAppPath(),
         'native',
         'wayland-clipboard',
         '.build',
         process.arch,
-        'orca-wayland-clipboard'
+        'bbq-wayland-clipboard'
       )
   if (
     !app.isPackaged ||

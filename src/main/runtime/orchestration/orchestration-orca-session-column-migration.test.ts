@@ -23,10 +23,10 @@ const SESSION_ID = testOrcaSessionId('5f0c1d9e-2b7a-4c3e-8f61-0a9d2e7b4c11')
 const CHAT_SESSION_ID = testOrcaSessionId('9a4e7c1b-3d2f-4b6a-8e5c-7f1d0b2a6c93')
 const CHAT_SESSION_ADDRESS = formatOrcaSessionAddress(CHAT_SESSION_ID)
 const ORCA_SESSION_ID_COLUMNS = [
-  'assignee_orca_session_id',
-  'coordinator_orca_session_id',
-  'coordinator_orca_session_id_generation',
-  'creator_orca_session_id'
+  'assignee_bbq_session_id',
+  'coordinator_bbq_session_id',
+  'coordinator_bbq_session_id_generation',
+  'creator_bbq_session_id'
 ]
 const COORDINATOR_PANE = 'tab_coord:11111111-1111-4111-8111-111111111111'
 const PTY_WORKER_PANE = 'tab_pty:22222222-2222-4222-8222-222222222222'
@@ -133,15 +133,15 @@ function seedStructuredAndPtyRows(db: OrchestrationDb): SeededRows {
 function stripOrcaSessionSchema(path: string, version: number): void {
   const raw = new Database(path)
   raw.exec(`
-    DROP INDEX idx_runs_coordinator_orca_session_id;
-    DROP INDEX idx_dispatch_assignee_orca_session_id;
+    DROP INDEX idx_runs_coordinator_bbq_session_id;
+    DROP INDEX idx_dispatch_assignee_bbq_session_id;
     DROP TRIGGER trg_runs_remember_coordinator_insert;
     DROP TRIGGER trg_runs_remember_coordinator_update;
     DROP TRIGGER trg_messages_route_coordinator_mail;
-    ALTER TABLE runs DROP COLUMN coordinator_orca_session_id;
-    ALTER TABLE runs DROP COLUMN coordinator_orca_session_id_generation;
-    ALTER TABLE dispatch_contexts DROP COLUMN assignee_orca_session_id;
-    ALTER TABLE dispatch_contexts DROP COLUMN creator_orca_session_id;
+    ALTER TABLE runs DROP COLUMN coordinator_bbq_session_id;
+    ALTER TABLE runs DROP COLUMN coordinator_bbq_session_id_generation;
+    ALTER TABLE dispatch_contexts DROP COLUMN assignee_bbq_session_id;
+    ALTER TABLE dispatch_contexts DROP COLUMN creator_bbq_session_id;
     ${HANDLE_ONLY_COORDINATOR_TRIGGERS_SQL}
     ${HANDLE_ONLY_MAIL_ROUTING_TRIGGER_SQL}
   `)
@@ -156,7 +156,7 @@ function coordinatorLookupPlan(db: Database.Database): string {
       `EXPLAIN QUERY PLAN SELECT id FROM runs
        WHERE legacy = 0 AND (
          (coordinator_pane_key IS NOT NULL AND ${RUN_PANE_KEY_MATCH_SUFFIX_SQL} = ?)
-         OR coordinator_orca_session_id = ?
+         OR coordinator_bbq_session_id = ?
        )`
     )
     .all('leaf', CHAT_SESSION_ID)
@@ -183,7 +183,7 @@ function orcaSessionColumns(db: Database.Database): string[] {
     )
     .all()
     .map((column) => String(column.name))
-    .filter((name) => name.includes('_orca_session_id'))
+    .filter((name) => name.includes('_bbq_session_id'))
     .sort()
 }
 
@@ -232,24 +232,24 @@ describe('orchestration Orca session id column migration', () => {
     try {
       expect(db.db.pragma('user_version', { simple: true })).toBe(SCHEMA_VERSION)
       expect(db.getDispatchContextById(rows.structuredDispatchId)).toMatchObject({
-        assignee_orca_session_id: SESSION_ID,
-        creator_orca_session_id: null
+        assignee_bbq_session_id: SESSION_ID,
+        creator_bbq_session_id: null
       })
       expect(db.getDispatchContextById(rows.ptyDispatchId)).toMatchObject({
-        assignee_orca_session_id: null,
-        creator_orca_session_id: null
+        assignee_bbq_session_id: null,
+        creator_bbq_session_id: null
       })
       expect(db.getDispatchContextById(rows.nestedDispatchId)).toMatchObject({
-        assignee_orca_session_id: null,
-        creator_orca_session_id: SESSION_ID
+        assignee_bbq_session_id: null,
+        creator_bbq_session_id: SESSION_ID
       })
       expect(
         db.db
-          .prepare('SELECT id FROM dispatch_contexts WHERE assignee_orca_session_id IS NOT NULL')
+          .prepare('SELECT id FROM dispatch_contexts WHERE assignee_bbq_session_id IS NOT NULL')
           .all()
       ).toEqual([{ id: rows.structuredDispatchId }])
-      expect(db.getRunRaw(rows.ptyRunId)?.coordinator_orca_session_id).toBeNull()
-      expect(db.getRunRaw(rows.structuredRunId)?.coordinator_orca_session_id).toBe(SESSION_ID)
+      expect(db.getRunRaw(rows.ptyRunId)?.coordinator_bbq_session_id).toBeNull()
+      expect(db.getRunRaw(rows.structuredRunId)?.coordinator_bbq_session_id).toBe(SESSION_ID)
       // Every address a coordinator has: the PTY one its handle, the structured worker its handle
       // and the session address its backfilled id gives it.
       expect(coordinatorAddresses(db.db, [rows.ptyRunId, rows.structuredRunId])).toEqual(
@@ -261,9 +261,7 @@ describe('orchestration Orca session id column migration', () => {
       )
       // CREATE TRIGGER IF NOT EXISTS alone would have kept the handle-only form here.
       for (const sql of coordinatorTriggerSql(db.db)) {
-        expect(sql).toContain(
-          'NEW.coordinator_orca_session_id_generation = NEW.consumer_generation'
-        )
+        expect(sql).toContain('NEW.coordinator_bbq_session_id_generation = NEW.consumer_generation')
       }
     } finally {
       db.close()
@@ -299,10 +297,10 @@ describe('orchestration Orca session id column migration', () => {
         .prepare("SELECT sql FROM sqlite_master WHERE name = 'idx_deliveries_one_outstanding'")
         .get()
       expect(String(index?.sql)).not.toContain('UNIQUE')
-      expect(db.getDispatchContextById(rows.structuredDispatchId)?.assignee_orca_session_id).toBe(
+      expect(db.getDispatchContextById(rows.structuredDispatchId)?.assignee_bbq_session_id).toBe(
         SESSION_ID
       )
-      expect(db.getDispatchContextById(rows.ptyDispatchId)?.assignee_orca_session_id).toBeNull()
+      expect(db.getDispatchContextById(rows.ptyDispatchId)?.assignee_bbq_session_id).toBeNull()
     } finally {
       db.close()
     }
@@ -323,16 +321,14 @@ describe('orchestration Orca session id column migration', () => {
     raw.close()
 
     // createTables installs its static triggers before this chain's v40 step inserts into runs, so
-    // a static form naming coordinator_orca_session_id would fail to prepare here.
+    // a static form naming coordinator_bbq_session_id would fail to prepare here.
     const db = new OrchestrationDb(path)
     try {
       expect(db.db.pragma('user_version', { simple: true })).toBe(SCHEMA_VERSION)
       for (const sql of coordinatorTriggerSql(db.db)) {
-        expect(sql).toContain(
-          'NEW.coordinator_orca_session_id_generation = NEW.consumer_generation'
-        )
+        expect(sql).toContain('NEW.coordinator_bbq_session_id_generation = NEW.consumer_generation')
       }
-      expect(db.getRunRaw(rows.structuredRunId)?.coordinator_orca_session_id).toBe(SESSION_ID)
+      expect(db.getRunRaw(rows.structuredRunId)?.coordinator_bbq_session_id).toBe(SESSION_ID)
       expect(coordinatorAddresses(db.db, [rows.ptyRunId])).toEqual([`${rows.ptyRunId} term_coord`])
     } finally {
       db.close()
@@ -345,11 +341,11 @@ describe('orchestration Orca session id column migration', () => {
     const rows = seedStructuredAndPtyRows(seed)
     seed.close()
     const upgraded = new OrchestrationDb(path)
-    expect(upgraded.getRunRaw(rows.structuredRunId)?.coordinator_orca_session_id).toBe(SESSION_ID)
+    expect(upgraded.getRunRaw(rows.structuredRunId)?.coordinator_bbq_session_id).toBe(SESSION_ID)
     upgraded.db
       .prepare(
         `INSERT INTO runs (
-           id, objective, coordinator_orca_session_id, coordinator_orca_session_id_generation, consumer_generation, legacy
+           id, objective, coordinator_bbq_session_id, coordinator_bbq_session_id_generation, consumer_generation, legacy
          ) VALUES ('run_session', 'session coordinator', ?, 1, 1, 0)`
       )
       .run(CHAT_SESSION_ID)
@@ -399,11 +395,11 @@ describe('orchestration Orca session id column migration', () => {
         SELECT id, coordinator_handle FROM runs WHERE legacy = 0 AND coordinator_handle IS NOT NULL`)
 
       const readOrcaSessionId = v41.prepare(
-        'SELECT coordinator_orca_session_id FROM runs WHERE id = ?'
+        'SELECT coordinator_bbq_session_id FROM runs WHERE id = ?'
       )
-      expect(readOrcaSessionId.get('run_v41')).toEqual({ coordinator_orca_session_id: null })
+      expect(readOrcaSessionId.get('run_v41')).toEqual({ coordinator_bbq_session_id: null })
       expect(readOrcaSessionId.get(rows.structuredRunId)).toEqual({
-        coordinator_orca_session_id: SESSION_ID
+        coordinator_bbq_session_id: SESSION_ID
       })
       // The session address was remembered by the v42 open, before v41's rebind made the id stale.
       expect(coordinatorAddresses(v41, ['run_v41', rows.structuredRunId])).toEqual(
@@ -416,7 +412,7 @@ describe('orchestration Orca session id column migration', () => {
       )
       // The v42 trigger form survives v41's IF NOT EXISTS create.
       for (const sql of coordinatorTriggerSql(v41)) {
-        expect(sql).toContain('coordinator_orca_session_id')
+        expect(sql).toContain('coordinator_bbq_session_id')
       }
     } finally {
       v41.close()
@@ -431,7 +427,7 @@ describe('orchestration Orca session id column migration', () => {
       ])
       // v41's rebind bumped the generation, so the id it could not clear no longer counts.
       const rebound = rolledForward.getRunRaw(rows.structuredRunId)
-      expect(rebound?.coordinator_orca_session_id).toBe(SESSION_ID)
+      expect(rebound?.coordinator_bbq_session_id).toBe(SESSION_ID)
       expect(rebound && currentRunCoordinatorOrcaSessionId(rebound)).toBeNull()
     } finally {
       rolledForward.close()
@@ -444,24 +440,24 @@ describe('orchestration Orca session id column migration', () => {
     const rows = seedStructuredAndPtyRows(first)
     // The shape a binary rolled back past v42 writes: its INSERTs name no Orca session id column.
     first.db.exec(
-      'UPDATE dispatch_contexts SET assignee_orca_session_id = NULL, creator_orca_session_id = NULL; UPDATE runs SET coordinator_orca_session_id = NULL'
+      'UPDATE dispatch_contexts SET assignee_bbq_session_id = NULL, creator_bbq_session_id = NULL; UPDATE runs SET coordinator_bbq_session_id = NULL'
     )
     expect(
-      first.getDispatchContextById(rows.structuredDispatchId)?.assignee_orca_session_id
+      first.getDispatchContextById(rows.structuredDispatchId)?.assignee_bbq_session_id
     ).toBeNull()
     first.close()
 
     const reopened = new OrchestrationDb(path)
     try {
       expect(
-        reopened.getDispatchContextById(rows.structuredDispatchId)?.assignee_orca_session_id
+        reopened.getDispatchContextById(rows.structuredDispatchId)?.assignee_bbq_session_id
       ).toBe(SESSION_ID)
-      expect(reopened.getDispatchContextById(rows.nestedDispatchId)?.creator_orca_session_id).toBe(
+      expect(reopened.getDispatchContextById(rows.nestedDispatchId)?.creator_bbq_session_id).toBe(
         SESSION_ID
       )
-      expect(reopened.getRunRaw(rows.structuredRunId)?.coordinator_orca_session_id).toBe(SESSION_ID)
+      expect(reopened.getRunRaw(rows.structuredRunId)?.coordinator_bbq_session_id).toBe(SESSION_ID)
       expect(
-        reopened.getDispatchContextById(rows.ptyDispatchId)?.assignee_orca_session_id
+        reopened.getDispatchContextById(rows.ptyDispatchId)?.assignee_bbq_session_id
       ).toBeNull()
     } finally {
       reopened.close()
@@ -510,7 +506,7 @@ describe('orchestration Orca session id column migration', () => {
       expect(db.db.pragma('user_version', { simple: true })).toBe(SCHEMA_VERSION)
       expect(orcaSessionColumns(db.db)).toEqual(ORCA_SESSION_ID_COLUMNS)
       expect(coordinatorTriggerSql(db.db).join('\n')).not.toContain('principal')
-      expect(db.getDispatchContextById(rows.structuredDispatchId)?.assignee_orca_session_id).toBe(
+      expect(db.getDispatchContextById(rows.structuredDispatchId)?.assignee_bbq_session_id).toBe(
         SESSION_ID
       )
       expect(() =>
@@ -531,7 +527,7 @@ describe('orchestration Orca session id column migration', () => {
     seeded.db
       .prepare(
         `INSERT INTO runs (
-           id, objective, coordinator_orca_session_id, coordinator_orca_session_id_generation, consumer_generation, legacy
+           id, objective, coordinator_bbq_session_id, coordinator_bbq_session_id_generation, consumer_generation, legacy
          ) VALUES ('run_chat', 'chat coordinated', ?, 1, 1, 0)`
       )
       .run(CHAT_SESSION_ID)
@@ -561,7 +557,7 @@ describe('orchestration Orca session id column migration', () => {
     expect(
       v41
         .prepare(
-          `SELECT coordinator_handle, coordinator_pane_key, coordinator_orca_session_id,
+          `SELECT coordinator_handle, coordinator_pane_key, coordinator_bbq_session_id,
              consumer_generation
            FROM runs WHERE id = ?`
         )
@@ -569,7 +565,7 @@ describe('orchestration Orca session id column migration', () => {
     ).toEqual({
       coordinator_handle: null,
       coordinator_pane_key: null,
-      coordinator_orca_session_id: CHAT_SESSION_ID,
+      coordinator_bbq_session_id: CHAT_SESSION_ID,
       consumer_generation: 3
     })
     v41.close()
@@ -594,7 +590,7 @@ describe('orchestration Orca session id column migration', () => {
       const db = new OrchestrationDb(path)
       try {
         const plan = coordinatorLookupPlan(db.db)
-        expect(plan).toContain('USING INDEX idx_runs_coordinator_orca_session_id')
+        expect(plan).toContain('USING INDEX idx_runs_coordinator_bbq_session_id')
         expect(plan).not.toContain('SCAN runs')
       } finally {
         db.close()
@@ -668,12 +664,10 @@ describe('orchestration Orca session id column migration', () => {
       expect(db.db.pragma('user_version', { simple: true })).toBe(SCHEMA_VERSION)
       expect(orcaSessionColumns(db.db)).toEqual(ORCA_SESSION_ID_COLUMNS)
       for (const sql of coordinatorTriggerSql(db.db)) {
-        expect(sql).toContain(
-          'NEW.coordinator_orca_session_id_generation = NEW.consumer_generation'
-        )
+        expect(sql).toContain('NEW.coordinator_bbq_session_id_generation = NEW.consumer_generation')
         expect(sql).not.toContain('coordinator_actor')
       }
-      expect(db.getDispatchContextById(rows.structuredDispatchId)?.assignee_orca_session_id).toBe(
+      expect(db.getDispatchContextById(rows.structuredDispatchId)?.assignee_bbq_session_id).toBe(
         SESSION_ID
       )
       const run = db.getRunRaw(rows.structuredRunId)
@@ -681,9 +675,9 @@ describe('orchestration Orca session id column migration', () => {
       // The stale column stays where it was and nothing reads it.
       expect(
         db.db
-          .prepare('SELECT coordinator_actor, coordinator_orca_session_id FROM runs WHERE id = ?')
+          .prepare('SELECT coordinator_actor, coordinator_bbq_session_id FROM runs WHERE id = ?')
           .get('run_earlier_chat')
-      ).toEqual({ coordinator_actor: CHAT_SESSION_ADDRESS, coordinator_orca_session_id: null })
+      ).toEqual({ coordinator_actor: CHAT_SESSION_ADDRESS, coordinator_bbq_session_id: null })
       expect(coordinatorAddresses(db.db, ['run_earlier_chat'])).toEqual([])
       expect(() =>
         db.createRun({

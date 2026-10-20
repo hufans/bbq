@@ -2,7 +2,7 @@
 name: orca-chat-visuals
 description: Show a chart, diagram, table, report or mockup inline in this Orca chat as an HTML
   page. Use when a visual would help the user understand your answer. Only available when the
-  ORCA_CHAT_SCRATCH_DIR environment variable is set.
+  BBQ_CHAT_SCRATCH_DIR environment variable is set.
 user-invocable: false
 ---
 
@@ -13,8 +13,8 @@ clearer.
 
 ## Writing the page
 
-- Save it in the folder named by `ORCA_CHAT_SCRATCH_DIR` (`printenv ORCA_CHAT_SCRATCH_DIR`; in
-  PowerShell `$env:ORCA_CHAT_SCRATCH_DIR`). If it's unset or you can't write there, skip the visual.
+- Save it in the folder named by `BBQ_CHAT_SCRATCH_DIR` (`printenv BBQ_CHAT_SCRATCH_DIR`; in
+  PowerShell `$env:BBQ_CHAT_SCRATCH_DIR`). If it's unset or you can't write there, skip the visual.
   This folder belongs to this chat and is kept as long as the chat. Save files meant for the
   project in the workspace.
 - One complete HTML file per visual, directly in that folder, under 512 KB, with a new file name

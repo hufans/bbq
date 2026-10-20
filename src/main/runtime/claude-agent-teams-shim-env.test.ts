@@ -35,7 +35,7 @@ describe('claude agent teams shim env', () => {
     // Why: the plan writes its tmux shim under ~/.orca.
     vi.stubEnv('HOME', root)
     vi.stubEnv('USERPROFILE', root)
-    const cliName = process.platform === 'win32' ? 'orca-dev.cmd' : 'orca-dev'
+    const cliName = process.platform === 'win32' ? 'bbq-dev.cmd' : 'bbq-dev'
     const cliPath = join(root, cliName)
     await writeFile(cliPath, '#!/usr/bin/env sh\n', 'utf8')
     if (process.platform !== 'win32') {
@@ -86,7 +86,7 @@ describe('claude agent teams shim env', () => {
   it('resolves the dev CLI wrapper for the tmux callback binary', async () => {
     const root = await mkdtemp(join(tmpdir(), 'orca-agent-teams-cli-'))
     roots.push(root)
-    const cliName = process.platform === 'win32' ? 'orca-dev.cmd' : 'orca-dev'
+    const cliName = process.platform === 'win32' ? 'bbq-dev.cmd' : 'bbq-dev'
     const cliPath = join(root, cliName)
     await writeFile(cliPath, '#!/usr/bin/env sh\n', 'utf8')
     if (process.platform !== 'win32') {
@@ -110,10 +110,10 @@ describe('claude agent teams shim env', () => {
     expect(resolveClaudeAgentTeamsShimBin({ PATH: '.' })).toBeNull()
     expect(resolveClaudeAgentTeamsShimBin({ PATH: '' })).toBeNull()
     expect(
-      resolveClaudeAgentTeamsShimBin({ PATH: '.', ORCA_AGENT_TEAMS_SHIM_BIN: 'orca' })
+      resolveClaudeAgentTeamsShimBin({ PATH: '.', BBQ_AGENT_TEAMS_SHIM_BIN: 'orca' })
     ).toBeNull()
     // Why: a bare override is still honored when it maps to a real absolute PATH entry.
-    expect(resolveClaudeAgentTeamsShimBin({ PATH: root, ORCA_AGENT_TEAMS_SHIM_BIN: 'orca' })).toBe(
+    expect(resolveClaudeAgentTeamsShimBin({ PATH: root, BBQ_AGENT_TEAMS_SHIM_BIN: 'orca' })).toBe(
       join(root, 'orca')
     )
   })
@@ -178,7 +178,7 @@ describe('claude agent teams shim env', () => {
       await chmod(cli, 0o755)
       const qualified = spawnSync(join(root, 'tmux'), ['list-panes'], {
         cwd,
-        env: { PATH: `.:${process.env.PATH ?? ''}`, ORCA_AGENT_TEAMS_SHIM_BIN: cli },
+        env: { PATH: `.:${process.env.PATH ?? ''}`, BBQ_AGENT_TEAMS_SHIM_BIN: cli },
         encoding: 'utf8'
       })
 
@@ -190,10 +190,10 @@ describe('claude agent teams shim env', () => {
   it('writes a Windows shim that rejects an unqualified shim bin', () => {
     const script = windowsClaudeAgentTeamsShimScript()
 
-    expect(script).not.toMatch(/^set "ORCA_AGENT_TEAMS_SHIM_BIN=orca/m)
-    expect(script).toContain('if "%ORCA_SHIM_BIN:~1,1%"==":" goto :run')
+    expect(script).not.toMatch(/^set "BBQ_AGENT_TEAMS_SHIM_BIN=orca/m)
+    expect(script).toContain('if "%BBQ_SHIM_BIN:~1,1%"==":" goto :run')
     // Why: `call` would re-expand `%2`-style tmux pane args as batch parameters.
-    expect(script).toContain('\r\n"%ORCA_SHIM_BIN%" agent-teams-tmux %*\r\n')
+    expect(script).toContain('\r\n"%BBQ_SHIM_BIN%" agent-teams-tmux %*\r\n')
     expect(script).toContain('exit /b 127')
   })
 })

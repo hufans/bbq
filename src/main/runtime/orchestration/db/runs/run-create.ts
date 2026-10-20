@@ -28,8 +28,8 @@ export function createRun(
     this.db
       .prepare(
         `INSERT INTO runs (
-           id, objective, coordinator_handle, coordinator_pane_key, coordinator_orca_session_id,
-           coordinator_orca_session_id_generation, consumer_generation, legacy
+           id, objective, coordinator_handle, coordinator_pane_key, coordinator_bbq_session_id,
+           coordinator_bbq_session_id_generation, consumer_generation, legacy
          ) VALUES (?, ?, ?, ?, ?, 1, 1, 0)`
       )
       .run(

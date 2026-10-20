@@ -54,7 +54,7 @@ describe('a structured chat coordinates through the same verbs as a terminal', (
     expect(h.db.getRunRaw(runId)).toMatchObject({
       coordinator_handle: null,
       coordinator_pane_key: null,
-      coordinator_orca_session_id: SESSION_X
+      coordinator_bbq_session_id: SESSION_X
     })
     expect(await as(SESSION_X, 'orchestration.runCurrent', {})).toMatchObject({
       run: { id: runId }
@@ -73,7 +73,7 @@ describe('a structured chat coordinates through the same verbs as a terminal', (
       assignee_handle: WORKER_HANDLE,
       creator_handle: null,
       creator_pane_key: null,
-      creator_orca_session_id: SESSION_X,
+      creator_bbq_session_id: SESSION_X,
       depth: 1
     })
 
@@ -227,7 +227,7 @@ describe('a structured chat coordinates through the same verbs as a terminal', (
     expect(await as(SESSION_X, 'orchestration.runCurrent', {})).toMatchObject({
       run: { id: xSecond }
     })
-    expect(h.db.getRunRaw(xFirst)?.coordinator_orca_session_id).toBeNull()
+    expect(h.db.getRunRaw(xFirst)?.coordinator_bbq_session_id).toBeNull()
   })
 
   it('takes over a bound Run like a terminal does, and fences the previous coordinator', async () => {
@@ -477,7 +477,7 @@ describe('a structured worker that names itself by session id', () => {
 
   it("reads its own Dispatch mailbox: the session id wins and maps to the worker's handle", async () => {
     const { dispatchId } = dispatchToWorker()
-    expect(h.db.getDispatchContextById(dispatchId)?.assignee_orca_session_id).toBe(SESSION_Y)
+    expect(h.db.getDispatchContextById(dispatchId)?.assignee_bbq_session_id).toBe(SESSION_Y)
 
     const bySession = resultOf(
       await h.dispatch(
@@ -516,7 +516,7 @@ describe('a structured worker that names itself by session id', () => {
     )
     expect(h.db.getRunRaw(idOf(run))).toMatchObject({
       coordinator_handle: handle,
-      coordinator_orca_session_id: SESSION_Y
+      coordinator_bbq_session_id: SESSION_Y
     })
   })
 
@@ -587,7 +587,7 @@ describe('a structured worker that names itself by session id', () => {
     expect(h.db.getRunRaw(runId)).toMatchObject({
       coordinator_handle: handle,
       coordinator_pane_key: paneKey,
-      coordinator_orca_session_id: SESSION_Y
+      coordinator_bbq_session_id: SESSION_Y
     })
     expect(h.db.getRunMailboxOwnerIdsForHandle(handle)).toEqual([runId])
     for (const to of [handle, ADDRESS_Y]) {

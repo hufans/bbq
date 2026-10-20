@@ -30,7 +30,7 @@ describe.skipIf(!isLinux || !e2eOptIn)('computer-use Linux e2e (gedit)', () => {
     expect(envelope.result.snapshot.coordinateSpace).toBe('window')
     expect(envelope.result.snapshot.truncation?.truncated).toBe(false)
     expect(envelope.result.screenshot?.data).toBeUndefined()
-    expect(envelope.result.screenshot?.path).toContain('orca-computer-use')
+    expect(envelope.result.screenshot?.path).toContain('bbq-computer-use')
   })
 
   test('click and type-text send synthetic input to the document', async () => {

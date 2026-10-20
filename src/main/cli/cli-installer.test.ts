@@ -38,7 +38,7 @@ import { buildLegacyAppImageCliWrapper } from './legacy-appimage-cli-wrapper'
 async function fakeAppImageExtractRunner(_appImagePath: string, cwd: string): Promise<void> {
   const launcherDir = join(cwd, 'squashfs-root', 'resources', 'bin')
   await mkdir(launcherDir, { recursive: true })
-  await writeFile(join(launcherDir, 'orca-ide'), '#!/usr/bin/env bash\n', {
+  await writeFile(join(launcherDir, 'bbq'), '#!/usr/bin/env bash\n', {
     encoding: 'utf8',
     mode: 0o755
   })
@@ -72,7 +72,7 @@ describe('CliInstaller', () => {
 
       const initial = await installer.getStatus()
       expect(initial.state).toBe('not_installed')
-      expect(initial.launcherPath).toContain(join('userData', 'cli', 'bin', 'orca'))
+      expect(initial.launcherPath).toContain(join('userData', 'cli', 'bin', 'bbq'))
 
       const installed = await installer.install()
       expect(installed.state).toBe('installed')
@@ -80,8 +80,8 @@ describe('CliInstaller', () => {
 
       const launcherContent = await readFile(installed.launcherPath as string, 'utf8')
       expect(launcherContent).toContain('ELECTRON_RUN_AS_NODE=1 exec "$ELECTRON" "$CLI" "$@"')
-      expect(launcherContent).toContain(`export ORCA_USER_DATA_PATH='${fixture.userDataPath}'`)
-      expect(launcherContent).toContain('export ORCA_APP_EXECUTABLE="$ELECTRON"')
+      expect(launcherContent).toContain(`export BBQ_USER_DATA_PATH='${fixture.userDataPath}'`)
+      expect(launcherContent).toContain('export BBQ_APP_EXECUTABLE="$ELECTRON"')
       expect(launcherContent).toContain(join(fixture.appPath, 'out', 'cli', 'index.js'))
 
       const removed = await installer.remove()
@@ -94,7 +94,7 @@ describe('CliInstaller', () => {
     'creates a linux symlink under the requested path and warns when PATH is missing',
     async () => {
       const fixture = await makeFixture()
-      const installPath = join(fixture.root, '.local', 'bin', 'orca-ide')
+      const installPath = join(fixture.root, '.local', 'bin', 'bbq')
       const installer = new CliInstaller({
         platform: 'linux',
         isPackaged: false,
@@ -107,13 +107,13 @@ describe('CliInstaller', () => {
 
       const installed = await installer.install()
       expect(installed.state).toBe('installed')
-      expect(installed.commandName).toBe('orca-ide')
+      expect(installed.commandName).toBe('bbq')
       expect(installed.pathConfigured).toBe(false)
       expect(installed.detail).toContain('.local')
 
       const launcherContent = await readFile(installed.launcherPath as string, 'utf8')
       expect(launcherContent).toContain('ELECTRON_RUN_AS_NODE=1 exec "$ELECTRON" "$CLI" "$@"')
-      expect(launcherContent).toContain(`export ORCA_USER_DATA_PATH='${fixture.userDataPath}'`)
+      expect(launcherContent).toContain(`export BBQ_USER_DATA_PATH='${fixture.userDataPath}'`)
 
       const removed = await installer.remove()
       expect(removed.state).toBe('not_installed')
@@ -140,13 +140,13 @@ describe('CliInstaller', () => {
 
       const installed = await installer.install()
       expect(installed.state).toBe('installed')
-      expect(installed.commandName).toBe('orca-dev')
-      expect(installed.commandPath).toBe(join(commandDir, 'orca-dev'))
-      expect(installed.launcherPath).toBe(join(fixture.userDataPath, 'cli', 'bin', 'orca-dev'))
+      expect(installed.commandName).toBe('bbq-dev')
+      expect(installed.commandPath).toBe(join(commandDir, 'bbq-dev'))
+      expect(installed.launcherPath).toBe(join(fixture.userDataPath, 'cli', 'bin', 'bbq-dev'))
       await expect(readlink(installed.commandPath as string)).resolves.toBe(installed.launcherPath)
-      await expect(
-        readFile(join(fixture.userDataPath, 'cli', 'bin', 'orca'), 'utf8')
-      ).resolves.toBe(await readFile(installed.launcherPath as string, 'utf8'))
+      await expect(readFile(join(fixture.userDataPath, 'cli', 'bin', 'bbq'), 'utf8')).resolves.toBe(
+        await readFile(installed.launcherPath as string, 'utf8')
+      )
     }
   )
 
@@ -185,14 +185,14 @@ describe('CliInstaller', () => {
       const installed = await installer.install()
       expect(installed).toMatchObject({
         state: 'installed',
-        commandName: 'orca-ide',
+        commandName: 'bbq',
         installMethod: 'symlink',
         pathConfigured: true
       })
       // The command target remains stable while its cache endpoint advances generations.
       expect(relative(cacheRootPath, installed.launcherPath as string).split(sep)).toEqual([
         'launcher',
-        'orca-ide'
+        'bbq'
       ])
       expect(installed.currentTarget).toBe(installed.launcherPath)
       await expect(readlink(installPath)).resolves.toBe(installed.launcherPath)
@@ -312,8 +312,8 @@ describe('CliInstaller', () => {
       const homePath = join(fixture.root, 'home')
       const commandDir = join(homePath, '.local', 'bin')
       const resourcesPath = join(fixture.root, 'resources')
-      const launcherPath = join(resourcesPath, 'bin', 'orca-ide')
-      const oldLauncherPath = join(resourcesPath, 'bin', 'orca')
+      const launcherPath = join(resourcesPath, 'bin', 'bbq')
+      const oldLauncherPath = join(resourcesPath, 'bin', 'bbq')
       const legacyCommandPath = join(commandDir, 'orca')
       await mkdir(commandDir, { recursive: true })
       await mkdir(join(resourcesPath, 'bin'), { recursive: true })
@@ -332,7 +332,7 @@ describe('CliInstaller', () => {
       })
 
       const installed = await installer.install()
-      expect(installed.commandPath).toBe(join(commandDir, 'orca-ide'))
+      expect(installed.commandPath).toBe(join(commandDir, 'bbq'))
       await expect(lstat(legacyCommandPath)).rejects.toMatchObject({ code: 'ENOENT' })
     }
   )
@@ -367,7 +367,7 @@ describe('CliInstaller', () => {
       })
 
       const installed = await installer.install()
-      expect(installed.commandPath).toBe(join(commandDir, 'orca-ide'))
+      expect(installed.commandPath).toBe(join(commandDir, 'bbq'))
       await expect(lstat(legacyCommandPath)).rejects.toMatchObject({ code: 'ENOENT' })
     }
   )

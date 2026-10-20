@@ -48,12 +48,14 @@ const FAKE_CLAUDE = String.raw`
 // Stands in for Orca's main: starts exactly the spec Claude's spawner built, then can be SIGKILLed.
 const OWNER = String.raw`
   const { spawn } = require('node:child_process')
+  const fs = require('node:fs')
   const spec = JSON.parse(process.env.ORCA_TEST_SPAWN_SPEC)
   const env = { ...spec.env }
-  if (env.ORCA_PROVIDER_SUPERVISOR_SPEC) {
-    const supervisor = JSON.parse(Buffer.from(env.ORCA_PROVIDER_SUPERVISOR_SPEC, 'base64').toString())
+  const supervisorArgs = spec.args || []
+  if (typeof supervisorArgs[0] === 'string' && supervisorArgs[0].endsWith('bbq-provider-supervisor.cjs')) {
+    const supervisor = JSON.parse(fs.readFileSync(supervisorArgs[1], 'utf8'))
     supervisor.ownerPid = process.pid
-    env.ORCA_PROVIDER_SUPERVISOR_SPEC = Buffer.from(JSON.stringify(supervisor)).toString('base64')
+    fs.writeFileSync(supervisorArgs[1], JSON.stringify(supervisor))
   }
   const child = spawn(spec.program, spec.args, {
     cwd: spec.cwd,

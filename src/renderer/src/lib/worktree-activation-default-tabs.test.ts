@@ -99,7 +99,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
       undefined,
       {
         runnerScriptPath: '/tmp/repo/.git/orca/setup-runner.sh',
-        envVars: { ORCA_WORKTREE_PATH: '/tmp/worktrees/wt-1' }
+        envVars: { BBQ_WORKTREE_PATH: '/tmp/worktrees/wt-1' }
       },
       undefined,
       {
@@ -128,7 +128,7 @@ describe('ensureWorktreeHasInitialTerminal', () => {
     expect(createdTabStartups(store)['tab-1']).toEqual({ command: 'pnpm dev' })
     expect(createdTabStartups(store)['tab-2']).toEqual({
       command: 'bash /tmp/repo/.git/orca/setup-runner.sh',
-      env: { ORCA_WORKTREE_PATH: '/tmp/worktrees/wt-1' }
+      env: { BBQ_WORKTREE_PATH: '/tmp/worktrees/wt-1' }
     })
   })
 

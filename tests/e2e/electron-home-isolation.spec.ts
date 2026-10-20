@@ -15,7 +15,7 @@ async function readElectronHomeState(electronApp: ElectronApplication) {
       home: process.env.HOME,
       userProfile: process.env.USERPROFILE,
       codexHome: process.env.CODEX_HOME,
-      orcaCodexHome: process.env.ORCA_CODEX_HOME
+      orcaCodexHome: process.env.BBQ_CODEX_HOME
     }
   })
 }

@@ -69,7 +69,7 @@ const POSIX_HOOK_JSON_STDIN_PYTHON = [
 // Why a variable rather than two inline copies: the script is embedded twice in
 // the reader chain, and `-c '<600 chars>'` twice is an EDR oversized-command-line
 // signal as well as unreadable in the generated hook.
-const POSIX_HOOK_JSON_STDIN_PYTHON_VAR = 'orca_hook_json_stdin_py'
+const POSIX_HOOK_JSON_STDIN_PYTHON_VAR = 'bbq_hook_json_stdin_py'
 export const POSIX_HOOK_JSON_STDIN_PRELUDE: readonly string[] = [
   `${POSIX_HOOK_JSON_STDIN_PYTHON_VAR}='${POSIX_HOOK_JSON_STDIN_PYTHON}'`
 ]
@@ -130,26 +130,26 @@ export function buildPosixHookSpoolLines(source: string, eventNameVar?: string):
     eventFormat,
     '"paneKey":"%s","tabId":"%s","worktreeId":"%s","env":"%s","version":"%s","launchToken":"%s","source":"%s","receivedAt":%s,"agentProcess":"%s","payload":%s}\\n\'',
     eventArg,
-    ' "$(spool_json_escape "${ORCA_PANE_KEY:-}")" "$(spool_json_escape "${ORCA_TAB_ID:-}")" "$(spool_json_escape "${ORCA_WORKTREE_ID:-}")" "$(spool_json_escape "${ORCA_AGENT_HOOK_ENV:-}")" "$(spool_json_escape "${ORCA_AGENT_HOOK_VERSION:-}")" "$(spool_json_escape "${ORCA_AGENT_LAUNCH_TOKEN:-}")" "$(spool_json_escape "',
+    ' "$(spool_json_escape "${BBQ_PANE_KEY:-}")" "$(spool_json_escape "${BBQ_TAB_ID:-}")" "$(spool_json_escape "${BBQ_WORKTREE_ID:-}")" "$(spool_json_escape "${BBQ_AGENT_HOOK_ENV:-}")" "$(spool_json_escape "${BBQ_AGENT_HOOK_VERSION:-}")" "$(spool_json_escape "${BBQ_AGENT_LAUNCH_TOKEN:-}")" "$(spool_json_escape "',
     source,
-    '")" "$spool_now" "$(spool_json_escape "${orca_agent_process:-}")" "$payload"; } >> "$spool_file" 2>/dev/null || :'
+    '")" "$spool_now" "$(spool_json_escape "${bbq_agent_process:-}")" "$payload"; } >> "$spool_file" 2>/dev/null || :'
   )
   return [
     'spool_hook_event() {',
     eventNameVar
       ? `  case "\${${eventNameVar}:-}" in PreToolUse|PostToolUse|PostToolUseFailure) return 0 ;; esac`
       : '  case "$payload" in *\'"PreToolUse"\'*|*\'"PostToolUse"\'*|*\'"PostToolUseFailure"\'*) return 0 ;; esac',
-    '  [ -n "${ORCA_AGENT_HOOK_ENDPOINT:-}" ] || return 0',
+    '  [ -n "${BBQ_AGENT_HOOK_ENDPOINT:-}" ] || return 0',
     // Why: an endpoint can linger in a parent shell after leaving Orca; without a pane key
     // the record is un-attributable and would accumulate as pane-unknown.jsonl.
-    '  [ -n "${ORCA_PANE_KEY:-}" ] || return 0',
+    '  [ -n "${BBQ_PANE_KEY:-}" ] || return 0',
     // Why: a stale env var must not create a spool tree for an Orca that is not installed here.
-    '  [ -r "$ORCA_AGENT_HOOK_ENDPOINT" ] || return 0',
-    '  spool_base=${ORCA_AGENT_HOOK_ENDPOINT%/*}',
+    '  [ -r "$BBQ_AGENT_HOOK_ENDPOINT" ] || return 0',
+    '  spool_base=${BBQ_AGENT_HOOK_ENDPOINT%/*}',
     '  spool_dir="$spool_base/spool"',
     '  mkdir -p "$spool_dir" 2>/dev/null || return 0',
     '  chmod 700 "$spool_dir" 2>/dev/null || :',
-    "  spool_id=$(printf %s \"${ORCA_PANE_KEY:-unknown}\" | tail -c 36 | tr '/:' '__')",
+    "  spool_id=$(printf %s \"${BBQ_PANE_KEY:-unknown}\" | tail -c 36 | tr '/:' '__')",
     '  spool_file="$spool_dir/pane-$spool_id.jsonl"',
     '  if [ -f "$spool_file" ] && find "$spool_file" -mtime +7 -print -quit 2>/dev/null | grep -q .; then : > "$spool_file"; fi',
     '  [ -f "$spool_file" ] || : > "$spool_file"',
@@ -164,7 +164,7 @@ export function buildPosixHookSpoolLines(source: string, eventNameVar?: string):
   ]
 }
 
-export const WINDOWS_HOOK_STDIN_DRAIN_LABEL = 'orca_agent_hook_drain_stdin'
+export const WINDOWS_HOOK_STDIN_DRAIN_LABEL = 'bbq_agent_hook_drain_stdin'
 // Why: qualify the stdin reader because Windows searches the worktree for
 // executables before PATH and hook payloads must not reach repo-local code.
 export const WINDOWS_HOOK_STDIN_READER = '"%SystemRoot%\\System32\\more.com"'
@@ -172,9 +172,9 @@ export const WINDOWS_HOOK_STDIN_DRAIN_COMMAND = `${WINDOWS_HOOK_STDIN_READER} >n
 
 // The Orca context a hook needs before it may own stdin; see the rule below.
 const WINDOWS_HOOK_ENVIRONMENT_VARS = [
-  'ORCA_AGENT_HOOK_PORT',
-  'ORCA_AGENT_HOOK_TOKEN',
-  'ORCA_PANE_KEY'
+  'BBQ_AGENT_HOOK_PORT',
+  'BBQ_AGENT_HOOK_TOKEN',
+  'BBQ_PANE_KEY'
 ] as const
 
 // Why (#11549): missing Orca context means the hook ran outside an Orca pane, where the caller

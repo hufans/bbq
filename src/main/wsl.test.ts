@@ -616,7 +616,7 @@ describe('wslUncDirectoryExistsAsync', () => {
   })
 
   it('returns true when the distro reports the directory exists', async () => {
-    runProcessMock.mockResolvedValue(exited('__ORCA_DIRECTORY_EXISTS__'))
+    runProcessMock.mockResolvedValue(exited('__BBQ_DIRECTORY_EXISTS__'))
 
     await expect(
       withPlatformAsync('win32', () =>
@@ -633,7 +633,7 @@ describe('wslUncDirectoryExistsAsync', () => {
           '--exec',
           'sh',
           '-c',
-          expect.stringContaining('__ORCA_DIRECTORY_EXISTS__'),
+          expect.stringContaining('__BBQ_DIRECTORY_EXISTS__'),
           'sh',
           '/home/jin/repo'
         ]
@@ -643,7 +643,7 @@ describe('wslUncDirectoryExistsAsync', () => {
 
   it('distinguishes a missing directory from an inconclusive probe', async () => {
     runProcessMock
-      .mockResolvedValueOnce(exited('__ORCA_DIRECTORY_MISSING__'))
+      .mockResolvedValueOnce(exited('__BBQ_DIRECTORY_MISSING__'))
       .mockResolvedValueOnce(exited('', 4294967295))
 
     await withPlatformAsync('win32', async () => {

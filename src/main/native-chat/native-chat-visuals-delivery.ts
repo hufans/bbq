@@ -12,7 +12,7 @@ import {
 
 /** The agent child's variable holding its chat's scratch folder. The skill reads it; the path is
  *  never written into the skill text. */
-export const NATIVE_CHAT_SCRATCH_DIR_ENV = 'ORCA_CHAT_SCRATCH_DIR'
+export const NATIVE_CHAT_SCRATCH_DIR_ENV = 'BBQ_CHAT_SCRATCH_DIR'
 
 /** The variable's pre-rename name. Never set; only stripped, since an Orca started from an older
  *  chat would otherwise hand that chat's folder on to every agent it launches. */

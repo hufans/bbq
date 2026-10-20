@@ -66,7 +66,7 @@ export async function prepareOrcadSecretStore(
 
 /**
  * The Orca release this server was built from, stamped into the bundle's own `out/package.json`.
- * Why: `status.get` and the updater report ORCA_APP_VERSION, which only the desktop's preflight
+ * Why: `status.get` and the updater report BBQ_APP_VERSION, which only the desktop's preflight
  * sets, so a server read `0.0.0-dev`. The bundle wins over an inherited value from another build.
  */
 export function stampOrcadAppVersion(installRoot: () => string = resolveOrcadInstallRoot): void {
@@ -79,7 +79,7 @@ export function stampOrcadAppVersion(installRoot: () => string = resolveOrcadIns
     return
   }
   if (typeof version === 'string' && version.length > 0) {
-    process.env.ORCA_APP_VERSION = version
+    process.env.BBQ_APP_VERSION = version
   }
 }
 

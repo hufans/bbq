@@ -23,7 +23,7 @@ async function launch(
   )
   vi.stubEnv('HOME', root)
   vi.stubEnv('ZDOTDIR', root)
-  vi.stubEnv('ORCA_ORIG_ZDOTDIR', root)
+  vi.stubEnv('BBQ_ORIG_ZDOTDIR', root)
   let session: Session | undefined
   let timer: ReturnType<typeof setTimeout> | undefined
   let legacyTimer: ReturnType<typeof setTimeout> | undefined
@@ -90,7 +90,7 @@ describe('agent startup at the rendered shell prompt', () => {
       const before = await launch(shell, true, true)
       expect(before.output.split(COMMAND)).toHaveLength(3)
       const result = await launch(shell, true)
-      expect(result.output).not.toContain('orca-shell-ready')
+      expect(result.output).not.toContain('bbq-shell-ready')
       expect(result.output.split(COMMAND)).toHaveLength(2)
       expect(result.output.indexOf('prompt> ')).toBeLessThan(result.output.indexOf(COMMAND))
     }
@@ -106,7 +106,7 @@ describe('agent startup at the rendered shell prompt', () => {
           for (let i = 0; i < 5; i++) {
             legacy.push((await launch(shell, slow, true)).ms)
             const result = await launch(shell, slow)
-            expect(result.output).not.toContain('orca-shell-ready')
+            expect(result.output).not.toContain('bbq-shell-ready')
             expect(result.output.split(COMMAND)).toHaveLength(2)
             current.push(result.ms)
           }

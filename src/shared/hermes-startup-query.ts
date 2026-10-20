@@ -8,13 +8,13 @@ import {
 } from './tui-agent-startup-shell'
 
 const QUERY_ENV_LIMIT = 24_000
-const QUERY_PLACEHOLDER = '__ORCA_HERMES_STARTUP_QUERY__'
+const QUERY_PLACEHOLDER = '__BBQ_HERMES_STARTUP_QUERY__'
 const QUERY_ARG_PLACEHOLDER = `--query=${QUERY_PLACEHOLDER}`
-const POSIX_QUERY_VARIABLE = '__orca_hermes_startup_query'
-const POWERSHELL_QUERY_VARIABLE = 'orcaHermesStartupQuery'
-const POWERSHELL_NATIVE_QUERY_VARIABLE = 'orcaHermesNativeQuery'
+const POSIX_QUERY_VARIABLE = '__bbq_hermes_startup_query'
+const POWERSHELL_QUERY_VARIABLE = 'bbqHermesStartupQuery'
+const POWERSHELL_NATIVE_QUERY_VARIABLE = 'bbqHermesNativeQuery'
 
-export const ORCA_HERMES_STARTUP_QUERY_ENV = 'ORCA_HERMES_STARTUP_QUERY'
+export const ORCA_HERMES_STARTUP_QUERY_ENV = 'BBQ_HERMES_STARTUP_QUERY'
 
 function encodePosixEvalScript(command: string): string {
   return Array.from(

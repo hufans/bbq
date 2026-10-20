@@ -51,7 +51,7 @@ describe('orca serve host selection', () => {
     spawnMock.mockReset()
     resolveLocalServeRuntimeMock.mockReset()
     serveWithOrcadMock.mockReset()
-    process.env.ORCA_APP_EXECUTABLE = '/opt/orca/orca-ide'
+    process.env.BBQ_APP_EXECUTABLE = '/opt/orca/orca-ide'
     stderr = []
     vi.spyOn(process.stderr, 'write').mockImplementation((chunk) => {
       stderr.push(String(chunk))
@@ -61,19 +61,19 @@ describe('orca serve host selection', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
-    delete process.env.ORCA_APP_EXECUTABLE
-    delete process.env.ORCA_SERVE_RUNTIME
-    delete process.env.ORCA_USER_DATA_PATH
+    delete process.env.BBQ_APP_EXECUTABLE
+    delete process.env.BBQ_SERVE_RUNTIME
+    delete process.env.BBQ_USER_DATA_PATH
     delete process.env.ORCA_DEV_USER_DATA_PATH
-    delete process.env.ORCA_APP_EXECUTABLE_NEEDS_APP_ROOT
+    delete process.env.BBQ_APP_EXECUTABLE_NEEDS_APP_ROOT
   })
 
   it('checks for a live peer before orcad only when supervised, so the brake never counts it', async () => {
     const root = await mkdtemp(join(tmpdir(), 'orca-serve-orcad-supervise-'))
     try {
-      process.env.ORCA_APP_EXECUTABLE = join(root, 'orca')
-      await writeFile(process.env.ORCA_APP_EXECUTABLE, '')
-      process.env.ORCA_USER_DATA_PATH = join(root, 'profile')
+      process.env.BBQ_APP_EXECUTABLE = join(root, 'orca')
+      await writeFile(process.env.BBQ_APP_EXECUTABLE, '')
+      process.env.BBQ_USER_DATA_PATH = join(root, 'profile')
       const selection = { kind: 'orcad', runtime: '/node', entry: '/slot/orcad.js', version: '1' }
       resolveLocalServeRuntimeMock.mockResolvedValue(selection)
       serveWithOrcadMock.mockResolvedValue(0)
@@ -101,7 +101,7 @@ describe('orca serve host selection', () => {
     try {
       await mkdir(join(appRoot, 'out', 'web'), { recursive: true })
       await writeFile(join(appRoot, 'out', 'web', 'web-index.html'), '<html></html>')
-      process.env.ORCA_SERVE_SUPERVISOR_APP_ROOT = appRoot
+      process.env.BBQ_SERVE_SUPERVISOR_APP_ROOT = appRoot
       const selection = { kind: 'orcad', runtime: '/node', entry: '/slot/orcad.js', version: '1' }
       resolveLocalServeRuntimeMock.mockResolvedValue(selection)
       serveWithOrcadMock.mockResolvedValue(0)
@@ -117,7 +117,7 @@ describe('orca serve host selection', () => {
       expect(spawnMock).not.toHaveBeenCalled()
       expect(stderr.join('')).toContain('[serve] running on orcad 1')
     } finally {
-      delete process.env.ORCA_SERVE_SUPERVISOR_APP_ROOT
+      delete process.env.BBQ_SERVE_SUPERVISOR_APP_ROOT
       await rm(appRoot, { recursive: true, force: true })
     }
   })
@@ -135,8 +135,8 @@ describe('orca serve host selection', () => {
     expect(stderr.join('')).toContain('[serve] using Electron serve: no template')
   })
 
-  it('keeps Electron without asking orcad when ORCA_SERVE_RUNTIME=electron', async () => {
-    process.env.ORCA_SERVE_RUNTIME = 'electron'
+  it('keeps Electron without asking orcad when BBQ_SERVE_RUNTIME=electron', async () => {
+    process.env.BBQ_SERVE_RUNTIME = 'electron'
     electronChild()
 
     await expect(serveOrcaApp({ json: true })).resolves.toBe(0)
@@ -151,9 +151,9 @@ describe('orca serve host selection', () => {
       return { args, env: options.env }
     }
 
-    it('starts the Electron fallback on ORCA_USER_DATA_PATH, not the default profile', async () => {
+    it('starts the Electron fallback on BBQ_USER_DATA_PATH, not the default profile', async () => {
       const profile = resolve('/isolated/profile-r')
-      process.env.ORCA_USER_DATA_PATH = profile
+      process.env.BBQ_USER_DATA_PATH = profile
       resolveLocalServeRuntimeMock.mockResolvedValue({ kind: 'electron', reason: 'ssh targets' })
       electronChild()
 
@@ -164,15 +164,15 @@ describe('orca serve host selection', () => {
       const child = electronSpawn()
       expect(child.args).toContain(`--user-data-dir=${profile}`)
       expect(child.env).toMatchObject({
-        ORCA_USER_DATA_PATH: profile,
+        BBQ_USER_DATA_PATH: profile,
         ORCA_SERVE_USER_DATA_PATH: profile
       })
     })
 
     it('pins the opt-out Electron serve to the same profile', async () => {
       const profile = resolve('/isolated/profile-e')
-      process.env.ORCA_USER_DATA_PATH = profile
-      process.env.ORCA_SERVE_RUNTIME = 'electron'
+      process.env.BBQ_USER_DATA_PATH = profile
+      process.env.BBQ_SERVE_RUNTIME = 'electron'
       electronChild()
 
       await expect(serveOrcaApp({ json: true })).resolves.toBe(0)
@@ -180,7 +180,7 @@ describe('orca serve host selection', () => {
     })
 
     it('hands orcad the absolute profile the selector read', async () => {
-      process.env.ORCA_USER_DATA_PATH = join('relative', 'profile')
+      process.env.BBQ_USER_DATA_PATH = join('relative', 'profile')
       const selection = { kind: 'orcad', runtime: '/node', entry: '/slot/orcad.js', version: '1' }
       resolveLocalServeRuntimeMock.mockResolvedValue(selection)
       serveWithOrcadMock.mockResolvedValue(0)
@@ -200,9 +200,9 @@ describe('orca serve host selection', () => {
 
     it('uses ORCA_DEV_USER_DATA_PATH for both the selector and a dev Electron child', async () => {
       const profile = resolve('/isolated/dev-profile')
-      delete process.env.ORCA_USER_DATA_PATH
+      delete process.env.BBQ_USER_DATA_PATH
       process.env.ORCA_DEV_USER_DATA_PATH = profile
-      process.env.ORCA_APP_EXECUTABLE_NEEDS_APP_ROOT = '1'
+      process.env.BBQ_APP_EXECUTABLE_NEEDS_APP_ROOT = '1'
       resolveLocalServeRuntimeMock.mockResolvedValue({ kind: 'electron', reason: 'dev' })
       electronChild()
 

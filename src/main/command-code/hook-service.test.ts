@@ -52,13 +52,11 @@ describe('CommandCodeHookService', () => {
     expect(config.hooks.Stop[0].matcher).toBeUndefined()
     expect(config.hooks.PreToolUse[0].hooks[0].command).toMatch(
       process.platform === 'win32'
-        ? wrapWindowsBatchHookCommand(
-            join(homeDir, '.orca', 'agent-hooks', 'command-code-hook.cmd')
-          )
+        ? wrapWindowsBatchHookCommand(join(homeDir, '.bbq', 'agent-hooks', 'command-code-hook.cmd'))
         : /command-code-hook/
     )
     if (process.platform !== 'win32') {
-      expect(config.hooks.PreToolUse[0].hooks[0].command).toContain(join(homeDir, '.orca'))
+      expect(config.hooks.PreToolUse[0].hooks[0].command).toContain(join(homeDir, '.bbq'))
     }
     if (process.platform !== 'win32') {
       expect(config.hooks.PreToolUse[0].hooks[0].command).toMatch(/^if \[ -f /)
@@ -71,7 +69,7 @@ describe('CommandCodeHookService', () => {
     try {
       expect(new CommandCodeHookService().install().state).toBe('installed')
       const command = wrapWindowsBatchHookCommand(
-        join(homeDir, '.orca', 'agent-hooks', 'command-code-hook.cmd')
+        join(homeDir, '.bbq', 'agent-hooks', 'command-code-hook.cmd')
       )
       const config = JSON.parse(
         readFileSync(join(homeDir, '.commandcode', 'settings.json'), 'utf8')
@@ -89,18 +87,18 @@ describe('CommandCodeHookService', () => {
 
     const scriptFileName =
       process.platform === 'win32' ? 'command-code-hook.cmd' : 'command-code-hook.sh'
-    const script = readFileSync(join(homeDir, '.orca', 'agent-hooks', scriptFileName), 'utf8')
+    const script = readFileSync(join(homeDir, '.bbq', 'agent-hooks', scriptFileName), 'utf8')
 
     if (process.platform === 'win32') {
       expect(script).toContain('sourceEndpointByPort')
       expect(script).toContain('orca-dev\\agent-hooks')
-      expect(script).toContain('set ORCA_AGENT_HOOK_PORT=')
+      expect(script).toContain('set BBQ_AGENT_HOOK_PORT=')
     } else {
-      expect(script).toContain('__orca_read_ancestor_var')
-      expect(script).toContain('__orca_fill_from_endpoint_file')
-      expect(script).toContain('[ "$__orca_endpoint_port" != "$ORCA_AGENT_HOOK_PORT" ]')
-      expect(script).toContain('ORCA_PANE_KEY')
-      expect(script).toContain('ORCA_AGENT_LAUNCH_TOKEN')
+      expect(script).toContain('__bbq_read_ancestor_var')
+      expect(script).toContain('__bbq_fill_from_endpoint_file')
+      expect(script).toContain('[ "$__bbq_endpoint_port" != "$BBQ_AGENT_HOOK_PORT" ]')
+      expect(script).toContain('BBQ_PANE_KEY')
+      expect(script).toContain('BBQ_AGENT_LAUNCH_TOKEN')
       expect(script).toContain('orca-dev/agent-hooks')
       expect(script).toContain('endpoint_port=')
     }
@@ -115,10 +113,10 @@ describe('CommandCodeHookService', () => {
     writeFileSync(
       staleEndpointPath,
       [
-        'ORCA_AGENT_HOOK_PORT=9',
-        'ORCA_AGENT_HOOK_TOKEN=stale-token',
-        'ORCA_AGENT_HOOK_ENV=development',
-        'ORCA_AGENT_HOOK_VERSION=1',
+        'BBQ_AGENT_HOOK_PORT=9',
+        'BBQ_AGENT_HOOK_TOKEN=stale-token',
+        'BBQ_AGENT_HOOK_ENV=development',
+        'BBQ_AGENT_HOOK_VERSION=1',
         ''
       ].join('\n')
     )
@@ -133,7 +131,7 @@ describe('CommandCodeHookService', () => {
       req.on('end', () => {
         requests.push({
           body,
-          token: req.headers['x-orca-agent-hook-token']
+          token: req.headers['x-bbq-agent-hook-token']
         })
         res.statusCode = 204
         res.end()
@@ -143,19 +141,19 @@ describe('CommandCodeHookService', () => {
     try {
       await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve))
       const address = server.address() as AddressInfo
-      const scriptPath = join(homeDir, '.orca', 'agent-hooks', 'command-code-hook.sh')
+      const scriptPath = join(homeDir, '.bbq', 'agent-hooks', 'command-code-hook.sh')
       const child = spawn('/bin/sh', [scriptPath], {
         env: {
           ...process.env,
           HOME: homeDir,
-          ORCA_AGENT_HOOK_ENDPOINT: staleEndpointPath,
-          ORCA_AGENT_HOOK_PORT: String(address.port),
-          ORCA_AGENT_HOOK_TOKEN: 'current-token',
-          ORCA_PANE_KEY: 'tab:leaf',
-          ORCA_TAB_ID: 'tab',
-          ORCA_WORKTREE_ID: 'worktree',
-          ORCA_AGENT_HOOK_ENV: 'development',
-          ORCA_AGENT_HOOK_VERSION: '1'
+          BBQ_AGENT_HOOK_ENDPOINT: staleEndpointPath,
+          BBQ_AGENT_HOOK_PORT: String(address.port),
+          BBQ_AGENT_HOOK_TOKEN: 'current-token',
+          BBQ_PANE_KEY: 'tab:leaf',
+          BBQ_TAB_ID: 'tab',
+          BBQ_WORKTREE_ID: 'worktree',
+          BBQ_AGENT_HOOK_ENV: 'development',
+          BBQ_AGENT_HOOK_VERSION: '1'
         },
         stdio: ['pipe', 'ignore', 'pipe']
       })

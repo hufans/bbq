@@ -41,15 +41,15 @@ beforeEach(() => {
   testState.userData = mkdtempSync(join(tmpdir(), 'orca-codex-e-migration-'))
   testState.home = mkdtempSync(join(tmpdir(), 'orca-codex-e-home-'))
   for (const key of [
-    'ORCA_USER_DATA_PATH',
+    'BBQ_USER_DATA_PATH',
     'ORCA_DISABLE_CODEX_TRUST_RPC',
     'CODEX_HOME',
-    'ORCA_CODEX_HOME'
+    'BBQ_CODEX_HOME'
   ]) {
     previousEnv[key] = process.env[key]
     delete process.env[key]
   }
-  process.env.ORCA_USER_DATA_PATH = testState.userData
+  process.env.BBQ_USER_DATA_PATH = testState.userData
   process.env.ORCA_DISABLE_CODEX_TRUST_RPC = '1'
   mkdirSync(systemHome(), { recursive: true })
   mkdirSync(sharedHome(), { recursive: true })

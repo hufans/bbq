@@ -1,3 +1,7 @@
+# Product name
+
+This fork's product name is BBQ. The command is `bbq`, the home directory is `~/.bbq`, and releases come from `hufans/bbq`. The naming contract, the residue that stays on the old spelling, and what is not finished are in [`BBQ.md`](./BBQ.md). Do not global-replace `orca`.
+
 # Design System
 
 All UI work — layout, color, typography, spacing, component selection, UX behavior — must follow [`docs/STYLEGUIDE.md`](./docs/STYLEGUIDE.md). Most of it is linted: `pnpm run check:code-quality:changed` fails on new restyles of a `components/ui/` primitive, raw palette colors, and computed `className` strings; `pnpm lint` fails on any class Tailwind cannot generate. See the Enforcement section of the style guide before suppressing either. Use the tokens defined in `src/renderer/src/assets/main.css` (the canonical source) and the shadcn primitives in `src/renderer/src/components/ui/`. Don't invent new color values, font sizes, or shadow tiers when a documented one already covers the role. When STYLEGUIDE.md is silent, follow the resolution order in its final section. In `components/native-chat/`, the "Chat type scale" and "Chat text colour, hover and focus" sections are binding, and `pnpm lint` fails on arbitrary font sizes, softened `text-foreground`, and weakened focus rings there.

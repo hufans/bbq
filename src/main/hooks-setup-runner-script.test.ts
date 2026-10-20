@@ -348,8 +348,8 @@ describe('createSetupRunnerScript', () => {
     const setup = createSetupRunnerScript(makeRepo(), '/test/worktree', 'git fetch')
 
     expect(setup.envVars).toMatchObject({
-      ORCA_ROOT_PATH: '/test/repo',
-      ORCA_WORKTREE_PATH: '/test/worktree',
+      BBQ_ROOT_PATH: '/test/repo',
+      BBQ_WORKTREE_PATH: '/test/worktree',
       ORCA_INTERNAL_TERMINAL_GIT_CREDENTIAL_GUARD_POLICY: 'guard'
     })
   })

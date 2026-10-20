@@ -143,7 +143,7 @@ describe('registerOrcaProfileHandlers auth channels', () => {
 
     await expect(
       Promise.resolve(handlers.get('orcaProfiles:selectOrg')?.(null, { orgId: ' ' }))
-    ).rejects.toThrow('invalid_orca_profile_org_selection')
+    ).rejects.toThrow('invalid_bbq_profile_org_selection')
   })
 
   it('creates cloud-linked profiles with trimmed optional args', async () => {

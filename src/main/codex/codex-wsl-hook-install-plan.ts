@@ -48,7 +48,7 @@ function toDefaultWslLinuxPath(windowsPath: string): string {
 }
 
 const WSL_CANONICALIZE_TIMEOUT_MS = 5000
-const WSL_PATH_MISSING_OUTPUT = '__ORCA_WSL_PATH_MISSING__'
+const WSL_PATH_MISSING_OUTPUT = '__BBQ_WSL_PATH_MISSING__'
 export const MAX_WSL_CANONICAL_PATH_CACHE_ENTRIES = 512
 
 // Why: `readlink -f` over wsl.exe stalls up to the timeout on a cold or wedged
@@ -210,8 +210,8 @@ export function createCodexWslRuntimeHookInstallPlan(
   return {
     configPath: pathWin32.join(runtimeHomePath, 'hooks.json'),
     tomlPath: pathWin32.join(runtimeHomePath, 'config.toml'),
-    scriptPath: pathWin32.join(runtimeHomePath, '.orca', 'agent-hooks', 'codex-hook.sh'),
-    commandScriptPath: pathPosix.join(linuxRuntimeHome, '.orca', 'agent-hooks', 'codex-hook.sh'),
+    scriptPath: pathWin32.join(runtimeHomePath, '.bbq', 'agent-hooks', 'codex-hook.sh'),
+    commandScriptPath: pathPosix.join(linuxRuntimeHome, '.bbq', 'agent-hooks', 'codex-hook.sh'),
     trustConfigPath: pathPosix.join(linuxRuntimeHome, 'hooks.json'),
     wslDistro: distro,
     linuxRuntimeHome

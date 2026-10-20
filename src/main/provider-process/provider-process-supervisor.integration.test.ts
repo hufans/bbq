@@ -97,13 +97,16 @@ const ONE_SHOT_PROVIDER = String.raw`
 // owner ends the supervisor's stdin at once, as Orca does after writing a one-shot's request.
 const OWNER = String.raw`
   const { spawn } = require('node:child_process')
+  const fs = require('node:fs')
   const quitsCleanly = Boolean(process.env.ORCA_TEST_OWNER_QUITS_CLEANLY)
   const endsStdin = Boolean(process.env.ORCA_TEST_OWNER_ENDS_STDIN)
   if (quitsCleanly) process.on('SIGUSR2', () => process.exit(0))
-  const spec = JSON.parse(Buffer.from(process.env.ORCA_PROVIDER_SUPERVISOR_SPEC, 'base64').toString())
+  const args = JSON.parse(process.env.ORCA_TEST_SUPERVISOR_ARGS)
+  const spec = JSON.parse(fs.readFileSync(args[1], 'utf8'))
   spec.ownerPid = process.pid
-  const supervisor = spawn(process.execPath, JSON.parse(process.env.ORCA_TEST_SUPERVISOR_ARGS), {
-    env: { ...process.env, ORCA_PROVIDER_SUPERVISOR_SPEC: Buffer.from(JSON.stringify(spec)).toString('base64') },
+  fs.writeFileSync(args[1], JSON.stringify(spec))
+  const supervisor = spawn(process.execPath, args, {
+    env: process.env,
     stdio: ['pipe', 'pipe', 'ignore'],
     detached: true
   })
