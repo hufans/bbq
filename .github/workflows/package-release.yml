@@ -49,7 +49,8 @@ jobs:
           - label: Linux
             os: ubuntu-latest
             cpu: current
-            node_targets: linux-x64
+            # The pin names Linux builds by libc. AppImage packaging asks for this id.
+            node_targets: linux-x64-glibc
             builder_args: --linux AppImage --x64
             artifact: bbq-linux
     steps:
