@@ -63,7 +63,10 @@ function verifyPackagedDaemonEntryBoots(resourcesDir, options = {}) {
   console.log('[verify-packaged-daemon-entry] OK — packaged daemon-entry loads under plain Node')
 }
 
-const TERMINAL_HOST_BOOT_TIMEOUT_MS = 20_000
+// The first exec of a freshly signed helper is assessed before it writes a token.
+// On a GitHub arm64 runner that assessment, plus Rosetta for the x64 slice, runs
+// past the local budget while the process is still alive and silent.
+const TERMINAL_HOST_BOOT_TIMEOUT_MS = process.env.CI === 'true' ? 120_000 : 20_000
 // Arithmetic so the shell echoing the typed command cannot satisfy the check.
 const TERMINAL_HOST_BOOT_COMMAND = 'echo "OK $((6*7))" && exit'
 const TERMINAL_HOST_BOOT_OUTPUT = 'OK 42'
