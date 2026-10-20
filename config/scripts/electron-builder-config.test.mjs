@@ -471,7 +471,7 @@ describe('electron-builder config', () => {
   it('validates each AppImage before electron-builder publishes it', async () => {
     const root = await mkdtemp(join(tmpdir(), 'orca-electron-builder-appimage-'))
     try {
-      const appImage = join(root, 'orca-linux.AppImage')
+      const appImage = join(root, 'bbq-linux.AppImage')
       await writeFile(appImage, 'not an ELF')
       await chmod(appImage, 0o755)
 
