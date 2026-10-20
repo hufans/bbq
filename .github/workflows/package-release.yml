@@ -127,6 +127,13 @@ jobs:
       - name: Install mobile dependencies
         uses: ./.github/actions/install-mobile-dependencies
 
+      # build:release runs the Linux computer-use import check. Atspi is not on a
+      # stock GitHub runner; release-cut installs the same packages.
+      - name: Install Linux packaging libraries
+        if: runner.os == 'Linux'
+        shell: bash
+        run: sudo apt-get update && sudo apt-get install -y python3-gi gir1.2-atspi-2.0 at-spi2-core xclip xdotool
+
       - name: Build release assets
         shell: bash
         run: pnpm run build:release
