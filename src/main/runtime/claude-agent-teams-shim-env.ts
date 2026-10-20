@@ -8,11 +8,8 @@ import {
   type ClaudeAgentTeamsMode
 } from '../../shared/claude-agent-teams-tmux-compat'
 import { getOrcaCliCommandNameForPlatform } from '../../shared/orca-cli-command-name'
-import {
-  PRODUCT_COMMAND,
-  PRODUCT_DEV_COMMAND,
-  resolveProductHomeDir
-} from '../../shared/product-brand'
+import { PRODUCT_COMMAND, PRODUCT_DEV_COMMAND } from '../../shared/product-brand'
+import { resolveProductHomeDir } from '../../shared/product-home'
 import { resolvePathEnvKey } from '../pty/windows-path-segment-merge'
 
 export type ClaudeAgentTeamsLaunchPlan = {

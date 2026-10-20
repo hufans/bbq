@@ -1,7 +1,7 @@
 import { getSecretStore } from '../../shared/secret-store'
 import { existsSync, readFileSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
-import { resolveProductHomeDir } from '../../shared/product-brand'
+import { resolveProductHomeDir } from '../../shared/product-home'
 import {
   hardenExistingSecureFile,
   isUnreadableError,

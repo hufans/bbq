@@ -12,13 +12,12 @@ import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   formatProductVersion,
-  migrateProductHome,
   PRODUCT_COMMAND,
   PRODUCT_DISPLAY_NAME,
   PRODUCT_HOME_DIRNAME,
-  resolveProductHomeDir,
   stripLegacyExportedProductEnv
 } from './product-brand'
+import { migrateProductHome, resolveProductHomeDir } from './product-home'
 
 const roots: string[] = []
 

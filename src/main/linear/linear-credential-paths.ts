@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { resolveProductHomeDir } from '../../shared/product-brand'
+import { resolveProductHomeDir } from '../../shared/product-home'
 
 export const LEGACY_WORKSPACE_ID = 'legacy'
 

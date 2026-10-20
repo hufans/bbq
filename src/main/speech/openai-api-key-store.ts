@@ -6,7 +6,7 @@ import {
 } from '../../shared/secret-at-rest-protection'
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { resolveProductHomeDir } from '../../shared/product-brand'
+import { resolveProductHomeDir } from '../../shared/product-home'
 
 type StoredOpenAiKey = {
   encryptedKeyBase64: string

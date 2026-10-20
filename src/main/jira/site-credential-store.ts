@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs'
-import { resolveProductHomeDir } from '../../shared/product-brand'
+import { resolveProductHomeDir } from '../../shared/product-home'
 import { join } from 'node:path'
 import { writeEncryptedCredential } from '../integration-credential-file'
 import { readCredentialFileProtection } from '../credential-file-protection'

@@ -6,7 +6,7 @@
  */
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { resolveProductHomeDir } from '../../shared/product-brand'
+import { resolveProductHomeDir } from '../../shared/product-home'
 import type { SecretStore } from '../../shared/secret-store'
 import { classifyUnenvelopedCredential } from '../../shared/secret-at-rest-protection'
 import { hardenExistingSecureFile, writeSecureFile } from '../../shared/secure-file'

@@ -4,10 +4,6 @@
  * Write the new names. Read the old ones only as a fallback. Package names,
  * function names, and protocol fields stay on their upstream spellings.
  */
-import { cpSync, existsSync, lstatSync, mkdirSync, readdirSync } from 'node:fs'
-import { homedir } from 'node:os'
-import { dirname, join } from 'node:path'
-
 export const PRODUCT_COMMAND = 'bbq'
 export const PRODUCT_DEV_COMMAND = 'bbq-dev'
 export const PRODUCT_DISPLAY_NAME = 'BBQ'
@@ -33,94 +29,23 @@ export function nonemptyEnv(env: NodeJS.ProcessEnv, name: string): string | null
   return typeof value === 'string' && value.length > 0 ? value : null
 }
 
-export function productHomeEnvIsExplicit(env: NodeJS.ProcessEnv = process.env): boolean {
-  return HOME_ENV_PRIORITY.some((name) => nonemptyEnv(env, name) !== null)
-}
-
-/** Directory for credentials and other product state. Does not create or copy. */
-export function resolveProductHomeDir(
-  env: NodeJS.ProcessEnv = process.env,
-  home: string = homedir()
-): string {
+/** The home path named by env, if the user set one. Empty values do not count. */
+export function explicitProductHome(env: NodeJS.ProcessEnv = process.env): string | null {
   for (const name of HOME_ENV_PRIORITY) {
     const value = nonemptyEnv(env, name)
     if (value) {
       return value
     }
   }
-  const xdg = nonemptyEnv(env, 'XDG_DATA_HOME')
-  if (xdg) {
-    return join(xdg, PRODUCT_DISPLAY_NAME)
-  }
-  return join(home, PRODUCT_HOME_DIRNAME)
+  return null
 }
 
-export function legacyProductHomeSources(
-  env: NodeJS.ProcessEnv = process.env,
-  home: string = homedir()
-): string[] {
-  const sources = [join(home, LEGACY_HOME_DIRNAME)]
-  const xdg = nonemptyEnv(env, 'XDG_DATA_HOME')
-  if (xdg) {
-    sources.push(join(xdg, LEGACY_XDG_DIRNAME))
-  }
-  return sources
+export function productHomeEnvIsExplicit(env: NodeJS.ProcessEnv = process.env): boolean {
+  return explicitProductHome(env) !== null
 }
 
 export function formatProductVersion(version: string): string {
   return `${PRODUCT_COMMAND} ${version}`
-}
-
-function copyMissing(source: string, target: string, copied: string[]): void {
-  if (!existsSync(source)) {
-    return
-  }
-  const stat = lstatSync(source)
-  // A symlink can point outside the legacy home. Leave it in place.
-  if (stat.isSymbolicLink()) {
-    return
-  }
-  if (stat.isDirectory()) {
-    mkdirSync(target, { recursive: true })
-    for (const name of readdirSync(source)) {
-      copyMissing(join(source, name), join(target, name), copied)
-    }
-    return
-  }
-  if (existsSync(target)) {
-    return
-  }
-  mkdirSync(dirname(target), { recursive: true })
-  cpSync(source, target)
-  copied.push(target)
-}
-
-/**
- * Copy legacy home files into the new home once.
- * Skips the copy when the user pointed home at an explicit env path.
- * Never overwrites a file that already exists in the new home.
- */
-export function migrateProductHome(
-  options: {
-    env?: NodeJS.ProcessEnv
-    home?: string
-    target?: string
-  } = {}
-): string[] {
-  const env = options.env ?? process.env
-  if (productHomeEnvIsExplicit(env)) {
-    return []
-  }
-  const home = options.home ?? homedir()
-  const target = options.target ?? resolveProductHomeDir(env, home)
-  const copied: string[] = []
-  for (const source of legacyProductHomeSources(env, home)) {
-    if (source === target) {
-      continue
-    }
-    copyMissing(source, target, copied)
-  }
-  return copied
 }
 
 /**
